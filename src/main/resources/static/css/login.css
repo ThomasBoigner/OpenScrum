@@ -16,6 +16,7 @@ section#hero {
 }
 
 section#hero h1 {
+    text-align: center;
     background: var(--brand-gradient);
     background-clip: text;
     -webkit-background-clip: text;
@@ -95,4 +96,105 @@ section#login-form button {
 
 section#login-form button:hover {
     gap: 8px;
+}
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    /* Container */
+    div.container {
+        gap: 96px;
+        padding: 48px 0;
+    }
+
+    /* Hero */
+    section#hero {
+        gap: 24px;
+    }
+
+    section#hero img {
+        width: 64px;
+        height: 64px;
+    }
+
+    section#hero h1 {
+        width: 768px;
+    }
+
+    section#hero h3 {
+        width: 512px;
+    }
+
+    /* Login Form */
+    section#login-form {
+        gap: 48px;
+    }
+
+    div.error-message img {
+        height: 24px;
+    }
+
+    section#login-form form {
+        gap: 48px;
+    }
+
+    section#login-form div.input-fields {
+        width: 512px;
+    }
+
+    section#login-form input:nth-child(2) {
+        margin-bottom: 24px;
+    }
+
+    section#login-form button {
+        width: 256px;
+    }
+
+    section#login-form button img {
+        height: 24px;
+    }
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    /* Container */
+    div.container {
+        gap: 64px;
+        padding: 32px 16px;
+    }
+
+    /* Hero */
+    section#hero {
+        gap: 16px;
+    }
+
+    section#hero h1 {
+        width: 100%;
+    }
+
+    section#hero h3 {
+        width: 100%;
+    }
+
+    /* Login Form */
+    section#login-form {
+        gap: 32px;
+        width: 100%;
+    }
+
+    section#login-form form {
+        gap: 32px;
+        width: 100%;
+    }
+
+    section#login-form div.input-fields {
+        width: 100%;
+    }
+
+    section#login-form input:nth-child(2) {
+        margin-bottom: 16px;
+    }
+
+    section#login-form button {
+        width: 100%;
+    }
 }

@@ -121,7 +121,7 @@ button:hover {
     cursor: pointer;
 }
 
-/* 1200px - 800px */
+/* 1200px - 600px */
 @media screen and (max-width: 1200px) {
     /* Typography */
     html {
@@ -165,8 +165,8 @@ button:hover {
     }
 }
 
-/* < 800px */
-@media screen and (max-width: 800px) {
+/* < 600px */
+@media screen and (max-width: 600px) {
     /* Typography */
     h1 {
         font-size: 2rem;
