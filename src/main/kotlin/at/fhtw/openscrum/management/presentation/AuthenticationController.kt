@@ -13,5 +13,5 @@ class AuthenticationController {
     }
 
     @GetMapping(value = ["", PATH_INDEX])
-    fun showLogin(): String = "login"
+    fun showLogin(): String = "pages/login"
 }

@@ -14,6 +14,8 @@ class SpringSecurityConfiguration {
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http {
             authorizeHttpRequests {
+                authorize("/css/**", permitAll)
+                authorize("/assets/**", permitAll)
                 authorize(anyRequest, authenticated)
             }
             formLogin {
