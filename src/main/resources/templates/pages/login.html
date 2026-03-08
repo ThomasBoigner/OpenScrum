@@ -17,12 +17,30 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-    <h1>h1</h1>
-    <h2>h2</h2>
-    <h3>h3</h3>
-    <h4>h4</h4>
-    <h5>h5</h5>
-    <h6>h6</h6>
-    <p>Paragraph</p>
+    <div class="container">
+        <section id="hero">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+            <h1>Welcome back to OpenScrum!</h1>
+            <h3>Log into your account and continue working</h3>
+        </section>
+        <section id="login-form">
+            <div th:if="${param.error}" class="error-message">
+                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+                <p>Invalid username and password.</p>
+            </div>
+            <form th:action="@{/login}" method="post">
+                <div class="input-fields">
+                    <label for="username">Username:</label>
+                    <input type="text" name="username" id="username" placeholder="Enter your username!">
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" id="password" placeholder="Enter your password!">
+                </div>
+                <button type="submit">
+                    Login
+                    <img th:src="@{/assets/svg/arrow-right.svg}" alt="arrow right">
+                </button>
+            </form>
+        </section>
+    </div>
 </body>
 </html>
