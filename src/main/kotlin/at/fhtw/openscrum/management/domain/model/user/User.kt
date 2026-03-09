@@ -7,6 +7,7 @@ class User(
     var emailAddress: EmailAddress,
     var fullName: FullName,
     val password: String,
+    var role: Role
 ) {
     init {
         require(username.isNotBlank()) { "Username must not be blank!" }
