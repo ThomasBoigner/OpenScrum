@@ -31,22 +31,22 @@ class CustomUserDetailsServiceTest {
     @Test
     fun ensureLoadByUsernameWorksProperly() {
         // Given
-        val email = "john.doe@gmail.com"
+        val username = "john.doe"
         val user =
             User(
-                username = "john.doe",
-                emailAddress = EmailAddress(email),
+                username = username,
+                emailAddress = EmailAddress("john.doe@gmail.com"),
                 fullName = FullName("John", "Doe"),
                 password = "abc123",
                 role = Role.USER,
             )
-        whenever(userRepository.findByEmail(email)).thenReturn(user)
+        whenever(userRepository.findByUsername(username)).thenReturn(user)
 
         // When
-        val userDetails = userDetailsService.loadUserByUsername(email)
+        val userDetails = userDetailsService.loadUserByUsername(username)
 
         // Then
-        assertThat(userDetails.username).isEqualTo(email)
+        assertThat(userDetails.username).isEqualTo(username)
         assertThat(userDetails.password).isEqualTo(user.password)
         assertThat(userDetails.isEnabled).isTrue
         assertThat(userDetails.isAccountNonExpired).isTrue
@@ -68,7 +68,7 @@ class CustomUserDetailsServiceTest {
                 password = "abc123",
                 role = Role.USER,
             )
-        whenever(userRepository.findByEmail(email)).thenReturn(null)
+        whenever(userRepository.findByUsername(email)).thenReturn(null)
 
         // When
         assertThrows<UsernameNotFoundException> { userDetailsService.loadUserByUsername(email) }

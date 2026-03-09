@@ -17,17 +17,20 @@ class CustomUserDetailsService(
     private val userRepository: UserRepository,
     private val log: Logger = LoggerFactory.getLogger(CustomUserDetailsService::class.java),
 ) : UserDetailsService {
-    override fun loadUserByUsername(email: String): UserDetails {
+    override fun loadUserByUsername(username: String): UserDetails {
+        log.debug("trying to load user with username: {}", username)
+
         val user: User =
-            userRepository.findByEmail(email)
-                ?: throw UsernameNotFoundException("No user found with email: $email")
+            userRepository.findByUsername(username)
+                ?: throw UsernameNotFoundException("No user found with username: $username")
         val enabled = true
         val accountNonExpired = true
         val credentialsNonExpired = true
         val accountNonLocked = true
 
+        log.debug("Logged in as user {}", username)
         return org.springframework.security.core.userdetails.User(
-            user.emailAddress.emailAddress,
+            user.username,
             user.password,
             enabled,
             accountNonExpired,

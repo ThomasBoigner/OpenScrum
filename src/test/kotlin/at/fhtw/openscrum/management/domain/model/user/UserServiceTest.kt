@@ -35,7 +35,7 @@ class UserServiceTest {
         val password = "abc123"
         val role = Role.USER
 
-        whenever(userRepository.existsByEmail(emailAddress)).thenReturn(false)
+        whenever(userRepository.existsByEmailAddress(emailAddress)).thenReturn(false)
         whenever(userRepository.existsByUsername(username)).thenReturn(false)
         whenever(encryptionService.hashPassword(password)).thenAnswer { it.arguments[0] }
         whenever(userRepository.save(any())).thenAnswer { it.arguments[0] }
@@ -62,7 +62,7 @@ class UserServiceTest {
         val password = "abc123"
         val role = Role.USER
 
-        whenever(userRepository.existsByEmail(emailAddress)).thenReturn(true)
+        whenever(userRepository.existsByEmailAddress(emailAddress)).thenReturn(true)
 
         // When
         assertThrows<IllegalArgumentException> {
@@ -87,7 +87,33 @@ class UserServiceTest {
         val password = "abc123"
         val role = Role.USER
 
-        whenever(userRepository.existsByEmail(emailAddress)).thenReturn(false)
+        whenever(userRepository.existsByEmailAddress(emailAddress)).thenReturn(false)
+        whenever(userRepository.existsByUsername(username)).thenReturn(true)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            userService.registerUser(
+                username,
+                emailAddress,
+                firstName,
+                lastName,
+                password,
+                role,
+            )
+        }
+    }
+
+    @Test
+    fun ensureRegisterUserThrowsExceptionWhenPasswordIsNull() {
+        // Given
+        val username = "JohnDoe"
+        val emailAddress = "john.doe@gmail.com"
+        val firstName = "John"
+        val lastName = "Doe"
+        val password = "abc123"
+        val role = Role.USER
+
+        whenever(userRepository.existsByEmailAddress(emailAddress)).thenReturn(false)
         whenever(userRepository.existsByUsername(username)).thenReturn(true)
 
         // When

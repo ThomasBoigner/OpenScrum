@@ -5,7 +5,7 @@ interface UserRepository {
 
     fun existsByUsername(username: String): Boolean
 
-    fun existsByEmail(email: String): Boolean
+    fun existsByEmailAddress(email: String): Boolean
 
-    fun findByEmail(email: String): User?
+    fun findByUsername(username: String): User?
 }

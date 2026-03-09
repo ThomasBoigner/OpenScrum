@@ -17,15 +17,17 @@ class UserService(
         role: Role,
     ): User {
         log.debug("Trying to register user {}", username)
-        require(!userRepository.existsByEmail(email)) { "User with email $email already exists!" }
-        require(!userRepository.existsByUsername(username)) { "User with first name $firstName already exists!" }
+        require(!userRepository.existsByEmailAddress(email)) { "User with email $email already exists!" }
+        require(!userRepository.existsByUsername(username)) { "User with username $firstName already exists!" }
+
+        val hashedPassword = encryptionService.hashPassword(password) ?: throw IllegalStateException("Password must not be null!")
 
         val user =
             User(
                 username = username,
                 emailAddress = EmailAddress(email),
                 fullName = FullName(firstName, lastName),
-                password = encryptionService.hashPassword(password),
+                password = hashedPassword,
                 role = role,
             )
 
