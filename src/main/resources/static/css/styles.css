@@ -117,8 +117,22 @@ textarea {
     resize: none;
 }
 
+button,
+input,
+textarea {
+    border: none;
+    background: none;
+}
+
 button:hover {
     cursor: pointer;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+    outline: none;
 }
 
 /* 1200px - 600px */
