@@ -6,41 +6,43 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Login</title>
-    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}" />
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
 
     <link rel="stylesheet" th:href="@{/css/login.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-    <div class="container">
-        <section id="hero">
-            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
-            <h1>Welcome back to OpenScrum!</h1>
-            <h3>Log into your account and continue working</h3>
-        </section>
-        <section id="login-form">
-            <div th:if="${param.error}" class="error-message">
-                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-                <p>Invalid username and password.</p>
+<div class="container">
+    <section id="hero">
+        <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        <h1>Welcome back to OpenScrum!</h1>
+        <h3>Log into your account and continue working</h3>
+    </section>
+    <section id="login-form">
+        <div th:if="${param.error}" class="error-message">
+            <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+            <p>Invalid username and password.</p>
+        </div>
+        <form th:action="@{/login}" method="post">
+            <div class="input-fields">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" placeholder="Enter your username!">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" placeholder="Enter your password!">
             </div>
-            <form th:action="@{/login}" method="post">
-                <div class="input-fields">
-                    <label for="username">Username:</label>
-                    <input type="text" name="username" id="username" placeholder="Enter your username!">
-                    <label for="password">Password:</label>
-                    <input type="password" name="password" id="password" placeholder="Enter your password!">
-                </div>
-                <button type="submit">
-                    Login
-                    <img th:src="@{/assets/svg/arrow-right.svg}" alt="arrow right">
-                </button>
-            </form>
-        </section>
-    </div>
+            <button type="submit">
+                Login
+                <img th:src="@{/assets/svg/arrow-right.svg}" alt="arrow right">
+            </button>
+        </form>
+    </section>
+</div>
 </body>
 </html>

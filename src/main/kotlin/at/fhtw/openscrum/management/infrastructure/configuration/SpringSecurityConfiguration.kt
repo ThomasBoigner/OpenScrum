@@ -22,6 +22,7 @@ class SpringSecurityConfiguration {
             }
             formLogin {
                 loginPage = "/login"
+                defaultSuccessUrl("/projects", true)
                 permitAll()
             }
         }

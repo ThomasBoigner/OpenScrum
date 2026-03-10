@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>List Projects</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/list-projects.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <header id="main-header">
+        <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        <nav>
+            <button class="selected">
+                <img th:src="@{/assets/svg/project.svg}" alt="Project">
+                Projects
+            </button>
+            <button>
+                <img th:src="@{/assets/svg/user.svg}" alt="User">
+                Users
+            </button>
+            <button>
+                <img th:src="@{/assets/svg/exit.svg}" alt="Exit">
+                Logout
+            </button>
+        </nav>
+    </header>
+    <section id="projects-list">
+        <div class="search-input">
+            <label for="search-input"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
+            <input type="text" name="search-input" id="search-input" placeholder="Search">
+        </div>
+        <div class="projects-list-item">
+            <div class="project-information">
+                <h2>Project name</h2>
+                <div>
+                    <img th:src="@{/assets/svg/user.svg}" alt="User">
+                    <p>10</p>
+                </div>
+            </div>
+            <div class="edit-delete-buttons">
+                <button class="edit-button">
+                    <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
+                </button>
+                <button class="delete-button">
+                    <img th:src="@{/assets/svg/delete.svg}" alt="Delete">
+                </button>
+            </div>
+        </div>
+        <button class="create-button">
+            <img th:src="@{/assets/svg/plus.svg}" alt="Plus">
+        </button>
+    </section>
+</div>
+</body>
+</html>

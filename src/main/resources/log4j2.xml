@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+    <Properties>
+        <Property name="LOG_PATTERN">
+            %d{dd.MM.yyyy HH:mm:ss} %style{[%t]}{magenta} %highlight{%-5level}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green} %style{%logger{36}}{cyan} - %msg %n %style{%throwable}{red}
+        </Property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
+        </Console>
+
+
+        <RollingFile name="RollingFile" fileName="./build/log4j-logs/log4j2.log" filePattern="./build/log4j-logs/$${date:yyyy-MM}/log4j2-%d{-dd-MMMM-yyyy}-%i.log.gz">
+
+            <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
+
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy
+                        size="10 MB" />
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+
+        <Logger name="at.fhtw.openscrum" level="trace"/>
+    </Loggers>
+
+</Configuration>
