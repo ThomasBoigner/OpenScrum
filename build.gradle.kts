@@ -41,13 +41,16 @@ dependencies {
     implementation(libs.spring.boot.starter)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.web)
-    implementation(libs.spring.boot.starter.thymeleaf)
     implementation(libs.spring.boot.starter.log4j2)
     // spring modulith
     implementation(libs.spring.modulith.core)
     implementation(libs.spring.modulith.starter.jpa)
     // spring security
     implementation(libs.spring.boot.starter.security)
+    // thymeleaf
+    implementation(libs.spring.boot.starter.thymeleaf)
+    implementation(libs.htmx.spring.boot.thymeleaf)
+    implementation(libs.htmx.org)
     // database
     implementation(libs.h2)
     // testing

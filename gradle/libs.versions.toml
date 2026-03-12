@@ -4,6 +4,8 @@ spring-boot = "4.0.3"
 spring-modulith = "2.0.3"
 h2 = "2.4.240"
 mockito-kotlin = "6.2.3"
+htmx-spring-boot-thymeleaf = "5.0.0"
+htmx = "2.0.8"
 
 [libraries]
 spring-modulith-bom = { module = "org.springframework.modulith:spring-modulith-bom", version.ref = "spring-modulith" }
@@ -19,4 +21,5 @@ spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
-
+htmx-spring-boot-thymeleaf = { module = "io.github.wimdeblauwe:htmx-spring-boot-thymeleaf", version.ref = "htmx-spring-boot-thymeleaf" }
+htmx-org = { module = "org.webjars.npm:htmx.org", version.ref = "htmx" }

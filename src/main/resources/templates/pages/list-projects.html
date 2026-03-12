@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:hx="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -17,9 +17,15 @@
 
     <link rel="stylesheet" th:href="@{/css/list-projects.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
 <div class="container">
+    <script th:src="@{/js/add-csrf-token.js}"></script>
     <header id="main-header">
         <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
         <nav>
@@ -31,7 +37,7 @@
                 <img th:src="@{/assets/svg/user.svg}" alt="User">
                 Users
             </button>
-            <button>
+            <button hx:post="@{/logout}">
                 <img th:src="@{/assets/svg/exit.svg}" alt="Exit">
                 Logout
             </button>
