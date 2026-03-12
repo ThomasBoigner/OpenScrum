@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.spring.boot.starter)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.web)
+    developmentOnly(libs.spring.boot.devtools)
     implementation(libs.spring.boot.starter.log4j2)
     // spring modulith
     implementation(libs.spring.modulith.core)

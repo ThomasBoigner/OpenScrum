@@ -144,3 +144,13 @@ section#projects-list button.create-button {
     bottom: 32px;
     box-shadow: 0 4px 24px rgb(196, 196, 196);
 }
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    /* Container */
+    div.container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+}
