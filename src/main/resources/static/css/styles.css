@@ -169,7 +169,8 @@ button:focus {
         line-height: 2.12rem;
     }
 
-    h6 {
+    h6,
+    button {
         font-size: 1.22rem;
         line-height: 1.66rem;
     }
@@ -211,7 +212,8 @@ button:focus {
         line-height: 1.67rem;
     }
 
-    h6 {
+    h6,
+    button {
         font-size: 1.11rem;
         line-height: 1.52rem;
     }
