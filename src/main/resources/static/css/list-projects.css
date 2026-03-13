@@ -28,7 +28,7 @@ header#main-header nav {
     width: 100%;
 }
 
-header#main-header button {
+header#main-header a.btn {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -42,17 +42,17 @@ header#main-header button {
     box-shadow: 0 4px 24px rgb(196, 196, 196);
 }
 
-header#main-header button.selected {
+header#main-header a.selected {
     border: solid 3px var(--primary-color);
     background-color: var(--primary-color);
     color: var(--white);
 }
 
-header#main-header button:hover {
+header#main-header a.btn:hover {
     gap: 8px;
 }
 
-/* Project list */
+/* Projects list */
 section#projects-list {
     display: flex;
     flex-direction: column;
@@ -60,7 +60,7 @@ section#projects-list {
     gap: 32px;
     background-color: var(--black5);
     padding: 64px 32px;
-    width: 100%;
+    flex: 1;
 }
 
 section#projects-list div.search-input {
@@ -174,7 +174,7 @@ section#projects-list button.create-button {
         display: none;
     }
 
-    /* Project list */
+    /* Projects list */
     section#projects-list {
         gap: 24px;
         padding: 48px 32px;
@@ -188,6 +188,11 @@ section#projects-list button.create-button {
 
     section#projects-list div.projects-list-item h2 {
         margin-bottom: 24px;
+    }
+
+    section#projects-list div.projects-list-item button.edit-button img,
+    section#projects-list div.projects-list-item button.delete-button img {
+        height: 24px;
     }
 
     section#projects-list button.create-button {
@@ -217,7 +222,7 @@ section#projects-list button.create-button {
         gap: 16px;
     }
 
-    /* Project list */
+    /* Projects list */
     section#projects-list {
         gap: 16px;
         padding: 32px 16px;

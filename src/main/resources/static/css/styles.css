@@ -43,7 +43,8 @@ h3,
 h4,
 h5,
 h6,
-button {
+button,
+a.btn {
     font-family: 'Nunito', sans-serif;
     color: var(--black);
 }
@@ -83,7 +84,8 @@ h5 {
 }
 
 h6,
-button {
+button,
+a.btn {
     font-size: 1.24rem;
     line-height: 1.69rem;
     font-weight: 700;
@@ -105,8 +107,7 @@ a {
 
 input,
 textarea,
-select,
-a.btn {
+select {
     font-family: 'PT Sans', sans-serif;
     font-size: 1rem;
     line-height: 1.3rem;
@@ -125,7 +126,8 @@ textarea {
     background: none;
 }
 
-button:hover {
+button:hover,
+a.btn:hover {
     cursor: pointer;
 }
 
@@ -170,7 +172,8 @@ button:focus {
     }
 
     h6,
-    button {
+    button,
+    a.btn {
         font-size: 1.22rem;
         line-height: 1.66rem;
     }
@@ -213,7 +216,8 @@ button:focus {
     }
 
     h6,
-    button {
+    button,
+    a.btn {
         font-size: 1.11rem;
         line-height: 1.52rem;
     }

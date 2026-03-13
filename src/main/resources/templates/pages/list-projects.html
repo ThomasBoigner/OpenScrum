@@ -29,18 +29,18 @@
     <header id="main-header">
         <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
         <nav>
-            <button class="selected">
-                <img th:src="@{/assets/svg/project.svg}" alt="Project">
+            <a class="btn selected" th:href="@{/projects}">
+                <img th:src="@{/assets/svg/project-white.svg}" alt="Project">
                 Projects
-            </button>
-            <button>
+            </a>
+            <a class="btn" th:href="@{/users}">
                 <img th:src="@{/assets/svg/user.svg}" alt="User">
                 Users
-            </button>
-            <button hx:post="@{/logout}">
+            </a>
+            <a class="btn" hx:post="@{/logout}">
                 <img th:src="@{/assets/svg/exit.svg}" alt="Exit">
                 Logout
-            </button>
+            </a>
         </nav>
     </header>
     <section id="projects-list">
