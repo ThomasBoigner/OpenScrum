@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>List Projects</title>
+    <title>List Users</title>
     <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet" th:href="@{/css/list-projects.css}">
+    <link rel="stylesheet" th:href="@{/css/list-users.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 
     <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
@@ -29,11 +29,11 @@
     <header id="main-header">
         <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
         <nav>
-            <button class="selected">
+            <button>
                 <img th:src="@{/assets/svg/project.svg}" alt="Project">
                 Projects
             </button>
-            <button>
+            <button class="selected">
                 <img th:src="@{/assets/svg/user.svg}" alt="User">
                 Users
             </button>
@@ -43,20 +43,29 @@
             </button>
         </nav>
     </header>
-    <section id="projects-list">
+    <section id="users-list">
         <div class="search-input">
             <label for="search-input"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
             <input type="text" name="search-input" id="search-input" placeholder="Search">
         </div>
-        <div class="projects-list-item">
-            <div class="project-information">
-                <h2>Project name</h2>
-                <div class="user-count">
-                    <img th:src="@{/assets/svg/user.svg}" alt="User">
-                    <p>10</p>
+        <div class="users-list-item">
+            <div class="user-information">
+                <h2>Username</h2>
+                <div class="person-information">
+                    <label>First name</label>
+                    <p>Thomas</p>
+                    <label>Last name</label>
+                    <p>Boigner</p>
+                    <label>E-mail</label>
+                    <p>thomasboigner@outlook.com</p>
+                    <label>Role</label>
+                    <p>User</p>
                 </div>
             </div>
-            <div class="edit-delete-buttons">
+            <div class="promote-edit-delete-buttons">
+                <button class="promote-button">
+                    <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Promote">
+                </button>
                 <button class="edit-button">
                     <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
                 </button>
