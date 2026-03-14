@@ -68,7 +68,6 @@ section#login-form label {
 }
 
 section#login-form input {
-    border: none;
     border-radius: 8px;
     background-color: var(--black10);
     width: 100%;
@@ -85,13 +84,12 @@ section#login-form button {
     gap: 16px;
     align-items: center;
     justify-content: center;
-    border: none;
     border-radius: 8px;
     background-color: var(--primary-color);
     padding: 16px 24px;
     width: 512px;
     color: var(--white);
-    box-shadow: 0 4px 24px rgba(196, 196, 196, .25);
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
 }
 
 section#login-form button:hover {

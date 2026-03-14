@@ -1,0 +1,260 @@
+/* Container */
+body {
+    height: 100vh;
+}
+
+div.container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+/* Header */
+header#main-header {
+    width: 384px;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    padding: 64px 16px;
+    box-shadow: 4px 0 6px rgba(0, 0, 0, 0.25);
+}
+
+header#main-header nav {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+}
+
+header#main-header a.btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    border: solid 3px var(--black85);
+    border-radius: 32px;
+    width: 100%;
+    padding: 16px 24px;
+    background-color: var(--white);
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
+}
+
+header#main-header a.selected {
+    border: solid 3px var(--primary-color);
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+header#main-header a.btn:hover {
+    gap: 8px;
+}
+
+/* Projects list */
+section#projects-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    background-color: var(--black5);
+    padding: 64px 32px;
+    flex: 1;
+}
+
+section#projects-list div.search-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    border-radius: 8px;
+    padding: 24px;
+    background-color: var(--white);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+section#projects-list div.search-input label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+section#projects-list div.search-input input {
+    width: 100%;
+}
+
+section#projects-list div.projects-list-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: var(--white);
+    padding: 24px;
+    border-radius: 8px;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+
+section#projects-list div.projects-list-item h2 {
+    margin-bottom: 32px;
+}
+
+section#projects-list div.projects-list-item div.user-count {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+}
+
+section#projects-list div.projects-list-item div.edit-delete-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+    height: 100%;
+}
+
+section#projects-list div.projects-list-item button.edit-button,
+section#projects-list div.projects-list-item button.delete-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+section#projects-list div.projects-list-item button.edit-button {
+    border: solid 3px var(--secondary-color);
+}
+
+section#projects-list div.projects-list-item button.delete-button {
+    border: solid 3px var(--error);
+}
+
+section#projects-list button.create-button {
+    background-color: var(--primary-color);
+    border-radius: 128px;
+    padding: 32px;
+    width: 128px;
+    height: 128px;
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
+}
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    /* Container */
+    div.container {
+        flex-direction: column;
+    }
+
+    /* Header */
+    header#main-header {
+        width: 100%;
+        flex-direction: row;
+        gap: 32px;
+        padding: 48px 32px;
+    }
+
+    header#main-header > img {
+        width: 64px;
+        height: 64px;
+    }
+
+    header#main-header nav {
+        flex-direction: row;
+        gap: 16px;
+    }
+
+    header#main-header nav img {
+        display: none;
+    }
+
+    /* Projects list */
+    section#projects-list {
+        gap: 24px;
+        padding: 48px 32px;
+        height: 100%;
+    }
+
+    section#projects-list div.search-input img {
+        height: 24px;
+        width: 24px;
+    }
+
+    section#projects-list div.projects-list-item h2 {
+        margin-bottom: 24px;
+    }
+
+    section#projects-list div.projects-list-item button.edit-button img,
+    section#projects-list div.projects-list-item button.delete-button img {
+        height: 24px;
+    }
+
+    section#projects-list button.create-button {
+        padding: 24px;
+        width: 96px;
+        height: 96px;
+        right: 32px;
+        bottom: 32px;
+    }
+
+    section#projects-list button.create-button img {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    /* Header */
+    header#main-header {
+        flex-direction: column;
+        padding: 32px 16px;
+    }
+
+    header#main-header nav {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* Projects list */
+    section#projects-list {
+        gap: 16px;
+        padding: 32px 16px;
+    }
+
+    section#projects-list div.projects-list-item {
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    section#projects-list div.projects-list-item h2 {
+        margin-bottom: 8px;
+    }
+
+    section#projects-list div.projects-list-item div.edit-delete-buttons {
+        flex-direction: row;
+        gap: 8px;
+        justify-content: start;
+    }
+
+    section#projects-list button.create-button {
+        padding: 16px;
+        width: 64px;
+        height: 64px;
+        right: 16px;
+        bottom: 16px;
+    }
+
+    section#projects-list button.create-button img {
+        width: 32px;
+        height: 32px;
+    }
+}

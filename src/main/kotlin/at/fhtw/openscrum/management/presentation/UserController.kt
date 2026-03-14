@@ -7,18 +7,18 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
-@RequestMapping(AuthenticationController.BASE_URL)
-class AuthenticationController(
-    private val log: Logger = LoggerFactory.getLogger(AuthenticationController::class.java),
+@RequestMapping(UserController.BASE_URL)
+class UserController(
+    private val log: Logger = LoggerFactory.getLogger(UserController::class.java),
 ) {
     companion object {
-        const val BASE_URL = "/login"
+        const val BASE_URL = "/users"
         const val PATH_INDEX = "/"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
-    fun showLogin(): String {
-        log.debug("Serving login page")
-        return "pages/login"
+    fun index(): String {
+        log.debug("Serving list users page")
+        return "pages/list-users"
     }
 }
