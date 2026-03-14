@@ -54,9 +54,13 @@ dependencies {
     implementation(libs.htmx.org)
     // database
     implementation(libs.h2)
+    implementation(libs.postgresql)
     // testing
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.testcontainers)
+    testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation(libs.testcontainers.postgresql)
 }
 
 kotlin {
