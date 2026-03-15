@@ -61,6 +61,7 @@ dependencies {
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.postgresql)
+    implementation("org.seleniumhq.selenium:selenium-java:4.41.0")
 }
 
 kotlin {
