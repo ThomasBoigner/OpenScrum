@@ -19,12 +19,8 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 
     <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
-
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
-<script th:src="@{/js/add-csrf-token.js}"></script>
 <div class="container">
     <header id="main-header">
         <img th:src="@{/assets/svg/logo.svg}" alt="Logo">

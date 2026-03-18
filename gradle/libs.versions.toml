@@ -6,7 +6,7 @@ spring-boot = "4.0.3"
 # spring modulith
 spring-modulith = "2.0.3"
 # thymeleaf
-htmx-spring-boot-thymeleaf = "5.0.0"
+htmx-spring-boot-thymeleaf = "5.1.0"
 htmx = "2.0.8"
 # database
 h2 = "2.4.240"
