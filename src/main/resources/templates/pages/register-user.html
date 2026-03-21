@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Register a user</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/register-user.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <section id="hero">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
+        <h1>Register a user!</h1>
+    </section>
+    <section id="registration-form">
+        <div th:if="${param.error}" class="error-message">
+            <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+            <p>There were field errors!</p>
+        </div>
+        <form th:action="@{/users/register}" method="post">
+            <div class="input-fields">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" placeholder="Enter the username!">
+            </div>
+            <div class="input-fields">
+                <label for="first-name">First name:</label>
+                <input type="text" name="first-name" id="first-name" placeholder="Enter the first name!">
+            </div>
+            <div class="input-fields">
+                <label for="last-name">Last name:</label>
+                <input type="text" name="first-name" id="last-name" placeholder="Enter the last name!">
+            </div>
+            <div class="input-fields">
+                <label for="email-address">Email address:</label>
+                <input type="text" name="email-address" id="email-address" placeholder="Enter the email address!">
+            </div>
+            <div class="input-fields">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" placeholder="Enter the password!">
+            </div>
+            <button type="submit">
+                Register
+                <img th:src="@{/assets/svg/plus.svg}" alt="plus">
+            </button>
+        </form>
+    </section>
+</div>
+</body>
+</html>
