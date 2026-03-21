@@ -26,11 +26,11 @@
         <h3>Log into your account and continue working</h3>
     </section>
     <section id="login-form">
-        <div th:if="${param.error}" class="error-message">
-            <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-            <p>Invalid username and password.</p>
-        </div>
         <form th:action="@{/login}" method="post">
+            <div th:if="${param.error}" class="error-message">
+                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+                <p>Invalid username and password.</p>
+            </div>
             <div class="input-fields">
                 <label for="username">Username:</label>
                 <input type="text" name="username" id="username" placeholder="Enter your username!">

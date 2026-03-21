@@ -27,31 +27,23 @@
         <h1>Register a user!</h1>
     </section>
     <section id="registration-form">
-        <div th:if="${param.error}" class="error-message">
-            <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-            <p>There were field errors!</p>
-        </div>
         <form th:action="@{/users/register}" method="post">
-            <div class="input-fields">
-                <label for="username">Username:</label>
-                <input type="text" name="username" id="username" placeholder="Enter the username!">
+            <div th:if="${param.error}" class="error-message">
+                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+                <p>There were field errors!</p>
             </div>
-            <div class="input-fields">
-                <label for="first-name">First name:</label>
-                <input type="text" name="first-name" id="first-name" placeholder="Enter the first name!">
-            </div>
-            <div class="input-fields">
-                <label for="last-name">Last name:</label>
-                <input type="text" name="first-name" id="last-name" placeholder="Enter the last name!">
-            </div>
-            <div class="input-fields">
-                <label for="email-address">Email address:</label>
-                <input type="text" name="email-address" id="email-address" placeholder="Enter the email address!">
-            </div>
-            <div class="input-fields">
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" placeholder="Enter the password!">
-            </div>
+                <div class="input-fields">
+                    <label for="username">Username:</label>
+                    <input type="text" name="username" id="username" placeholder="Enter the username!">
+                    <label for="first-name">First name:</label>
+                    <input type="text" name="first-name" id="first-name" placeholder="Enter the first name!">
+                    <label for="last-name">Last name:</label>
+                    <input type="text" name="first-name" id="last-name" placeholder="Enter the last name!">
+                    <label for="email-address">Email address:</label>
+                    <input type="text" name="email-address" id="email-address" placeholder="Enter the email address!">
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" id="password" placeholder="Enter the password!">
+                </div>
             <button type="submit">
                 Register
                 <img th:src="@{/assets/svg/plus.svg}" alt="plus">

@@ -29,7 +29,7 @@ section#hero h3 {
 }
 
 /* Login Form */
-section#login-form {
+section#login-form form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -49,13 +49,6 @@ div.error-message {
 
 div.error-message p {
     color: var(--error);
-}
-
-section#login-form form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 64px;
 }
 
 section#login-form div.input-fields {
@@ -123,16 +116,12 @@ section#login-form button:hover {
     }
 
     /* Login Form */
-    section#login-form {
+    section#login-form form {
         gap: 48px;
     }
 
     div.error-message img {
         height: 24px;
-    }
-
-    section#login-form form {
-        gap: 48px;
     }
 
     section#login-form div.input-fields {
@@ -175,12 +164,15 @@ section#login-form button:hover {
 
     /* Login Form */
     section#login-form {
-        gap: 32px;
         width: 100%;
     }
 
     section#login-form form {
         gap: 32px;
+        width: 100%;
+    }
+
+    div.error-message {
         width: 100%;
     }
 
