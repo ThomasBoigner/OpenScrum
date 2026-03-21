@@ -88,3 +88,87 @@ section#registration-form button img {
 section#registration-form button:hover {
     gap: 8px;
 }
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    /* Container */
+    div.container {
+        gap: 96px;
+        padding: 48px 0;
+    }
+
+    /* Hero */
+    section#hero {
+        gap: 24px;
+    }
+
+    section#hero img {
+        width: 64px;
+        height: 64px;
+    }
+
+    /* Login Form */
+    section#registration-form form {
+        gap: 48px;
+    }
+
+    div.error-message img {
+        height: 24px;
+    }
+
+    section#registration-form div.input-fields {
+        width: 512px;
+    }
+
+    section#registration-form input:not(:last-child) {
+        margin-bottom: 24px;
+    }
+
+    section#registration-form button {
+        width: 256px;
+    }
+
+    section#registration-form button img {
+        height: 24px;
+    }
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    /* Container */
+    div.container {
+        gap: 64px;
+        padding: 32px 16px;
+    }
+
+    /* Hero */
+    section#hero {
+        gap: 16px;
+    }
+
+    /* Login Form */
+    section#registration-form {
+        width: 100%;
+    }
+
+    section#registration-form form {
+        gap: 32px;
+        width: 100%;
+    }
+
+    div.error-message {
+        width: 100%;
+    }
+
+    section#registration-form div.input-fields {
+        width: 100%;
+    }
+
+    section#registration-form input:not(:last-child) {
+        margin-bottom: 16px;
+    }
+
+    section#registration-form button {
+        width: 100%;
+    }
+}
