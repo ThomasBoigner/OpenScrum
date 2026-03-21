@@ -23,7 +23,9 @@
 <body>
 <div class="container">
     <header id="main-header">
-        <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
         <nav>
             <a class="btn" th:href="@{/projects}">
                 <img th:src="@{/assets/svg/project.svg}" alt="Project">
@@ -48,10 +50,8 @@
             <div class="user-information">
                 <h2>Username</h2>
                 <div class="person-information">
-                    <label>First name</label>
-                    <p>Thomas</p>
-                    <label>Last name</label>
-                    <p>Boigner</p>
+                    <label>Name</label>
+                    <p>Thomas Boigner</p>
                     <label>E-mail</label>
                     <p>thomasboigner@outlook.com</p>
                     <label>Role</label>
@@ -70,9 +70,9 @@
                 </button>
             </div>
         </div>
-        <button class="create-button">
+        <a class="create-button">
             <img th:src="@{/assets/svg/plus.svg}" alt="Plus">
-        </button>
+        </a>
     </section>
 </div>
 </body>

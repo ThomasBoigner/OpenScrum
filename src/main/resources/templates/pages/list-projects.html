@@ -23,7 +23,9 @@
 <body>
 <div class="container">
     <header id="main-header">
-        <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
         <nav>
             <a class="btn selected" th:href="@{/projects}">
                 <img th:src="@{/assets/svg/project-white.svg}" alt="Project">
