@@ -28,21 +28,21 @@
     </section>
     <section id="registration-form">
         <form th:action="@{/users/register}" method="post">
-            <div th:if="${param.error}" class="error-message">
+            <div th:if="${errorMessage}" class="error-message">
                 <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-                <p>There were field errors!</p>
+                <p th:text="${errorMessage}">Error while registering user!</p>
             </div>
             <div class="input-fields">
                 <label for="username">Username:</label>
-                <input type="text" name="username" id="username" placeholder="Enter the username!">
+                <input type="text" name="username" id="username" placeholder="Enter the username!" th:field="${registerUserCommand.username}">
                 <label for="first-name">First name:</label>
-                <input type="text" name="first-name" id="first-name" placeholder="Enter the first name!">
+                <input type="text" name="first-name" id="first-name" placeholder="Enter the first name!" th:field="${registerUserCommand.firstName}">
                 <label for="last-name">Last name:</label>
-                <input type="text" name="first-name" id="last-name" placeholder="Enter the last name!">
+                <input type="text" name="first-name" id="last-name" placeholder="Enter the last name!" th:field="${registerUserCommand.lastName}">
                 <label for="email-address">Email address:</label>
-                <input type="text" name="email-address" id="email-address" placeholder="Enter the email address!">
+                <input type="text" name="email-address" id="email-address" placeholder="Enter the email address!" th:field="${registerUserCommand.email}">
                 <label for="password">Password:</label>
-                <input type="password" name="password" id="password" placeholder="Enter the password!">
+                <input type="password" name="password" id="password" placeholder="Enter the password!" th:field="${registerUserCommand.password}">
             </div>
             <button type="submit">
                 Register

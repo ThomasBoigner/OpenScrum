@@ -1,15 +1,20 @@
 package at.fhtw.openscrum.management.presentation
 
+import at.fhtw.openscrum.management.application.UserApplicationService
+import at.fhtw.openscrum.management.application.command.RegisterUserCommand
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
 @RequestMapping(UserController.BASE_URL)
 class UserController(
+    private val userApplicationService: UserApplicationService,
     private val log: Logger = LoggerFactory.getLogger(UserController::class.java),
 ) {
     companion object {
@@ -25,11 +30,25 @@ class UserController(
     }
 
     @GetMapping(value = [ROUTE_REGISTER])
-    fun showRegisterForm(): String {
+    fun showRegisterForm(model: Model): String {
         log.debug("Serving register user page")
+        model.addAttribute("registerUserCommand", RegisterUserCommand())
         return "pages/register-user"
     }
 
     @PostMapping(value = [ROUTE_REGISTER])
-    fun handleRegisterForm(): String = "redirect:$BASE_URL"
+    fun handleRegisterForm(
+        @ModelAttribute(name = "registerUserCommand") command: RegisterUserCommand,
+        model: Model,
+    ): String {
+        log.debug("Received http POST request to register user with command {}", command)
+        try {
+            userApplicationService.registerUser(command)
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while registering user with message: {}", ex.message)
+            model.addAttribute("errorMessage", ex.message)
+            return "pages/register-user"
+        }
+        return "redirect:$BASE_URL"
+    }
 }
