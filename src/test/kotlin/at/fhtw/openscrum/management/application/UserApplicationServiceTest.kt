@@ -33,6 +33,36 @@ class UserApplicationServiceTest {
     }
 
     @Test
+    fun ensureGetUsersWorksProperly() {
+        // Given
+        val user1 =
+            User(
+                username = "John.Doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        val user2 =
+            User(
+                username = "Max.Mustermann",
+                emailAddress = EmailAddress("max.mustermann@gmail.com"),
+                fullName = FullName("Max", "Mustermann"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        whenever { userRepository.findAll() }.thenReturn(listOf(user1, user2))
+
+        // When
+        val result = userApplicationService.getUsers()
+
+        // Then
+        assertThat(result).isEqualTo(listOf(UserDto(user1), UserDto(user2)))
+    }
+
+    @Test
     fun ensureGetUserByUsernameWorksProperly() {
         // Given
         val user =

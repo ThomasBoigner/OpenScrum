@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository
 class JpaUserRepository(
     private val userEntityRepository: UserEntityRepository,
 ) : UserRepository {
+    override fun findAll(): List<User> = userEntityRepository.findAll().map { it.toUser() }
+
     override fun save(user: User): User {
         val userEntity = UserEntity(user)
         userEntityRepository.save(userEntity)

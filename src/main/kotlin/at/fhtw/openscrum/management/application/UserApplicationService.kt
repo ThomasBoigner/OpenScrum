@@ -16,6 +16,13 @@ class UserApplicationService(
     private val userRepository: UserRepository,
     private val log: Logger = LoggerFactory.getLogger(UserApplicationService::class.java),
 ) {
+    fun getUsers(): List<UserDto> {
+        log.debug("Trying to get all users")
+        val users = userRepository.findAll()
+        log.info("Found all ({}) users", users.size)
+        return users.map { UserDto(it) }
+    }
+
     fun getUserByUsername(username: String): UserDto? {
         log.debug("Trying to get user with username {}", username)
         val user = userRepository.findByUsername(username)

@@ -2,6 +2,7 @@ package at.fhtw.openscrum.management.presentation
 
 import at.fhtw.openscrum.management.application.UserApplicationService
 import at.fhtw.openscrum.management.presentation.forms.RegisterUserForm
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -24,6 +25,7 @@ class UserController(
         const val BASE_URL = "/users"
         const val PATH_INDEX = "/"
         const val ROUTE_REGISTER = "/register"
+        const val FRAGMENT_USERS_LIST_ITEM = "/list"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -37,6 +39,13 @@ class UserController(
             userApplicationService.getUserByUsername(principal.name),
         )
         return "pages/list-users"
+    }
+
+    @HxRequest
+    @GetMapping(value = [FRAGMENT_USERS_LIST_ITEM])
+    fun getUsersListItems(model: Model): String {
+        model.addAttribute("users", userApplicationService.getUsers())
+        return "fragments/users-list-item"
     }
 
     @GetMapping(value = [ROUTE_REGISTER])
