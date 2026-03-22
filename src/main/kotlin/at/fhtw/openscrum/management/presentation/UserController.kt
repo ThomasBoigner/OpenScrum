@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import java.security.Principal
 
 @Controller
 @RequestMapping(UserController.BASE_URL)
@@ -40,17 +41,22 @@ class UserController(
 
     @PostMapping(value = [ROUTE_REGISTER])
     fun handleRegisterForm(
+        principal: Principal,
         @Valid @ModelAttribute(name = "registerUserForm") form: RegisterUserForm,
         brRegisterUserForm: BindingResult,
         model: Model,
     ): String {
         log.debug("Received http POST request to register user with form {}", form)
         if (brRegisterUserForm.hasErrors()) {
+            log.warn("Register user form {} has validation errors", form)
             return "pages/register-user"
         }
 
         try {
-            userApplicationService.registerUser(form.toRegisterUserCommand())
+            userApplicationService.registerUser(
+                principal.name,
+                form.toRegisterUserCommand(),
+            )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while registering user with message: {}", ex.message)
             model.addAttribute("errorMessage", ex.message)

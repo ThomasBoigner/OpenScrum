@@ -2,7 +2,6 @@ package at.fhtw.openscrum.management.application
 
 import at.fhtw.openscrum.management.application.command.RegisterUserCommand
 import at.fhtw.openscrum.management.application.dtos.UserDto
-import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import org.slf4j.Logger
@@ -18,16 +17,24 @@ class UserApplicationService(
     private val log: Logger = LoggerFactory.getLogger(UserApplicationService::class.java),
 ) {
     @Transactional(readOnly = false)
-    fun registerUser(command: RegisterUserCommand): UserDto {
-        log.debug("Trying to register user with command: {}", command)
+    fun registerUser(
+        authenticatedUserUsername: String,
+        command: RegisterUserCommand,
+    ): UserDto {
+        log.debug("User {} is trying to register user with command: {}", authenticatedUserUsername, command)
+
+        val authenticatedUser =
+            userRepository.findByUsername(authenticatedUserUsername)
+                ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
+
         return UserDto(
             userService.registerUser(
+                authenticatedUser,
                 command.username,
                 command.email,
                 command.firstName,
                 command.lastName,
                 command.password,
-                Role.USER,
             ),
         )
     }

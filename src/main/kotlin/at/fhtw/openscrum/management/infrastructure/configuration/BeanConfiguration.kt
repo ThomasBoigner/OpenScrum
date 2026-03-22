@@ -15,14 +15,7 @@ class BeanConfiguration {
         userRepository: UserRepository,
     ): UserService {
         val userService = UserService(encryptionService, userRepository)
-        userService.registerUser(
-            "admin",
-            "admin@gmail.com",
-            "admin",
-            "admin",
-            "admin",
-            Role.MANAGER,
-        )
+        userService.registerAdmin()
         return userService
     }
 }

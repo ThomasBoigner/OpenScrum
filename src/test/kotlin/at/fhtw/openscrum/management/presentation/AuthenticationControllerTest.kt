@@ -27,6 +27,7 @@ class AuthenticationControllerTest {
     @AfterEach
     fun cleanUp() {
         userEntityRepository.deleteAll()
+        userService.registerAdmin()
     }
 
     /*
@@ -40,13 +41,15 @@ class AuthenticationControllerTest {
         val username = "john.doe"
         val password = "abc123"
 
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
         userService.registerUser(
+            authenticatedUser = admin,
             username = username,
             firstName = "John",
             lastName = "Doe",
             password = password,
             email = "john.doe@gmail.com",
-            role = Role.USER,
         )
 
         val webDriver = ChromeDriver()
@@ -75,13 +78,15 @@ class AuthenticationControllerTest {
         val username = "john.doe"
         val password = "abc123"
 
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
         userService.registerUser(
+            authenticatedUser = admin,
             username = username,
             firstName = "John",
             lastName = "Doe",
             password = password,
             email = "john.doe@gmail.com",
-            role = Role.USER,
         )
 
         val webDriver = ChromeDriver()
@@ -109,13 +114,15 @@ class AuthenticationControllerTest {
         val username = "john.doe"
         val password = "abc123"
 
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
         userService.registerUser(
+            authenticatedUser = admin,
             username = username,
             firstName = "John",
             lastName = "Doe",
             password = password,
             email = "john.doe@gmail.com",
-            role = Role.USER,
         )
 
         val webDriver = ChromeDriver()
