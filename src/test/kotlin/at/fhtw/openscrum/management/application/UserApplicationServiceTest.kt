@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.management.application
 
 import at.fhtw.openscrum.management.application.command.RegisterUserCommand
+import at.fhtw.openscrum.management.application.dtos.UserDto
 import at.fhtw.openscrum.management.domain.model.user.EmailAddress
 import at.fhtw.openscrum.management.domain.model.user.FullName
 import at.fhtw.openscrum.management.domain.model.user.Role
@@ -29,6 +30,27 @@ class UserApplicationServiceTest {
     @BeforeEach
     fun setUp() {
         userApplicationService = UserApplicationService(userService, userRepository)
+    }
+
+    @Test
+    fun ensureGetUserByUsernameWorksProperly() {
+        // Given
+        val user =
+            User(
+                username = "John.Doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        whenever(userRepository.findByUsername(user.username)).thenReturn(user)
+
+        // When
+        val result = userApplicationService.getUserByUsername(user.username)
+
+        // Then
+        assertThat(result).isEqualTo(UserDto(user))
     }
 
     @Test

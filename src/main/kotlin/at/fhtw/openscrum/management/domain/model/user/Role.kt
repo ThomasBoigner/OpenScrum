@@ -5,5 +5,5 @@ enum class Role(
     val isManager: Boolean,
 ) {
     USER("ROLE_USER", false),
-    MANAGER("ROLE_ADMIN", true),
+    MANAGER("ROLE_MANAGER", true),
 }

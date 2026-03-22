@@ -16,6 +16,13 @@ class UserApplicationService(
     private val userRepository: UserRepository,
     private val log: Logger = LoggerFactory.getLogger(UserApplicationService::class.java),
 ) {
+    fun getUserByUsername(username: String): UserDto? {
+        log.debug("Trying to get user with username {}", username)
+        val user = userRepository.findByUsername(username)
+        log.info(user?.let { "Found user $it" } ?: "User with username $username could not be found")
+        return user?.let { UserDto(it) }
+    }
+
     @Transactional(readOnly = false)
     fun registerUser(
         authenticatedUserUsername: String,

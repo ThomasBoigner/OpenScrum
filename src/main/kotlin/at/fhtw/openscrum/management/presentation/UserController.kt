@@ -27,8 +27,15 @@ class UserController(
     }
 
     @GetMapping(value = ["", PATH_INDEX])
-    fun index(): String {
+    fun index(
+        principal: Principal,
+        model: Model,
+    ): String {
         log.debug("Serving list users page")
+        model.addAttribute(
+            "authenticatedUser",
+            userApplicationService.getUserByUsername(principal.name),
+        )
         return "pages/list-users"
     }
 
