@@ -4,7 +4,7 @@ import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.User
 import java.util.UUID
 
-class UserDto(
+data class UserDto(
     val userId: UUID,
     var username: String,
     var emailAddress: String,

@@ -46,6 +46,12 @@ div.error-message p {
     color: var(--error);
 }
 
+div.error-message div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 section#registration-form div.input-fields {
     width: 1024px;
 }
