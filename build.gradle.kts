@@ -1,9 +1,9 @@
 plugins {
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.spring") version "2.2.21"
-    id("org.springframework.boot") version "4.0.3"
-    id("io.spring.dependency-management") version "1.1.7"
-    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
+    kotlin("jvm") version libs.versions.kotlin.reflect
+    kotlin("plugin.spring") version libs.versions.kotlin.reflect
+    id("org.springframework.boot") version libs.versions.spring.boot
+    id("io.spring.dependency-management") version libs.versions.spring.dependency.management
+    id("org.jlleitschuh.gradle.ktlint") version libs.versions.ktlint
 }
 
 group = "at.fhtw"
@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.spring.boot.starter)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.validation)
     developmentOnly(libs.spring.boot.devtools)
     implementation(libs.spring.boot.starter.log4j2)
     // spring modulith
@@ -61,7 +62,7 @@ dependencies {
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.postgresql)
-    implementation("org.seleniumhq.selenium:selenium-java:4.41.0")
+    implementation(libs.selenium.java)
 }
 
 kotlin {

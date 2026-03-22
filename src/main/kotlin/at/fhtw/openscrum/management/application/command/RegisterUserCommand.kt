@@ -7,5 +7,5 @@ class RegisterUserCommand(
     val lastName: String,
     val password: String,
 ) {
-    constructor(): this("", "", "", "", "")
+    constructor() : this("", "", "", "", "")
 }
