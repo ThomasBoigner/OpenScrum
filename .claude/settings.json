@@ -1,0 +1,19 @@
+{
+  "enabledPlugins": {
+    "kotlin-lsp@claude-plugins-official": true,
+    "figma@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew build)",
+      "Bash(./gradlew bootRun)",
+      "Bash(./gradlew test)",
+      "Bash(./gradlew test --tests=*)",
+      "Bash(./gradlew ktlintCheck)",
+      "Bash(./gradlew ktlintFormat)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git status)"
+    ]
+  }
+}
