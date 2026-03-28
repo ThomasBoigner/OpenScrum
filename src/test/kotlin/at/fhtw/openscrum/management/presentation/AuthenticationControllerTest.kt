@@ -1,6 +1,5 @@
 package at.fhtw.openscrum.management.presentation
 
-import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
 import org.assertj.core.api.Assertions.assertThat

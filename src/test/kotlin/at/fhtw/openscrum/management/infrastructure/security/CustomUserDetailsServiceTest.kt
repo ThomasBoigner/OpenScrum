@@ -53,7 +53,7 @@ class CustomUserDetailsServiceTest {
         assertThat(userDetails.isCredentialsNonExpired).isTrue
         assertThat(userDetails.isCredentialsNonExpired).isTrue
         assertThat(userDetails.isAccountNonLocked).isTrue
-        assertThat(userDetails.authorities).contains(SimpleGrantedAuthority("USER"))
+        assertThat(userDetails.authorities).contains(SimpleGrantedAuthority("ROLE_USER"))
     }
 
     @Test
