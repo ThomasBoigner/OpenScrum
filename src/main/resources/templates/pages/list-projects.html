@@ -15,19 +15,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet" th:href="@{/css/list-projects.css}">
+    <link rel="stylesheet" th:href="@{/css/pages/list-projects.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 
     <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
-
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
-<script th:src="@{/js/add-csrf-token.js}"></script>
 <div class="container">
     <header id="main-header">
-        <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
         <nav>
             <a class="btn selected" th:href="@{/projects}">
                 <img th:src="@{/assets/svg/project-white.svg}" alt="Project">

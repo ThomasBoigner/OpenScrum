@@ -1,0 +1,89 @@
+div.users-list-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 24px;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+div.users-list-item h2 {
+    margin-bottom: 32px;
+}
+
+div.users-list-item div.person-information label {
+    margin-bottom: 4px;
+}
+
+div.users-list-item div.person-information p {
+    margin-bottom: 16px;
+}
+
+div.users-list-item div.promote-edit-delete-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+    height: 100%;
+}
+
+div.users-list-item button.promote-button,
+div.users-list-item button.edit-button,
+div.users-list-item button.delete-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+div.users-list-item button.promote-button {
+    border: solid 3px var(--primary-color);
+}
+
+div.users-list-item button.edit-button {
+    border: solid 3px var(--secondary-color);
+}
+
+div.users-list-item button.delete-button {
+    border: solid 3px var(--error);
+}
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    section#users-list div.users-list-item h2 {
+        margin-bottom: 24px;
+    }
+
+    section#users-list div.users-list-item button.promote-button img,
+    section#users-list div.users-list-item button.edit-button img,
+    section#users-list div.users-list-item button.delete-button img {
+        height: 24px;
+    }
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    section#users-list div.users-list-item {
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    section#users-list div.users-list-item h2 {
+        margin-bottom: 16px;
+    }
+
+    section#users-list div.users-list-item div.person-information p {
+        margin-bottom: 8px;
+    }
+
+    section#users-list div.users-list-item div.promote-edit-delete-buttons {
+        flex-direction: row;
+        gap: 8px;
+        justify-content: start;
+    }
+}

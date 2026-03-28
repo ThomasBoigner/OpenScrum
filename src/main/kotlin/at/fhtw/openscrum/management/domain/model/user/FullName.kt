@@ -10,4 +10,6 @@ data class FullName(
         require(lastName.isNotBlank()) { "Last name must not be blank!" }
         require(lastName.length < 128) { "Last name must not be longer than 128 characters!" }
     }
+
+    val fullName: String = "$firstName $lastName"
 }

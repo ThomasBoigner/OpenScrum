@@ -1,9 +1,9 @@
 plugins {
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.spring") version "2.2.21"
-    id("org.springframework.boot") version "4.0.3"
-    id("io.spring.dependency-management") version "1.1.7"
-    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
+    kotlin("jvm") version libs.versions.kotlin.reflect
+    kotlin("plugin.spring") version libs.versions.kotlin.reflect
+    id("org.springframework.boot") version libs.versions.spring.boot
+    id("io.spring.dependency-management") version libs.versions.spring.dependency.management
+    id("org.jlleitschuh.gradle.ktlint") version libs.versions.ktlint
 }
 
 group = "at.fhtw"
@@ -12,7 +12,7 @@ description = "OpenScrum"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.spring.boot.starter)
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.validation)
     developmentOnly(libs.spring.boot.devtools)
     implementation(libs.spring.boot.starter.log4j2)
     // spring modulith
@@ -54,9 +55,14 @@ dependencies {
     implementation(libs.htmx.org)
     // database
     implementation(libs.h2)
+    implementation(libs.postgresql)
     // testing
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.testcontainers)
+    testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation(libs.testcontainers.postgresql)
+    implementation(libs.selenium.java)
 }
 
 kotlin {

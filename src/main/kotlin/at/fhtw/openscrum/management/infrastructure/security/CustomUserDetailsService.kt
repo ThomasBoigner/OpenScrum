@@ -36,7 +36,7 @@ class CustomUserDetailsService(
             accountNonExpired,
             credentialsNonExpired,
             accountNonLocked,
-            listOf(SimpleGrantedAuthority(user.role.name)),
+            listOf(SimpleGrantedAuthority(user.role.roleName)),
         )
     }
 }

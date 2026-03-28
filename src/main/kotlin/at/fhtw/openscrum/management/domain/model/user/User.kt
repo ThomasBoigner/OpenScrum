@@ -2,12 +2,12 @@ package at.fhtw.openscrum.management.domain.model.user
 
 class User(
     val id: Long? = null,
-    var userId: UserId = UserId(),
+    val userId: UserId = UserId(),
     var username: String,
     var emailAddress: EmailAddress,
     var fullName: FullName,
     val password: String,
-    var role: Role,
+    var role: Role = Role.USER,
 ) {
     init {
         require(username.isNotBlank()) { "Username must not be blank!" }

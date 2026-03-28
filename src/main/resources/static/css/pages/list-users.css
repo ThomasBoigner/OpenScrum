@@ -61,6 +61,7 @@ section#users-list {
     background-color: var(--black5);
     padding: 64px 32px;
     flex: 1;
+    height: 100%;
 }
 
 section#users-list div.search-input {
@@ -85,60 +86,7 @@ section#users-list div.search-input input {
     width: 100%;
 }
 
-section#users-list div.users-list-item {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    background-color: var(--white);
-    border-radius: 8px;
-    padding: 24px;
-    width: 100%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
-}
-
-section#users-list div.users-list-item h2 {
-    margin-bottom: 32px;
-}
-
-section#users-list div.users-list-item div.person-information label {
-    margin-bottom: 4px;
-}
-
-section#users-list div.users-list-item div.person-information p {
-    margin-bottom: 16px;
-}
-
-section#users-list div.users-list-item div.promote-edit-delete-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    justify-content: center;
-    height: 100%;
-}
-
-section#users-list div.users-list-item button.promote-button,
-section#users-list div.users-list-item button.edit-button,
-section#users-list div.users-list-item button.delete-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    padding: 8px;
-}
-
-section#users-list div.users-list-item button.promote-button {
-    border: solid 3px var(--primary-color);
-}
-
-section#users-list div.users-list-item button.edit-button {
-    border: solid 3px var(--secondary-color);
-}
-
-section#users-list div.users-list-item button.delete-button {
-    border: solid 3px var(--error);
-}
-
-section#users-list button.create-button {
+section#users-list a.create-button {
     background-color: var(--primary-color);
     border-radius: 128px;
     padding: 32px;
@@ -183,7 +131,6 @@ section#users-list button.create-button {
     section#users-list {
         gap: 24px;
         padding: 48px 32px;
-        height: 100%;
     }
 
     section#users-list div.search-input img {
@@ -191,17 +138,7 @@ section#users-list button.create-button {
         width: 24px;
     }
 
-    section#users-list div.users-list-item h2 {
-        margin-bottom: 24px;
-    }
-
-    section#users-list div.users-list-item button.promote-button img,
-    section#users-list div.users-list-item button.edit-button img,
-    section#users-list div.users-list-item button.delete-button img {
-        height: 24px;
-    }
-
-    section#users-list button.create-button {
+    section#users-list a.create-button {
         padding: 24px;
         width: 96px;
         height: 96px;
@@ -209,7 +146,7 @@ section#users-list button.create-button {
         bottom: 32px;
     }
 
-    section#users-list button.create-button img {
+    section#users-list a.create-button img {
         width: 48px;
         height: 48px;
     }
@@ -234,28 +171,7 @@ section#users-list button.create-button {
         padding: 32px 16px;
     }
 
-    section#users-list div.users-list-item {
-        flex-direction: column;
-        justify-content: flex-start;
-        gap: 16px;
-        padding: 16px;
-    }
-
-    section#users-list div.users-list-item h2 {
-        margin-bottom: 16px;
-    }
-
-    section#users-list div.users-list-item div.person-information p {
-        margin-bottom: 8px;
-    }
-
-    section#users-list div.users-list-item div.promote-edit-delete-buttons {
-        flex-direction: row;
-        gap: 8px;
-        justify-content: start;
-    }
-
-    section#users-list button.create-button {
+    section#users-list a.create-button {
         padding: 16px;
         width: 64px;
         height: 64px;
@@ -263,7 +179,7 @@ section#users-list button.create-button {
         bottom: 16px;
     }
 
-    section#users-list button.create-button img {
+    section#users-list a.create-button img {
         width: 32px;
         height: 32px;
     }

@@ -33,7 +33,15 @@ class UserServiceTest {
         val firstName = "John"
         val lastName = "Doe"
         val password = "abc123"
-        val role = Role.USER
+
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
 
         whenever(userRepository.existsByEmailAddress(emailAddress)).thenReturn(false)
         whenever(userRepository.existsByUsername(username)).thenReturn(false)
@@ -41,7 +49,15 @@ class UserServiceTest {
         whenever(userRepository.save(any())).thenAnswer { it.arguments[0] }
 
         // When
-        val user = userService.registerUser(username, emailAddress, firstName, lastName, password, role)
+        val user =
+            userService.registerUser(
+                authenticatedUser,
+                username,
+                emailAddress,
+                firstName,
+                lastName,
+                password,
+            )
 
         // Then
         assertThat(user.username).isEqualTo(username)
@@ -49,7 +65,38 @@ class UserServiceTest {
         assertThat(user.fullName.firstName).isEqualTo(firstName)
         assertThat(user.fullName.lastName).isEqualTo(lastName)
         assertThat(user.password).isEqualTo(password)
-        assertThat(user.role).isEqualTo(role)
+        assertThat(user.role).isEqualTo(Role.USER)
+    }
+
+    @Test
+    fun ensureRegisterUserThrowsExceptionWhenUserIsNotAManager() {
+        // Given
+        val username = "JohnDoe"
+        val emailAddress = "john.doe@gmail.com"
+        val firstName = "John"
+        val lastName = "Doe"
+        val password = "abc123"
+
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.USER,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            userService.registerUser(
+                authenticatedUser,
+                username,
+                emailAddress,
+                firstName,
+                lastName,
+                password,
+            )
+        }
     }
 
     @Test
@@ -60,19 +107,27 @@ class UserServiceTest {
         val firstName = "John"
         val lastName = "Doe"
         val password = "abc123"
-        val role = Role.USER
+
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
 
         whenever(userRepository.existsByEmailAddress(emailAddress)).thenReturn(true)
 
         // When
         assertThrows<IllegalArgumentException> {
             userService.registerUser(
+                authenticatedUser,
                 username,
                 emailAddress,
                 firstName,
                 lastName,
                 password,
-                role,
             )
         }
     }
@@ -85,7 +140,15 @@ class UserServiceTest {
         val firstName = "John"
         val lastName = "Doe"
         val password = "abc123"
-        val role = Role.USER
+
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
 
         whenever(userRepository.existsByEmailAddress(emailAddress)).thenReturn(false)
         whenever(userRepository.existsByUsername(username)).thenReturn(true)
@@ -93,12 +156,12 @@ class UserServiceTest {
         // When
         assertThrows<IllegalArgumentException> {
             userService.registerUser(
+                authenticatedUser,
                 username,
                 emailAddress,
                 firstName,
                 lastName,
                 password,
-                role,
             )
         }
     }
@@ -111,7 +174,15 @@ class UserServiceTest {
         val firstName = "John"
         val lastName = "Doe"
         val password = "abc123"
-        val role = Role.USER
+
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
 
         whenever(userRepository.existsByEmailAddress(emailAddress)).thenReturn(false)
         whenever(userRepository.existsByUsername(username)).thenReturn(true)
@@ -119,12 +190,12 @@ class UserServiceTest {
         // When
         assertThrows<IllegalArgumentException> {
             userService.registerUser(
+                authenticatedUser,
                 username,
                 emailAddress,
                 firstName,
                 lastName,
                 password,
-                role,
             )
         }
     }

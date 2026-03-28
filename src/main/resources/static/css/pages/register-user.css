@@ -23,13 +23,8 @@ section#hero h1 {
     -webkit-text-fill-color: transparent;
 }
 
-section#hero h3 {
-    width: 640px;
-    text-align: center;
-}
-
-/* Login Form */
-section#login-form {
+/* Registration Form */
+section#registration-form form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -51,34 +46,33 @@ div.error-message p {
     color: var(--error);
 }
 
-section#login-form form {
+div.error-message div {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 64px;
+    gap: 4px;
 }
 
-section#login-form div.input-fields {
+section#registration-form div.input-fields {
     width: 1024px;
 }
 
-section#login-form label {
+section#registration-form label {
     display: block;
     margin-bottom: 8px;
 }
 
-section#login-form input {
+section#registration-form input {
     border-radius: 8px;
     background-color: var(--black10);
     width: 100%;
     padding: 24px;
 }
 
-section#login-form input:nth-child(2) {
+section#registration-form input:not(:last-child) {
     margin-bottom: 32px;
 }
 
-section#login-form button {
+section#registration-form button {
     display: flex;
     flex-direction: row;
     gap: 16px;
@@ -92,7 +86,12 @@ section#login-form button {
     box-shadow: 0 4px 24px rgb(196, 196, 196);
 }
 
-section#login-form button:hover {
+section#registration-form button img {
+    width: 32px;
+    height: 32px;
+}
+
+section#registration-form button:hover {
     gap: 8px;
 }
 
@@ -114,16 +113,8 @@ section#login-form button:hover {
         height: 64px;
     }
 
-    section#hero h1 {
-        width: 768px;
-    }
-
-    section#hero h3 {
-        width: 512px;
-    }
-
     /* Login Form */
-    section#login-form {
+    section#registration-form form {
         gap: 48px;
     }
 
@@ -131,23 +122,19 @@ section#login-form button:hover {
         height: 24px;
     }
 
-    section#login-form form {
-        gap: 48px;
-    }
-
-    section#login-form div.input-fields {
+    section#registration-form div.input-fields {
         width: 512px;
     }
 
-    section#login-form input:nth-child(2) {
+    section#registration-form input:not(:last-child) {
         margin-bottom: 24px;
     }
 
-    section#login-form button {
+    section#registration-form button {
         width: 256px;
     }
 
-    section#login-form button img {
+    section#registration-form button img {
         height: 24px;
     }
 }
@@ -165,34 +152,29 @@ section#login-form button:hover {
         gap: 16px;
     }
 
-    section#hero h1 {
-        width: 100%;
-    }
-
-    section#hero h3 {
-        width: 100%;
-    }
-
     /* Login Form */
-    section#login-form {
+    section#registration-form {
+        width: 100%;
+    }
+
+    section#registration-form form {
         gap: 32px;
         width: 100%;
     }
 
-    section#login-form form {
-        gap: 32px;
+    div.error-message {
         width: 100%;
     }
 
-    section#login-form div.input-fields {
+    section#registration-form div.input-fields {
         width: 100%;
     }
 
-    section#login-form input:nth-child(2) {
+    section#registration-form input:not(:last-child) {
         margin-bottom: 16px;
     }
 
-    section#login-form button {
+    section#registration-form button {
         width: 100%;
     }
 }
