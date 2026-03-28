@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
-import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,7 +45,7 @@ class UserControllerTest {
 
         val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -54,6 +53,7 @@ class UserControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
         webDriver.findElement(By.cssSelector("section#login-form button")).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
@@ -64,6 +64,7 @@ class UserControllerTest {
         webDriver.findElement(By.cssSelector("input#last-name")).sendKeys(lastName)
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys(email)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#registration-form button")))
         webDriver.findElement(By.cssSelector("section#registration-form button")).click()
         wait.until(ExpectedConditions.urlContains("/users"))
 
@@ -100,13 +101,14 @@ class UserControllerTest {
             email = "john.doe@gmail.com",
         )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
         webDriver.findElement(By.cssSelector("section#login-form button")).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
@@ -143,7 +145,7 @@ class UserControllerTest {
             email = "john.doe2@gmail.com",
         )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -151,6 +153,7 @@ class UserControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
         webDriver.findElement(By.cssSelector("section#login-form button")).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
@@ -161,6 +164,7 @@ class UserControllerTest {
         webDriver.findElement(By.cssSelector("input#last-name")).sendKeys(lastName)
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys(email)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#registration-form button")))
         webDriver.findElement(By.cssSelector("section#registration-form button")).click()
         wait.until(ExpectedConditions.urlContains("/users"))
 
@@ -196,7 +200,7 @@ class UserControllerTest {
             email = email,
         )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -204,6 +208,7 @@ class UserControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
         webDriver.findElement(By.cssSelector("section#login-form button")).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
@@ -214,6 +219,7 @@ class UserControllerTest {
         webDriver.findElement(By.cssSelector("input#last-name")).sendKeys(lastName)
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys(email)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#registration-form button")))
         webDriver.findElement(By.cssSelector("section#registration-form button")).click()
         wait.until(ExpectedConditions.urlContains("/users"))
 
@@ -240,7 +246,7 @@ class UserControllerTest {
 
         val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -248,6 +254,7 @@ class UserControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
         webDriver.findElement(By.cssSelector("section#login-form button")).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
@@ -258,6 +265,7 @@ class UserControllerTest {
         webDriver.findElement(By.cssSelector("input#last-name")).sendKeys(lastName)
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys(email)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#registration-form button")))
         webDriver.findElement(By.cssSelector("section#registration-form button")).click()
         wait.until(ExpectedConditions.urlContains("/users"))
 

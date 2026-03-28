@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
-import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.springframework.beans.factory.annotation.Autowired
@@ -51,13 +50,14 @@ class AuthenticationControllerTest {
             email = "john.doe@gmail.com",
         )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
         webDriver.findElement(By.cssSelector("section#login-form button")).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
@@ -88,13 +88,14 @@ class AuthenticationControllerTest {
             email = "john.doe@gmail.com",
         )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys("Wrong Username")
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
         webDriver.findElement(By.cssSelector("section#login-form button")).click()
 
         // Then
@@ -124,13 +125,14 @@ class AuthenticationControllerTest {
             email = "john.doe@gmail.com",
         )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys("Wrong Password")
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
         webDriver.findElement(By.cssSelector("section#login-form button")).click()
 
         // Then
