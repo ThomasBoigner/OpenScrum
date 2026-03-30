@@ -1,8 +1,4 @@
 {
-  "enabledPlugins": {
-    "kotlin-lsp@claude-plugins-official": true,
-    "figma@claude-plugins-official": true
-  },
   "permissions": {
     "allow": [
       "Bash(./gradlew build)",
@@ -15,5 +11,13 @@
       "Bash(git log*)",
       "Bash(git status)"
     ]
+  },
+  "enabledPlugins": {
+    "kotlin-lsp@claude-plugins-official": true,
+    "figma@claude-plugins-official": true,
+    "engineering-advanced-skills@claude-code-skills": true,
+    "engineering-skills@claude-code-skills": true,
+    "fullstack-engineer@claude-code-skills": true,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
   }
 }

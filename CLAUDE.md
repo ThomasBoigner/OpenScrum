@@ -46,6 +46,31 @@ Spring Security with form login. Roles are prefixed `ROLE_` internally. Only `RO
 
 Tests follow Given/When/Then comment style and use AssertJ assertions. Each test class resets state in `@AfterEach`.
 
+## Design
+
+Figma file: https://www.figma.com/design/Vh3sFgX6u4cvDxb5QmvbUO/OpenScrum
+
+### Responsive breakpoints
+All screens are designed in three variants: **Phone**, **Tablet**, and **Laptop**.
+
+### Navigation
+A **sidebar** contains: Projects button, Users button, Logout button.
+
+### Designed screens
+| Screen | Page |
+|---|---|
+| Login form | `/login` |
+| Register user form | `/users/register` |
+| List projects page | `/projects` |
+| Project creation page | `/projects/new` |
+| List users page | `/users` |
+
+### UI conventions
+- Primary colour: blue (used for CTAs, logo, active navigation)
+- Input fields have placeholder text and a visible border
+- Error messages appear above the form with an exclamation-mark icon
+- Action buttons per list item: promote (users), edit, delete; rendered inline
+
 ## Domain
 
 The ubiquitous language is documented in `src/docs/ubiquitous-language.md`. There are two bounded contexts:
