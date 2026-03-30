@@ -18,35 +18,54 @@ Then I receive an error
 
 ## 2. As a manager I want to register users, so that I can give them access to the system. 
 ### Test 1
-Given a manager, a username, a first name, a last name, an email address and a password
-When the manager enters the information
-Then the manager wants to register a user and see them in the user list
+Given a manager, a username, a first name, a last name, an email address and a password 
+When the manager enters the information 
+Then the manager wants to register a user and see them in the user list 
 
 ### Test 2
-Given a user, a username, a first name, a last name, an email address and a password
-When the user enters the information
-Then he receives an error that he does not have the required permission
+Given a user, a username, a first name, a last name, an email address and a password 
+When the user enters the information 
+Then he receives an error that he does not have the required permission 
 
 ### Test 3
-Given a manager, an already taken username, a first name, a last name, an email address and a password
-When the manager enters the information
+Given a manager, an already taken username, a first name, a last name, an email address and a password 
+When the manager enters the information 
 Then he receives an error that the username is already taken 
 
 ### Test 4
-Given a manager, a username, a first name, a last name, an already taken email address and a password
-When the manager enters the information
-Then he receives an error that the email address is already taken
+Given a manager, a username, a first name, a last name, an already taken email address and a password 
+When the manager enters the information 
+Then he receives an error that the email address is already taken 
 
 ### Test 5
-Given a manager, a blank username, a blank first name, a blank last name, a blank email address and a blank password
-When the manager enters the information
-Then he receives an error that the information is invalid
+Given a manager, a blank username, a blank first name, a blank last name, a blank email address and a blank password 
+When the manager enters the information 
+Then he receives an error that the information is invalid 
 
 ## 3. As a manager I want to remove users, so that I can remove their access to the system.
 
 ## 4. As a user I want to update my user data, so that I can provide up-to-date data.
 
 ## 5. As a manager I want to create a project, so that I can track the work that is being done.
+### Test 1
+Given a manager, a project name, a product owner, a scrum master and developers 
+When the manager enters the information into the create project form 
+Then he wants to create a project and see it in the projects list 
+
+### Test 2
+Given a manager, a project name, a scrum master and developers 
+When the manager enters the information into the create project form 
+Then he receives an error that the product owner is missing 
+
+### Test 2
+Given a manager, a project name, a product owner and developers 
+When the manager enters the information into the create project form 
+Then he receives an error that the scrum master is missing 
+
+### Test 2
+Given a manager, a blank project name, a product owner, a scrum master and developers 
+When the manager enters the information into the create project form 
+Then he receives an error that the information is invalid 
 
 ## 6. As a product owner or scrum master I want to configure the project, so that I can define the way of working.
 
