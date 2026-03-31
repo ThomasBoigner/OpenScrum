@@ -28,7 +28,8 @@ class User(
         this.username = username
     }
 
-    override fun toString(): String = "User(userId=$userId, username='$username', emailAddress=$emailAddress, fullName=$fullName)"
+    override fun toString(): String =
+        "User(userId=$userId, username='$username', emailAddress=$emailAddress, fullName=$fullName, role=$role)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
