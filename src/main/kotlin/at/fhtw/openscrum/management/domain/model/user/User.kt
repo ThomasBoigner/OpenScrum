@@ -3,14 +3,29 @@ package at.fhtw.openscrum.management.domain.model.user
 class User(
     val id: Long? = null,
     val userId: UserId = UserId(),
-    var username: String,
-    var emailAddress: EmailAddress,
-    var fullName: FullName,
+    username: String,
+    emailAddress: EmailAddress,
+    fullName: FullName,
     val password: String,
-    var role: Role = Role.USER,
+    role: Role = Role.USER,
 ) {
+    var username: String = ""
+        private set(value) {
+            require(value.isNotBlank()) { "Username must not be blank!" }
+            field = value
+        }
+
+    var emailAddress: EmailAddress = emailAddress
+        private set
+
+    var fullName: FullName = fullName
+        private set
+
+    var role: Role = role
+        private set
+
     init {
-        require(username.isNotBlank()) { "Username must not be blank!" }
+        this.username = username
     }
 
     override fun toString(): String = "User(userId=$userId, username='$username', emailAddress=$emailAddress, fullName=$fullName)"
