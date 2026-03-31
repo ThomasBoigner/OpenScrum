@@ -14,6 +14,7 @@ class ProjectController(
     companion object {
         const val BASE_URL = "/projects"
         const val PATH_INDEX = "/"
+        const val ROUTE_CREATE = "/create"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -21,4 +22,7 @@ class ProjectController(
         log.debug("Serving list projects page")
         return "pages/list-projects"
     }
+
+    @GetMapping(value = [ROUTE_CREATE])
+    fun showCreationForm(): String = "pages/create-project"
 }

@@ -133,7 +133,7 @@ section#projects-list div.projects-list-item button.delete-button {
     border: solid 3px var(--error);
 }
 
-section#projects-list button.create-button {
+section#projects-list a.create-button {
     background-color: var(--primary-color);
     border-radius: 128px;
     padding: 32px;
@@ -195,7 +195,7 @@ section#projects-list button.create-button {
         height: 24px;
     }
 
-    section#projects-list button.create-button {
+    section#projects-list a.create-button {
         padding: 24px;
         width: 96px;
         height: 96px;
@@ -203,7 +203,7 @@ section#projects-list button.create-button {
         bottom: 32px;
     }
 
-    section#projects-list button.create-button img {
+    section#projects-list a.create-button img {
         width: 48px;
         height: 48px;
     }
@@ -245,7 +245,7 @@ section#projects-list button.create-button {
         justify-content: start;
     }
 
-    section#projects-list button.create-button {
+    section#projects-list a.create-button {
         padding: 16px;
         width: 64px;
         height: 64px;
@@ -253,7 +253,7 @@ section#projects-list button.create-button {
         bottom: 16px;
     }
 
-    section#projects-list button.create-button img {
+    section#projects-list a.create-button img {
         width: 32px;
         height: 32px;
     }
