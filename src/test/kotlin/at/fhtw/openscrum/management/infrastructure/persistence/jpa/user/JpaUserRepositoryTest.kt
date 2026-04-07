@@ -42,7 +42,7 @@ class JpaUserRepositoryTest {
         userRepository.save(user)
 
         // Then
-        val savedUser = userRepository.findByUsername(user.username)
+        val savedUser = userRepository.findByUserId(user.userId)
         assertThat(savedUser).isNotNull()
         assertThat(savedUser).isEqualTo(user)
     }
@@ -85,5 +85,26 @@ class JpaUserRepositoryTest {
 
         // Then
         assertThat(result).isTrue()
+    }
+
+    @Test
+    fun ensureFindByUsernameWorksProperly() {
+        // Given
+        val user =
+            User(
+                username = "john.doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        // When
+        userRepository.save(user)
+
+        // Then
+        val savedUser = userRepository.findByUsername(user.username)
+        assertThat(savedUser).isNotNull()
+        assertThat(savedUser).isEqualTo(user)
     }
 }

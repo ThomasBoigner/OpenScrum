@@ -4,7 +4,10 @@ import at.fhtw.openscrum.management.application.command.CreateProjectCommand
 import at.fhtw.openscrum.management.domain.model.project.Project
 import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import at.fhtw.openscrum.management.domain.model.project.ProjectService
+import at.fhtw.openscrum.management.domain.model.user.UserId
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -14,10 +17,32 @@ class ProjectApplicationService(
     private val projectService: ProjectService,
     private val projectRepository: ProjectRepository,
     private val userRepository: UserRepository,
+    private val log: Logger = LoggerFactory.getLogger(ProjectApplicationService::class.java),
 ) {
     @Transactional(readOnly = false)
     fun createProject(
-        authenticatedUser: String,
+        authenticatedUserUsername: String,
         command: CreateProjectCommand,
-    ): Project = throw NotImplementedError()
+    ): Project {
+        log.debug("User {} is trying to create project with command: {}", authenticatedUserUsername, command)
+
+        val authenticatedUser =
+            userRepository.findByUsername(authenticatedUserUsername)
+                ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
+
+        val productOwner = userRepository.findByUserId(UserId(command.productOwnerId))
+        val scrumMaster = userRepository.findByUserId(UserId(command.scrumMasterId))
+        val developers =
+            command.developerIds
+                .mapNotNull { developerId -> userRepository.findByUserId(UserId(developerId)) }
+                .toSet()
+
+        return projectService.createProject(
+            authenticatedUser = authenticatedUser,
+            projectName = command.projectName,
+            productOwner = productOwner,
+            scrumMaster = scrumMaster,
+            developers = developers,
+        )
+    }
 }
