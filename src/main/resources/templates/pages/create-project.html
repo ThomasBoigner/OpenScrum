@@ -27,23 +27,37 @@
         <h1>Plan a new Project!</h1>
     </section>
     <section id="project-form">
-        <form method="post">
-            <div class="error-message">
+        <form method="post" th:action="@{/projects/create}" th:object="${createProjectForm}">
+            <div class="error-message" th:if="${#fields.hasErrors() || errorMessage != null}">
                 <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-                <p>Error while creating project!</p>
+                <p th:if="${errorMessage}" th:text="${errorMessage}">Error while creating project!</p>
                 <div>
-                    <p>Validation error while creating project!</p>
+                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
                 </div>
             </div>
             <div class="input-fields">
                 <label for="project-name">Project name:</label>
-                <input type="text" name="projectName" id="project-name" placeholder="Enter the project name!">
+                <input type="text" id="project-name" th:field="*{projectName}" placeholder="Enter the project name!">
                 <label for="product-owner">Product Owner:</label>
-                <input type="text" name="productOwner" id="product-owner" placeholder="Enter the product owner!">
+                <select id="product-owner" th:field="*{productOwnerId}">
+                    <option value="">Select a product owner!</option>
+                    <option th:each="user : ${users}"
+                            th:value="${user.userId}"
+                            th:text="${user.username}"></option>
+                </select>
                 <label for="scrum-master">Scrum Master:</label>
-                <input type="text" name="scrumMaster" id="scrum-master" placeholder="Enter the scrum master!">
+                <select id="scrum-master" th:field="*{scrumMasterId}">
+                    <option value="">Select a scrum master!</option>
+                    <option th:each="user : ${users}"
+                            th:value="${user.userId}"
+                            th:text="${user.username}"></option>
+                </select>
                 <label for="developers">Developers:</label>
-                <input type="text" name="developers" id="developers" placeholder="Enter the developers!">
+                <select id="developers" th:field="*{developerIds}" multiple>
+                    <option th:each="user : ${users}"
+                            th:value="${user.userId}"
+                            th:text="${user.username}"></option>
+                </select>
             </div>
             <button type="submit">
                 Create Project

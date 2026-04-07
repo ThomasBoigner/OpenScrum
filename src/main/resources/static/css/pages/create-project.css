@@ -61,14 +61,16 @@ section#project-form label {
     margin-bottom: 8px;
 }
 
-section#project-form input {
+section#project-form input,
+section#project-form select {
     border-radius: 8px;
     background-color: var(--black10);
     width: 100%;
     padding: 24px;
 }
 
-section#project-form input:not(:last-child) {
+section#project-form input:not(:last-child),
+section#project-form select:not(:last-child) {
     margin-bottom: 32px;
 }
 
@@ -126,7 +128,8 @@ section#project-form button:hover {
         width: 512px;
     }
 
-    section#project-form input:not(:last-child) {
+    section#project-form input:not(:last-child),
+    section#project-form select:not(:last-child) {
         margin-bottom: 24px;
     }
 
@@ -170,7 +173,8 @@ section#project-form button:hover {
         width: 100%;
     }
 
-    section#project-form input:not(:last-child) {
+    section#project-form input:not(:last-child),
+    section#project-form select:not(:last-child) {
         margin-bottom: 16px;
     }
 

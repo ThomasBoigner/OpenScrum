@@ -6,19 +6,17 @@ import jakarta.validation.constraints.NotBlank
 
 data class RegisterUserForm(
     @NotBlank(message = "Username must not be blank!")
-    val username: String,
+    var username: String = "",
     @NotBlank(message = "Email address must not be blank!")
     @Email(message = "Email address must be valid!")
-    val email: String,
+    var email: String = "",
     @NotBlank(message = "First name must not be blank!")
-    val firstName: String,
+    var firstName: String = "",
     @NotBlank(message = "Last name must not be blank!")
-    val lastName: String,
+    var lastName: String = "",
     @NotBlank(message = "Password must not be blank!")
-    val password: String,
+    var password: String = "",
 ) {
-    constructor() : this("", "", "", "", "")
-
     fun toRegisterUserCommand(): RegisterUserCommand =
         RegisterUserCommand(
             username = username,

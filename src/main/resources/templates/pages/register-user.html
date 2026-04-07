@@ -26,8 +26,8 @@
         </a>
         <h1>Register a user!</h1>
     </section>
-    <section id="registration-form" th:object="${registerUserForm}">
-        <form th:action="@{/users/register}" method="post">
+    <section id="registration-form" >
+        <form th:action="@{/users/register}" th:object="${registerUserForm}" method="post">
             <div th:if="${#fields.hasErrors() || errorMessage != null}" class="error-message">
                 <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
                 <p th:if="${errorMessage}" th:text="${errorMessage}">Error while registering user!</p>
@@ -37,15 +37,15 @@
             </div>
             <div class="input-fields">
                 <label for="username">Username:</label>
-                <input type="text" name="username" id="username" placeholder="Enter the username!" th:field="${registerUserForm.username}">
+                <input type="text" name="username" id="username" placeholder="Enter the username!" th:field="*{username}">
                 <label for="first-name">First name:</label>
-                <input type="text" name="first-name" id="first-name" placeholder="Enter the first name!" th:field="${registerUserForm.firstName}">
+                <input type="text" name="first-name" id="first-name" placeholder="Enter the first name!" th:field="*{firstName}">
                 <label for="last-name">Last name:</label>
-                <input type="text" name="first-name" id="last-name" placeholder="Enter the last name!" th:field="${registerUserForm.lastName}">
+                <input type="text" name="first-name" id="last-name" placeholder="Enter the last name!" th:field="*{lastName}">
                 <label for="email-address">Email address:</label>
-                <input type="text" name="email-address" id="email-address" placeholder="Enter the email address!" th:field="${registerUserForm.email}">
+                <input type="text" name="email-address" id="email-address" placeholder="Enter the email address!" th:field="*{email}">
                 <label for="password">Password:</label>
-                <input type="password" name="password" id="password" placeholder="Enter the password!" th:field="${registerUserForm.password}">
+                <input type="password" name="password" id="password" placeholder="Enter the password!" th:field="*{password}">
             </div>
             <button type="submit">
                 Register
