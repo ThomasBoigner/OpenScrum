@@ -53,7 +53,7 @@ class UserApplicationServiceTest {
                 role = Role.USER,
             )
 
-        whenever { userRepository.findAll() }.thenReturn(listOf(user1, user2))
+        whenever(userRepository.findAll()).thenReturn(listOf(user1, user2))
 
         // When
         val result = userApplicationService.getUsers()

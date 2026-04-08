@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.management.application
 
 import at.fhtw.openscrum.management.application.command.CreateProjectCommand
+import at.fhtw.openscrum.management.application.dtos.ProjectDto
 import at.fhtw.openscrum.management.domain.model.project.Project
 import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import at.fhtw.openscrum.management.domain.model.project.ProjectService
@@ -35,6 +36,31 @@ class ProjectApplicationServiceTest {
     @BeforeEach
     fun setUp() {
         projectApplicationService = ProjectApplicationService(projectService, projectRepository, userRepository)
+    }
+
+    @Test
+    fun ensureGetProjectsWorksProperly() {
+        // Given
+        val project1 =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        val project2 =
+            Project(
+                projectName = "AnotherProject",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+
+        whenever(projectRepository.findAll()).thenReturn(listOf(project1, project2))
+
+        // When
+        val result = projectApplicationService.getProjects()
+
+        // Then
+        assertThat(result).isEqualTo(listOf(ProjectDto(project1), ProjectDto(project2)))
     }
 
     @Test
@@ -107,10 +133,12 @@ class ProjectApplicationServiceTest {
         ).thenReturn(expectedProject)
 
         // When
-        val result = projectApplicationService.createProject(manager.username, command)
+        val projectDto = projectApplicationService.createProject(manager.username, command)
 
         // Then
-        assertThat(result).isEqualTo(expectedProject)
+        assertThat(projectDto.projectId).isEqualTo(expectedProject.projectId.token)
+        assertThat(projectDto.projectName).isEqualTo(expectedProject.projectName)
+        assertThat(projectDto.numberOfDevelopers).isEqualTo(expectedProject.developerIds.size)
     }
 
     @Test

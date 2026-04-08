@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.management.application
 
 import at.fhtw.openscrum.management.application.command.CreateProjectCommand
+import at.fhtw.openscrum.management.application.dtos.ProjectDto
 import at.fhtw.openscrum.management.domain.model.project.Project
 import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import at.fhtw.openscrum.management.domain.model.project.ProjectService
@@ -19,11 +20,18 @@ class ProjectApplicationService(
     private val userRepository: UserRepository,
     private val log: Logger = LoggerFactory.getLogger(ProjectApplicationService::class.java),
 ) {
+    fun getProjects(): List<ProjectDto> {
+        log.info("Trying to get all projects")
+        val projects = projectRepository.findAll()
+        log.info("Found all ({}) projects", projects.size)
+        return projects.map { ProjectDto(it) }
+    }
+
     @Transactional(readOnly = false)
     fun createProject(
         authenticatedUserUsername: String,
         command: CreateProjectCommand,
-    ): Project {
+    ): ProjectDto {
         log.debug("User {} is trying to create project with command: {}", authenticatedUserUsername, command)
 
         val authenticatedUser =
@@ -37,12 +45,14 @@ class ProjectApplicationService(
                 .mapNotNull { developerId -> userRepository.findByUserId(UserId(developerId)) }
                 .toSet()
 
-        return projectService.createProject(
-            authenticatedUser = authenticatedUser,
-            projectName = command.projectName,
-            productOwner = productOwner,
-            scrumMaster = scrumMaster,
-            developers = developers,
+        return ProjectDto(
+            projectService.createProject(
+                authenticatedUser = authenticatedUser,
+                projectName = command.projectName,
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = developers,
+            ),
         )
     }
 }
