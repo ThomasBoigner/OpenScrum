@@ -21,12 +21,19 @@ class ProjectService(
         require(scrumMaster != null) { "Scrum master does not exist!" }
         require(!projectRepository.existsByProjectName(projectName)) { "Project with name $projectName already exists!" }
 
+        val developerIds = developers.map { it.userId }.toSet()
+        require(
+            productOwner.userId !in developerIds &&
+                scrumMaster.userId !in developerIds &&
+                productOwner.userId != scrumMaster.userId,
+        ) { "A user cannot have multiple roles in the same project!" }
+
         val project =
             Project(
                 projectName = projectName,
                 productOwnerId = productOwner.userId,
                 scrumMasterId = scrumMaster.userId,
-                developerIds = developers.map { it.userId }.toSet(),
+                developerIds = developerIds,
             )
 
         log.info("Created Project {}", project)

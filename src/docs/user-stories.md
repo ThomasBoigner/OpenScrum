@@ -77,6 +77,11 @@ Given a manager, a blank project name, a product owner, a scrum master and devel
 When the manager enters the information into the create project form 
 Then he receives an error that the information is invalid 
 
+### Test 7
+Given a manager, a project name, a user as product owner, scrum master and developer 
+When the manager enters the information into the create project form
+Then he receives an error one user can not have multiple roles
+
 ## 6. As a product owner or scrum master I want to configure the project, so that I can define the way of working.
 
 ## 7. As a product owner I want to define the product backlog, so that I can list possible improvements.

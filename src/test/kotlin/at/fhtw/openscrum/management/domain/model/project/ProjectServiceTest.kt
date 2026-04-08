@@ -337,4 +337,41 @@ class ProjectServiceTest {
             )
         }
     }
+
+    @Test
+    fun ensureCreateProjectThrowsExceptionWhenOneUserHasMultipleRoles() {
+        // Given
+        val projectName = "OpenScrum"
+
+        val manager =
+            User(
+                username = "manager",
+                emailAddress = EmailAddress("manager@gmail.com"),
+                fullName = FullName("Manager", "User"),
+                password = "password",
+                role = Role.MANAGER,
+            )
+
+        val user =
+            User(
+                username = "user",
+                emailAddress = EmailAddress("user@gmail.com"),
+                fullName = FullName("Regular", "User"),
+                password = "password",
+                role = Role.USER,
+            )
+
+        whenever(projectRepository.existsByProjectName(projectName)).thenReturn(false)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            projectService.createProject(
+                authenticatedUser = manager,
+                projectName = projectName,
+                productOwner = user,
+                scrumMaster = user,
+                developers = setOf(user),
+            )
+        }
+    }
 }
