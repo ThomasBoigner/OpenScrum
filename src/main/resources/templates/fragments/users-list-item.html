@@ -1,4 +1,4 @@
-<div  th:fragment="users-list-item" th:each="user : ${users}" th:object="${user}" class="users-list-item">
+<div th:fragment="users-list-item" th:each="user : ${users}" th:object="${user}" class="users-list-item">
     <div class="user-information">
         <h2 th:text="*{username}">Username</h2>
         <div class="person-information">

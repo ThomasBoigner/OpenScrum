@@ -3,6 +3,7 @@ package at.fhtw.openscrum.management.presentation
 import at.fhtw.openscrum.management.application.ProjectApplicationService
 import at.fhtw.openscrum.management.application.UserApplicationService
 import at.fhtw.openscrum.management.presentation.forms.CreateProjectForm
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,12 +27,27 @@ class ProjectController(
         const val BASE_URL = "/projects"
         const val PATH_INDEX = "/"
         const val ROUTE_CREATE = "/create"
+        const val FRAGMENT_PROJECTS_LIST_ITEM = "/list"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
-    fun index(): String {
+    fun index(
+        principal: Principal,
+        model: Model,
+    ): String {
         log.debug("Serving list projects page")
+        model.addAttribute(
+            "authenticatedUser",
+            userApplicationService.getUserByUsername(principal.name),
+        )
         return "pages/list-projects"
+    }
+
+    @HxRequest
+    @GetMapping(value = [FRAGMENT_PROJECTS_LIST_ITEM])
+    fun getProjectsListItems(model: Model): String {
+        model.addAttribute("projects", projectApplicationService.getProjects())
+        return "fragments/project-list-item"
     }
 
     @GetMapping(value = [ROUTE_CREATE])

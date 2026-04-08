@@ -48,7 +48,7 @@
             <input type="text" name="search-input" id="search-input" placeholder="Search">
         </div>
         <p hx:get="@{/projects/list}" hx-trigger="load" hx-swap="outerHTML">Could not load projects!</p>
-        <a class="create-button" th:href="@{/projects/create}">
+        <a th:if="${authenticatedUser != null && authenticatedUser.role.isManager()}" class="create-button" th:href="@{/projects/create}">
             <img th:src="@{/assets/svg/plus.svg}" alt="Plus">
         </a>
     </section>
