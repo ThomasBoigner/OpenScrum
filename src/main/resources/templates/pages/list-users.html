@@ -48,7 +48,7 @@
             <input type="text" name="search-input" id="search-input" placeholder="Search">
         </div>
         <p hx:get="@{/users/list}" hx-trigger="load" hx-swap="outerHTML">Could not load users!</p>
-        <a th:if="${authenticatedUser.role.isManager()}" class="create-button" th:href="@{/users/register}">
+        <a th:if="${authenticatedUser != null && authenticatedUser.role.isManager()}" class="create-button" th:href="@{/users/register}">
             <img th:src="@{/assets/svg/plus.svg}" alt="Plus">
         </a>
     </section>

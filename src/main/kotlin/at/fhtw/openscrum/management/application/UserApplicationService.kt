@@ -43,12 +43,12 @@ class UserApplicationService(
 
         return UserDto(
             userService.registerUser(
-                authenticatedUser,
-                command.username,
-                command.email,
-                command.firstName,
-                command.lastName,
-                command.password,
+                authenticatedUser = authenticatedUser,
+                username = command.username,
+                email = command.email,
+                firstName = command.firstName,
+                lastName = command.lastName,
+                password = command.password,
             ),
         )
     }

@@ -11,7 +11,7 @@ data class UserDto(
     val firstName: String,
     val lastName: String,
     var fullName: String,
-    var role: Role,
+    var role: RoleDto,
 ) {
     constructor(user: User) : this(
         user.userId.token,
@@ -20,6 +20,9 @@ data class UserDto(
         user.fullName.firstName,
         user.fullName.lastName,
         user.fullName.fullName,
-        user.role,
+        when (user.role) {
+            Role.USER -> RoleDto.USER
+            Role.MANAGER -> RoleDto.MANAGER
+        },
     )
 }

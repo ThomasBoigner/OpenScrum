@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Create a project</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/pages/create-project.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <section id="hero">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
+        <h1>Plan a new Project!</h1>
+    </section>
+    <section id="project-form">
+        <form method="post" th:action="@{/projects/create}" th:object="${createProjectForm}">
+            <div class="error-message" th:if="${#fields.hasErrors() || errorMessage != null}">
+                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+                <p th:if="${errorMessage}" th:text="${errorMessage}">Error while creating project!</p>
+                <div>
+                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
+                </div>
+            </div>
+            <div class="input-fields">
+                <label for="project-name">Project name:</label>
+                <input type="text" id="project-name" th:field="*{projectName}" placeholder="Enter the project name!">
+                <label for="product-owner">Product Owner:</label>
+                <select id="product-owner" th:field="*{productOwnerId}">
+                    <option value="">Select a product owner!</option>
+                    <option th:each="user : ${users}"
+                            th:value="${user.userId}"
+                            th:text="${user.username}"></option>
+                </select>
+                <label for="scrum-master">Scrum Master:</label>
+                <select id="scrum-master" th:field="*{scrumMasterId}">
+                    <option value="">Select a scrum master!</option>
+                    <option th:each="user : ${users}"
+                            th:value="${user.userId}"
+                            th:text="${user.username}"></option>
+                </select>
+                <label for="developers">Developers:</label>
+                <select id="developers" th:field="*{developerIds}" multiple>
+                    <option th:each="user : ${users}"
+                            th:value="${user.userId}"
+                            th:text="${user.username}"></option>
+                </select>
+            </div>
+            <button type="submit">
+                Create Project
+                <img th:src="@{/assets/svg/plus.svg}" alt="plus">
+            </button>
+        </form>
+    </section>
+</div>
+</body>
+</html>

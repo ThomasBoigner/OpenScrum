@@ -1,0 +1,78 @@
+div.projects-list-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: var(--white);
+    padding: 24px;
+    border-radius: 8px;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+div.projects-list-item h2 {
+    margin-bottom: 32px;
+}
+
+div.projects-list-item div.user-count {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+}
+
+div.projects-list-item div.edit-delete-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+    height: 100%;
+}
+
+div.projects-list-item button.edit-button,
+div.projects-list-item button.delete-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+div.projects-list-item button.edit-button {
+    border: solid 3px var(--secondary-color);
+}
+
+div.projects-list-item button.delete-button {
+    border: solid 3px var(--error);
+}
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    section#projects-list div.projects-list-item h2 {
+        margin-bottom: 24px;
+    }
+
+    section#projects-list div.projects-list-item button.edit-button img,
+    section#projects-list div.projects-list-item button.delete-button img {
+        height: 24px;
+    }
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    section#projects-list div.projects-list-item {
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    section#projects-list div.projects-list-item h2 {
+        margin-bottom: 8px;
+    }
+
+    section#projects-list div.projects-list-item div.edit-delete-buttons {
+        flex-direction: row;
+        gap: 8px;
+        justify-content: start;
+    }
+}

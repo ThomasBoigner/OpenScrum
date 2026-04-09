@@ -29,7 +29,6 @@ class UserControllerTest {
     }
 
     /*
-    ### Test 1
     Given a manager, a username, a first name, a last name, an email address and a password
     When the manager enters the information
     Then the manager wants to register a user and see them in the user list

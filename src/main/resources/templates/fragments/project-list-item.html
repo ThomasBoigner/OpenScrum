@@ -1,0 +1,18 @@
+<p th:if="${#lists.isEmpty(projects)}">No projects found!</p>
+<div th:fragment="project-list-item" th:each="project : ${projects}" th:object="${project}" class="projects-list-item">
+    <div class="project-information">
+        <h2 th:text="*{projectName}">Project name</h2>
+        <div class="user-count">
+            <img th:src="@{/assets/svg/user.svg}" alt="User">
+            <p th:text="*{numberOfDevelopers}">0</p>
+        </div>
+    </div>
+    <div class="edit-delete-buttons">
+        <button class="edit-button">
+            <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
+        </button>
+        <button class="delete-button">
+            <img th:src="@{/assets/svg/trash.svg}" alt="Trash">
+        </button>
+    </div>
+</div>

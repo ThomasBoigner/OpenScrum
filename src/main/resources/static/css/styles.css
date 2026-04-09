@@ -106,6 +106,8 @@ a {
 }
 
 input,
+select,
+option,
 textarea,
 select {
     font-family: 'PT Sans', sans-serif;
@@ -121,6 +123,7 @@ textarea {
 
 button,
 input,
+select,
 textarea {
     border: none;
     background: none;
