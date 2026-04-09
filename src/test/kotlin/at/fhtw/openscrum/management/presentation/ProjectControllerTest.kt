@@ -313,4 +313,110 @@ class ProjectControllerTest {
         assertThat(error.text).containsIgnoringCase(projectName)
         webDriver.close()
     }
+
+    /*
+    Given a manager, a blank project name, a product owner, a scrum master and developers
+    When the manager enters the information into the create project form
+    Then he receives an error that the information is invalid
+     */
+    @Test
+    fun ensureCreateProjectDoesNotWorkWithBlankProjectName() {
+        // Given
+        val productOwnerUsername = "product.owner"
+        val scrumMasterUsername = "scrum.master"
+
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        userService.registerUser(
+            authenticatedUser = admin,
+            username = productOwnerUsername,
+            firstName = "Product",
+            lastName = "Owner",
+            password = "abc123",
+            email = "product.owner@gmail.com",
+        )
+        userService.registerUser(
+            authenticatedUser = admin,
+            username = scrumMasterUsername,
+            firstName = "Scrum",
+            lastName = "Master",
+            password = "abc123",
+            email = "scrum.master@gmail.com",
+        )
+
+        val webDriver = createHeadlessChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        // login as admin
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
+        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        // fill in create project form with blank project name
+        webDriver.get("http://localhost:8080/projects/create")
+        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwnerUsername)
+        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMasterUsername)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#project-form button")))
+        webDriver.findElement(By.cssSelector("section#project-form button")).click()
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+        assertThat(error).isNotNull
+        assertThat(error.text).containsIgnoringCase("project name")
+        webDriver.close()
+    }
+
+    /*
+    Given a manager, a project name, a user as product owner, scrum master and developer
+    When the manager enters the information into the create project form
+    Then he receives an error one user can not have multiple roles
+     */
+    @Test
+    fun ensureCreateProjectDoesNotWorkWhenOneUserHasMultipleRoles() {
+        // Given
+        val projectName = "OpenScrum"
+        val userUsername = "user"
+
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        userService.registerUser(
+            authenticatedUser = admin,
+            username = userUsername,
+            firstName = "Regular",
+            lastName = "User",
+            password = "abc123",
+            email = "user@gmail.com",
+        )
+
+        val webDriver = createHeadlessChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        // login as admin
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
+        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        // fill in create project form with the same user in all roles
+        webDriver.get("http://localhost:8080/projects/create")
+        webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
+        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(userUsername)
+        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(userUsername)
+        Select(webDriver.findElement(By.cssSelector("select#developers"))).selectByVisibleText(userUsername)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#project-form button")))
+        webDriver.findElement(By.cssSelector("section#project-form button")).click()
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+        assertThat(error).isNotNull
+        assertThat(error.text).containsIgnoringCase("multiple roles")
+        webDriver.close()
+    }
 }
