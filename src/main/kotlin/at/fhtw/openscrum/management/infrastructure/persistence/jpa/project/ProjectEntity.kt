@@ -7,6 +7,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import org.springframework.data.domain.AbstractAggregateRoot
 import java.util.UUID
 
 @Entity
@@ -19,7 +20,7 @@ class ProjectEntity(
     val productOwnerId: UUID,
     val scrumMasterId: UUID,
     val developerIds: Set<UUID> = setOf(),
-) {
+) : AbstractAggregateRoot<ProjectEntity>() {
     constructor(project: Project) : this(
         id = project.id,
         projectId = project.projectId.token,
@@ -27,7 +28,9 @@ class ProjectEntity(
         productOwnerId = project.productOwnerId.token,
         scrumMasterId = project.scrumMasterId.token,
         developerIds = project.developerIds.map { it.token }.toSet(),
-    )
+    ) {
+        project.projectCreatedEvents.forEach { this.registerEvent(it) }
+    }
 
     constructor() : this(
         id = null,

@@ -9,6 +9,7 @@ class Project(
     productOwnerId: UserId,
     scrumMasterId: UserId,
     val developerIds: Set<UserId> = setOf(),
+    val projectCreatedEvents: MutableList<ProjectCreated> = mutableListOf(),
 ) {
     var projectName: String = ""
         private set(value) {
@@ -24,6 +25,7 @@ class Project(
 
     init {
         this.projectName = projectName
+        this.projectCreatedEvents.add(ProjectCreated(projectId, projectName))
     }
 
     override fun toString(): String =
