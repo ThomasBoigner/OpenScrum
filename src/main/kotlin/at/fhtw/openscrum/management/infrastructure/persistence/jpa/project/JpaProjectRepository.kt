@@ -4,7 +4,7 @@ import at.fhtw.openscrum.management.domain.model.project.Project
 import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import org.springframework.stereotype.Repository
 
-@Repository
+@Repository("managementJpaProjectRepository")
 class JpaProjectRepository(
     private val projectEntityRepository: ProjectEntityRepository,
 ) : ProjectRepository {

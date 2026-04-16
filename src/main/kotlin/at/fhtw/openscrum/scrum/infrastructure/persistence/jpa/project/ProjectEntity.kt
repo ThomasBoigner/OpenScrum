@@ -2,21 +2,23 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.project
 
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
+import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.util.UUID
 
+@Entity(name = "scrumProjectEntity")
 class ProjectEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
-    val projectId: UUID,
-    val projectName: String,
-    val sprintLength: Int,
-    val definitionOfDone: String?,
-    val productGoal: String?,
+    var id: Long? = null,
+    var projectId: UUID,
+    var projectName: String,
+    var sprintLength: Int,
+    var definitionOfDone: String?,
+    var productGoal: String?,
 ) : AbstractAggregateRoot<ProjectEntity>() {
     constructor(project: Project) : this(
         id = project.id,

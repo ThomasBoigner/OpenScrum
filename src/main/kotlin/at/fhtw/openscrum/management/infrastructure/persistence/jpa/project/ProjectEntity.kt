@@ -10,16 +10,16 @@ import jakarta.persistence.Id
 import org.springframework.data.domain.AbstractAggregateRoot
 import java.util.UUID
 
-@Entity
+@Entity(name = "managementProjectEntity")
 class ProjectEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
-    val projectId: UUID,
-    val projectName: String,
-    val productOwnerId: UUID,
-    val scrumMasterId: UUID,
-    val developerIds: Set<UUID> = setOf(),
+    var id: Long? = null,
+    var projectId: UUID,
+    var projectName: String,
+    var productOwnerId: UUID,
+    var scrumMasterId: UUID,
+    var developerIds: Set<UUID> = setOf(),
 ) : AbstractAggregateRoot<ProjectEntity>() {
     constructor(project: Project) : this(
         id = project.id,
