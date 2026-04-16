@@ -2,7 +2,7 @@ package at.fhtw.openscrum.scrum.application.command
 
 import java.util.UUID
 
-class CreateProjectCommand(
+data class CreateProjectCommand(
     val projectId: UUID,
     val projectName: String,
 )
