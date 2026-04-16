@@ -62,7 +62,7 @@ dependencies {
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.postgresql)
-    implementation(libs.selenium.java)
+    testImplementation(libs.selenium.java)
 }
 
 kotlin {

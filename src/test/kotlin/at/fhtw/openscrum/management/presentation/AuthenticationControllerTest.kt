@@ -3,7 +3,7 @@ package at.fhtw.openscrum.management.presentation
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -22,7 +22,7 @@ class AuthenticationControllerTest {
     @Autowired
     lateinit var userEntityRepository: UserEntityRepository
 
-    @AfterEach
+    @BeforeEach
     fun cleanUp() {
         userEntityRepository.deleteAll()
         userService.registerAdmin()
@@ -57,8 +57,7 @@ class AuthenticationControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
-        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
         // Then
@@ -95,8 +94,7 @@ class AuthenticationControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys("Wrong Username")
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
-        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
 
         // Then
         assertThat(wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))).isNotNull
@@ -132,8 +130,7 @@ class AuthenticationControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys("Wrong Password")
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
-        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
 
         // Then
         assertThat(wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))).isNotNull

@@ -5,7 +5,7 @@ import at.fhtw.openscrum.management.domain.model.user.UserService
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.project.ProjectEntityRepository
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -31,7 +31,7 @@ class ProjectControllerTest {
     @Autowired
     lateinit var projectEntityRepository: ProjectEntityRepository
 
-    @AfterEach
+    @BeforeEach
     fun cleanUp() {
         projectEntityRepository.deleteAll()
         userEntityRepository.deleteAll()
@@ -86,8 +86,7 @@ class ProjectControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
-        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
         // fill in create project form
@@ -96,8 +95,7 @@ class ProjectControllerTest {
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwnerUsername)
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMasterUsername)
         Select(webDriver.findElement(By.cssSelector("select#developers"))).selectByVisibleText(developerUsername)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#project-form button")))
-        webDriver.findElement(By.cssSelector("section#project-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
         // Then
@@ -137,8 +135,7 @@ class ProjectControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
-        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
         webDriver.get("http://localhost:8080/users/register")
@@ -179,16 +176,14 @@ class ProjectControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
-        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
         // fill in create project form without product owner
         webDriver.get("http://localhost:8080/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMasterUsername)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#project-form button")))
-        webDriver.findElement(By.cssSelector("section#project-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
@@ -227,16 +222,14 @@ class ProjectControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
-        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
         // fill in create project form without scrum master
         webDriver.get("http://localhost:8080/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwnerUsername)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#project-form button")))
-        webDriver.findElement(By.cssSelector("section#project-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
@@ -295,8 +288,7 @@ class ProjectControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
-        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
         // fill in create project form with already taken project name
@@ -304,8 +296,7 @@ class ProjectControllerTest {
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwnerUsername)
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMasterUsername)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#project-form button")))
-        webDriver.findElement(By.cssSelector("section#project-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
@@ -352,16 +343,14 @@ class ProjectControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
-        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
         // fill in create project form with blank project name
         webDriver.get("http://localhost:8080/projects/create")
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwnerUsername)
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMasterUsername)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#project-form button")))
-        webDriver.findElement(By.cssSelector("section#project-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
@@ -400,8 +389,7 @@ class ProjectControllerTest {
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
         webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#login-form button")))
-        webDriver.findElement(By.cssSelector("section#login-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
         // fill in create project form with the same user in all roles
@@ -410,8 +398,7 @@ class ProjectControllerTest {
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(userUsername)
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(userUsername)
         Select(webDriver.findElement(By.cssSelector("select#developers"))).selectByVisibleText(userUsername)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section#project-form button")))
-        webDriver.findElement(By.cssSelector("section#project-form button")).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))

@@ -1,7 +1,6 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
-import at.fhtw.openscrum.scrum.application.dtos.ProjectDto
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
