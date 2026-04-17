@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 @NamedInterface("DeveloperAssigned")
 data class DeveloperAssigned(
     val userId: UserId,
+    val projectId: ProjectId,
     val username: String,
     val fullName: FullName,
     val occurredOn: LocalDateTime = LocalDateTime.now(),

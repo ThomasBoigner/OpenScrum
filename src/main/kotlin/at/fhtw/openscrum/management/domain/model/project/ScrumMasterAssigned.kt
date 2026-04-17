@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 @NamedInterface("ScrumMasterAssigned")
 data class ScrumMasterAssigned(
     val userId: UserId,
+    val projectId: ProjectId,
     val username: String,
     val fullName: FullName,
     val occurredOn: LocalDateTime = LocalDateTime.now(),
