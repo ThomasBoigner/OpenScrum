@@ -10,6 +10,9 @@ class Project(
     scrumMasterId: UserId,
     val developerIds: Set<UserId> = setOf(),
     val projectCreatedEvents: MutableList<ProjectCreated> = mutableListOf(),
+    val scrumMasterAssignedEvents: MutableList<ScrumMasterAssigned> = mutableListOf(),
+    val productOwnerAssignedEvents: MutableList<ProductOwnerAssigned> = mutableListOf(),
+    val developerAssignedEvents: MutableList<DeveloperAssigned> = mutableListOf(),
 ) {
     var projectName: String = ""
         private set(value) {

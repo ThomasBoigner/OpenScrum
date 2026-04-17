@@ -34,6 +34,26 @@ class ProjectService(
                 productOwnerId = productOwner.userId,
                 scrumMasterId = scrumMaster.userId,
                 developerIds = developerIds,
+                scrumMasterAssignedEvents =
+                    mutableListOf(
+                        ScrumMasterAssigned(
+                            scrumMaster.userId,
+                            scrumMaster.username,
+                            scrumMaster.fullName,
+                        ),
+                    ),
+                productOwnerAssignedEvents =
+                    mutableListOf(
+                        ProductOwnerAssigned(
+                            scrumMaster.userId,
+                            scrumMaster.username,
+                            scrumMaster.fullName,
+                        ),
+                    ),
+                developerAssignedEvents =
+                    developers
+                        .map { DeveloperAssigned(it.userId, it.username, it.fullName) }
+                        .toMutableList(),
             )
 
         log.info("Created Project {}", project)

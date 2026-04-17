@@ -30,6 +30,9 @@ class ProjectEntity(
         developerIds = project.developerIds.map { it.token }.toSet(),
     ) {
         project.projectCreatedEvents.forEach { this.registerEvent(it) }
+        project.scrumMasterAssignedEvents.forEach { this.registerEvent(it) }
+        project.productOwnerAssignedEvents.forEach { this.registerEvent(it) }
+        project.developerAssignedEvents.forEach { this.registerEvent(it) }
     }
 
     constructor() : this(

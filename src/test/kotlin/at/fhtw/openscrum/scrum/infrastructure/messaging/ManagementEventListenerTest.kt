@@ -30,10 +30,11 @@ class ManagementEventListenerTest {
         val projectId = UUID.randomUUID()
         val projectName = "OpenScrum"
 
-        val event = ProjectCreated(
-            projectId = ProjectId(projectId),
-            projectName = projectName,
-        )
+        val event =
+            ProjectCreated(
+                projectId = ProjectId(projectId),
+                projectName = projectName,
+            )
 
         // When
         managementEventListener.receiveProjectCreatedEvent(event)
