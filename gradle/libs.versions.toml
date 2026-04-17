@@ -34,7 +34,7 @@ spring-boot-starter-log4j2 = { module = "org.springframework.boot:spring-boot-st
 # spring modulith
 spring-modulith-bom = { module = "org.springframework.modulith:spring-modulith-bom", version.ref = "spring-modulith" }
 spring-modulith-core = { module = "org.springframework.modulith:spring-modulith-core", version.ref = "spring-modulith" }
-spring-modulith-starter-jpa = { module = "org.springframework.modulith:spring-modulith-starter-jpa", version.ref = "spring-modulith" }
+spring-modulith-starter-jdbc = { module = "org.springframework.modulith:spring-modulith-starter-jdbc", version.ref = "spring-modulith" }
 # spring security
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security", version.ref = "spring-boot" }
 # thymeleaf

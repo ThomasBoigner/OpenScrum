@@ -23,7 +23,6 @@ class JpaDeveloperRepositoryTest {
     lateinit var developerEntityRepository: DeveloperEntityRepository
 
     @BeforeEach
-    @AfterEach
     fun cleanUp() {
         developerEntityRepository.deleteAll()
     }

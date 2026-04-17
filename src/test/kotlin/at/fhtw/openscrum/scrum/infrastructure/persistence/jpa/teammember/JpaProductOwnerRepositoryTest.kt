@@ -23,7 +23,6 @@ class JpaProductOwnerRepositoryTest {
     lateinit var productOwnerEntityRepository: ProductOwnerEntityRepository
 
     @BeforeEach
-    @AfterEach
     fun cleanUp() {
         productOwnerEntityRepository.deleteAll()
     }

@@ -46,7 +46,7 @@ dependencies {
     implementation(libs.spring.boot.starter.log4j2)
     // spring modulith
     implementation(libs.spring.modulith.core)
-    implementation(libs.spring.modulith.starter.jpa)
+    implementation(libs.spring.modulith.starter.jdbc)
     // spring security
     implementation(libs.spring.boot.starter.security)
     // thymeleaf

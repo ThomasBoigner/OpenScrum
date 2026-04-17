@@ -22,7 +22,6 @@ class JpaProjectRepositoryTest {
     lateinit var projectEntityRepository: ProjectEntityRepository
 
     @BeforeEach
-    @AfterEach
     fun cleanUp() {
         projectEntityRepository.deleteAll()
     }

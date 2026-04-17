@@ -23,7 +23,6 @@ class JpaScrumMasterRepositoryTest {
     lateinit var scrumMasterEntityRepository: ScrumMasterEntityRepository
 
     @BeforeEach
-    @AfterEach
     fun cleanUp() {
         scrumMasterEntityRepository.deleteAll()
     }

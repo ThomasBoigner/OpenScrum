@@ -7,6 +7,7 @@ import at.fhtw.openscrum.management.domain.model.user.User
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -21,7 +22,7 @@ class JpaUserRepositoryTest {
     @Autowired
     lateinit var userEntityRepository: UserEntityRepository
 
-    @AfterEach
+    @BeforeEach
     fun cleanUp() {
         userEntityRepository.deleteAll()
     }
