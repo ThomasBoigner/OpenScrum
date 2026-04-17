@@ -16,6 +16,7 @@ class ProjectApplicationService(
     private val projectRepository: ProjectRepository,
     private val log: Logger = LoggerFactory.getLogger(ProjectApplicationService::class.java),
 ) {
+    @Transactional(readOnly = false)
     fun createProject(command: CreateProjectCommand): ProjectDto {
         log.debug("Trying to create project with command: {}", command)
 

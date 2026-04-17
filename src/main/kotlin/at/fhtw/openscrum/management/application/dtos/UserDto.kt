@@ -6,12 +6,12 @@ import java.util.UUID
 
 data class UserDto(
     val userId: UUID,
-    var username: String,
+    val username: String,
     var emailAddress: String,
     val firstName: String,
     val lastName: String,
-    var fullName: String,
-    var role: RoleDto,
+    val fullName: String,
+    val role: RoleDto,
 ) {
     constructor(user: User) : this(
         user.userId.token,
