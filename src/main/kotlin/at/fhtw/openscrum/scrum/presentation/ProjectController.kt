@@ -17,6 +17,7 @@ class ProjectController(
     companion object {
         const val BASE_URL = "/projects/{id}"
         const val PATH_INDEX = "/"
+        const val ROUTE_CONFIGURE = "/configure"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -24,4 +25,10 @@ class ProjectController(
         model: Model,
         @PathVariable id: UUID,
     ): String = "pages/project-details-page"
+
+    @GetMapping(value = [ROUTE_CONFIGURE])
+    fun showConfigurationForm(
+        model: Model,
+        @PathVariable id: UUID,
+    ): String = "pages/configure-project"
 }

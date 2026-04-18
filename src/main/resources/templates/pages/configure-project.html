@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Configure a project</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/pages/configure-project.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <section id="hero">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
+        <h1>Configure the Project!</h1>
+    </section>
+
+    <section id="configure-form">
+        <div class="error-message">
+            <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+            <p>Error while configuring project!</p>
+        </div>
+
+        <div class="input-fields">
+            <form>
+                <label for="sprint-length">Sprint length:</label>
+                <input type="number" id="sprint-length" name="sprintLengthInWeeks"
+                       placeholder="Enter the length of Sprints in weeks!" min="0" max="4">
+                <button type="submit">Save</button>
+            </form>
+
+            <form>
+                <label for="product-goal">Product goal:</label>
+                <textarea id="product-goal" name="productGoal"
+                          placeholder="Describe the product goal for this project!"></textarea>
+                <button type="submit">Save</button>
+            </form>
+
+            <form>
+                <label for="definition-of-done">Definition of done:</label>
+                <textarea id="definition-of-done" name="definitionOfDone"
+                          placeholder="Describe when a task is considered done!"></textarea>
+                <button type="submit">Save</button>
+            </form>
+        </div>
+
+        <a class="btn">
+            <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
+            Back
+        </a>
+    </section>
+</div>
+</body>
+</html>
