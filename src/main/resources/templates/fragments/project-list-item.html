@@ -8,11 +8,14 @@
         </div>
     </div>
     <div class="edit-delete-buttons">
-        <button class="edit-button">
+        <a class="details-button" th:href="@{/projects/{id}(id=*{projectId})}">
+            <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Arrow">
+        </a>
+        <a class="edit-button">
             <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
-        </button>
-        <button class="delete-button">
+        </a>
+        <a class="delete-button">
             <img th:src="@{/assets/svg/trash.svg}" alt="Trash">
-        </button>
+        </a>
     </div>
 </div>

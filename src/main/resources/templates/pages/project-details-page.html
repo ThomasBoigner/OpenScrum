@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Project details page</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/pages/project-details-page.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <header id="scrum-header">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
+        <nav>
+            <a class="btn selected">
+                <img th:src="@{/assets/svg/sticky.svg}" alt="Sticky">
+                Details
+            </a>
+            <a class="btn">
+                <img th:src="@{/assets/svg/list.svg}" alt="List">
+                Backlog
+            </a>
+            <a class="btn">
+                <img th:src="@{/assets/svg/rotate.svg}" alt="Rotate">
+                Sprints
+            </a>
+        </nav>
+    </header>
+
+    <section id="project-details">
+        <h1 class="project-title">Project Name</h1>
+
+        <div class="details-grid">
+            <div class="details-row">
+                <div class="detail-card">
+                    <img th:src="@{/assets/svg/team.svg}" alt="Team">
+                    <div class="card-info">
+                        <div class="team-info">
+                            <div class="info-group">
+                                <label>Scrum Master</label>
+                                <p>John Doe</p>
+                            </div>
+                            <div class="info-group">
+                                <label>Product Owner</label>
+                                <p>John Doe</p>
+                            </div>
+                            <div class="info-group">
+                                <label>Sprint Length</label>
+                                <p>2 weeks</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <img th:src="@{/assets/svg/dev.svg}" alt="Dev">
+                    <div class="card-info">
+                        <label>Developers</label>
+                        <div class="developers-list">
+                            <p>Maria Garcia</p>
+                            <p>Jane Smith</p>
+                            <p>Alex Johnson</p>
+                            <p>Chris Lee</p>
+                            <p>Sam Wilson</p>
+                            <p>Pat Brown</p>
+                            <p>Fred Smith</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-row">
+                <div class="detail-card">
+                    <img th:src="@{/assets/svg/rocket.svg}" alt="Rocket">
+                    <div class="card-info">
+                        <label>Product Goal</label>
+                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <img th:src="@{/assets/svg/check.svg}" alt="Check">
+                    <div class="card-info">
+                        <label>Definition of Done</label>
+                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a class="settings-button">
+            <img th:src="@{/assets/svg/gear.svg}" alt="Gear">
+        </a>
+    </section>
+</div>
+</body>
+</html>

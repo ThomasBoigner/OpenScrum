@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import java.security.Principal
 
-@Controller
+@Controller("managementProjectController")
 @RequestMapping(ProjectController.BASE_URL)
 class ProjectController(
     private val projectApplicationService: ProjectApplicationService,
