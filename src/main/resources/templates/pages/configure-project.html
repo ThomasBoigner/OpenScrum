@@ -35,23 +35,29 @@
 
         <div class="input-fields">
             <form>
-                <label for="sprint-length">Sprint length:</label>
-                <input type="number" id="sprint-length" name="sprintLengthInWeeks"
-                       placeholder="Enter the length of Sprints in weeks!" min="0" max="4">
+                <div class="label-input">
+                    <label for="sprint-length">Sprint length:</label>
+                    <input type="number" id="sprint-length" name="sprintLengthInWeeks"
+                           placeholder="Enter the length of Sprints in weeks!" min="0" max="4">
+                </div>
                 <button type="submit">Save</button>
             </form>
 
             <form>
-                <label for="product-goal">Product goal:</label>
-                <textarea id="product-goal" name="productGoal"
-                          placeholder="Describe the product goal for this project!"></textarea>
+                <div class="label-input">
+                    <label for="product-goal">Product goal:</label>
+                    <textarea id="product-goal" name="productGoal"
+                              placeholder="Describe the product goal for this project!"></textarea>
+                </div>
                 <button type="submit">Save</button>
             </form>
 
             <form>
-                <label for="definition-of-done">Definition of done:</label>
-                <textarea id="definition-of-done" name="definitionOfDone"
-                          placeholder="Describe when a task is considered done!"></textarea>
+                <div class="label-input">
+                    <label for="definition-of-done">Definition of done:</label>
+                    <textarea id="definition-of-done" name="definitionOfDone"
+                              placeholder="Describe when a task is considered done!"></textarea>
+                </div>
                 <button type="submit">Save</button>
             </form>
         </div>
