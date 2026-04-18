@@ -140,3 +140,75 @@ a.settings-button {
     bottom: 32px;
     box-shadow: 0 4px 24px rgb(196, 196, 196);
 }
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    body {
+        height: auto;
+    }
+
+    div.container {
+        flex-direction: column;
+    }
+
+    /* Header */
+    header#scrum-header {
+        width: 100%;
+        flex-direction: row;
+        gap: 32px;
+        padding: 48px 32px;
+    }
+
+    header#scrum-header > a > img {
+        width: 64px;
+        height: 64px;
+    }
+
+    header#scrum-header nav {
+        flex-direction: row;
+        gap: 16px;
+    }
+
+    header#scrum-header a.btn img {
+        display: none;
+    }
+
+    /* Project Details */
+    section#project-details {
+        gap: 32px;
+        padding: 48px 32px;
+    }
+
+    div.details-row {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    div.details-grid {
+        gap: 24px;
+    }
+
+    div.detail-card > img {
+        width: 48px;
+        height: 48px;
+    }
+
+    div.team-info {
+        flex-direction: row;
+        gap: 32px;
+    }
+
+    /* Settings button */
+    a.settings-button {
+        padding: 24px;
+        width: 96px;
+        height: 96px;
+        right: 32px;
+        bottom: 32px;
+    }
+
+    a.settings-button img {
+        width: 48px;
+        height: 48px;
+    }
+}
