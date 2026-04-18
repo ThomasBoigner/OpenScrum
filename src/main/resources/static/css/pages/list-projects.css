@@ -118,7 +118,7 @@ section#projects-list a.create-button {
         padding: 48px 32px;
     }
 
-    header#main-header > img {
+    header#main-header > a > img {
         width: 64px;
         height: 64px;
     }
