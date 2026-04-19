@@ -15,7 +15,5 @@ class JpaProductOwnerRepository(
         return productOwner
     }
 
-    override fun findByProjectId(projectId: UUID): ProductOwner? {
-        TODO("Not yet implemented")
-    }
+    override fun findByProjectId(projectId: UUID): ProductOwner? = productOwnerEntityRepository.findByProjectId(projectId)?.toProductOwner()
 }

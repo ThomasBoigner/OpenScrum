@@ -28,6 +28,28 @@ class JpaProductOwnerRepositoryTest {
     }
 
     @Test
+    fun ensureFindByProjectIdWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jsmith",
+                fullName = FullName(firstName = "Jane", lastName = "Smith"),
+            )
+        productOwnerRepository.save(productOwner)
+
+        // When
+        val result = productOwnerRepository.findByProjectId(projectId)
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result!!.teamMemberId).isEqualTo(productOwner.teamMemberId)
+        assertThat(result.username).isEqualTo(productOwner.username)
+        assertThat(result.fullName).isEqualTo(productOwner.fullName)
+    }
+
+    @Test
     fun ensureSaveWorksProperly() {
         // Given
         val productOwner =
