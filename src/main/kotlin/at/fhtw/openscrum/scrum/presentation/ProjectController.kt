@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.scrum.presentation
 
+import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
@@ -12,6 +13,7 @@ import java.util.UUID
 @Controller("scrumProjectController")
 @RequestMapping(ProjectController.BASE_URL)
 class ProjectController(
+    private val projectApplicationService: ProjectApplicationService,
     private val log: Logger = LoggerFactory.getLogger(ProjectController::class.java),
 ) {
     companion object {
@@ -24,7 +26,11 @@ class ProjectController(
     fun index(
         model: Model,
         @PathVariable id: UUID,
-    ): String = "pages/project-details-page"
+    ): String {
+        val project = projectApplicationService.getProject(id) ?: return "error/404"
+        model.addAttribute("project", project)
+        return "pages/project-details-page"
+    }
 
     @GetMapping(value = [ROUTE_CONFIGURE])
     fun showConfigurationForm(
