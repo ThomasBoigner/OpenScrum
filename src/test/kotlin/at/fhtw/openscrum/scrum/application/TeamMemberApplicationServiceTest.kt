@@ -7,6 +7,7 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.assertj.core.api.Assertions.assertThat
@@ -34,7 +35,48 @@ class TeamMemberApplicationServiceTest {
 
     @BeforeEach
     fun setUp() {
-        teamMemberApplicationService = TeamMemberApplicationService(developerRepository, scrumMasterRepository, productOwnerRepository)
+        teamMemberApplicationService =
+            TeamMemberApplicationService(developerRepository, scrumMasterRepository, productOwnerRepository)
+    }
+
+    @Test
+    fun ensureGetScrumMasterOfProjectWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val scrumMaster =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "mmueller",
+                fullName = FullName(firstName = "Max", lastName = "Mueller"),
+            )
+
+        whenever(scrumMasterRepository.findByProjectId(projectId)).thenReturn(scrumMaster)
+
+        // When
+        val result = teamMemberApplicationService.getScrumMasterOfProject(projectId)
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result!!.userId).isEqualTo(scrumMaster.teamMemberId.userId)
+        assertThat(result.projectId).isEqualTo(projectId)
+        assertThat(result.username).isEqualTo(scrumMaster.username)
+        assertThat(result.firstName).isEqualTo(scrumMaster.fullName.firstName)
+        assertThat(result.lastName).isEqualTo(scrumMaster.fullName.lastName)
+        assertThat(result.fullName).isEqualTo("${scrumMaster.fullName.firstName} ${scrumMaster.fullName.lastName}")
+    }
+
+    @Test
+    fun ensureGetScrumMasterOfProjectReturnsNullWhenNotFound() {
+        // Given
+        val projectId = UUID.randomUUID()
+
+        whenever(scrumMasterRepository.findByProjectId(projectId)).thenReturn(null)
+
+        // When
+        val result = teamMemberApplicationService.getScrumMasterOfProject(projectId)
+
+        // Then
+        assertThat(result).isNull()
     }
 
     @Test

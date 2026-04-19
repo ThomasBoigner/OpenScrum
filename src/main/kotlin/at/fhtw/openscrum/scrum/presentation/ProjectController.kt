@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.presentation
 
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
+import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
@@ -14,6 +15,7 @@ import java.util.UUID
 @RequestMapping(ProjectController.BASE_URL)
 class ProjectController(
     private val projectApplicationService: ProjectApplicationService,
+    private val teamMemberApplicationService: TeamMemberApplicationService,
     private val log: Logger = LoggerFactory.getLogger(ProjectController::class.java),
 ) {
     companion object {
@@ -29,7 +31,13 @@ class ProjectController(
     ): String {
         log.debug("Serving project details page for id {}", id)
         val project = projectApplicationService.getProject(id) ?: return "error/404"
+        val scrumMaster = teamMemberApplicationService.getScrumMasterOfProject(id) ?: return "error/404"
+        val productOwner = teamMemberApplicationService.getProductOwnerOfProject(id) ?: return "error/404"
+
         model.addAttribute("project", project)
+        model.addAttribute("scrumMaster", scrumMaster)
+        model.addAttribute("productOwner", productOwner)
+
         return "pages/project-details-page"
     }
 

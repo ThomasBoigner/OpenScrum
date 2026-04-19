@@ -6,6 +6,7 @@ import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.dtos.DeveloperDto
 import at.fhtw.openscrum.scrum.application.dtos.ProductOwnerDto
 import at.fhtw.openscrum.scrum.application.dtos.ScrumMasterDto
+import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
@@ -28,6 +29,16 @@ class TeamMemberApplicationService(
     private val productOwnerRepository: ProductOwnerRepository,
     private val log: Logger = LoggerFactory.getLogger(TeamMemberApplicationService::class.java),
 ) {
+    fun getScrumMasterOfProject(projectId: UUID): ScrumMasterDto? {
+        log.debug("Trying to get scrum master of project with id {}", projectId)
+        val scrumMaster = scrumMasterRepository.findByProjectId(projectId)
+        log.info(
+            scrumMaster?.let { "Found scrum master $it" }
+                ?: "Scrum master of project with project id $projectId could not be found",
+        )
+        return scrumMaster?.let { ScrumMasterDto(it) }
+    }
+
     fun getProductOwnerOfProject(projectId: UUID): ProductOwnerDto? {
         log.debug("Trying to get product owner of project with id {}", projectId)
         val productOwner = productOwnerRepository.findByProjectId(projectId)
