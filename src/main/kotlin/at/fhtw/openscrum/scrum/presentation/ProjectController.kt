@@ -27,6 +27,7 @@ class ProjectController(
         model: Model,
         @PathVariable id: UUID,
     ): String {
+        log.debug("Serving project details page for id {}", id)
         val project = projectApplicationService.getProject(id) ?: return "error/404"
         model.addAttribute("project", project)
         return "pages/project-details-page"
@@ -36,5 +37,10 @@ class ProjectController(
     fun showConfigurationForm(
         model: Model,
         @PathVariable id: UUID,
-    ): String = "pages/configure-project"
+    ): String {
+        log.debug("Serving project configuration page for id {}", id)
+        val project = projectApplicationService.getProject(id) ?: return "error/404"
+        model.addAttribute("project", project)
+        return "pages/configure-project"
+    }
 }

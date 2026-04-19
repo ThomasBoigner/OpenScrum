@@ -27,7 +27,7 @@
         <h1>Configure the Project!</h1>
     </section>
 
-    <section id="configure-form">
+    <section id="configure-form" th:object="${project}">
         <div class="error-message">
             <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
             <p>Error while configuring project!</p>
@@ -38,7 +38,7 @@
                 <div class="label-input">
                     <label for="sprint-length">Sprint length:</label>
                     <input type="number" id="sprint-length" name="sprintLengthInWeeks"
-                           placeholder="Enter the length of Sprints in weeks!" min="0" max="4">
+                           placeholder="Enter the length of Sprints in weeks!" min="0" max="4" th:value="*{sprintLength}">
                 </div>
                 <button type="submit">Save</button>
             </form>
@@ -47,7 +47,7 @@
                 <div class="label-input">
                     <label for="product-goal">Product goal:</label>
                     <textarea id="product-goal" name="productGoal"
-                              placeholder="Describe the product goal for this project!"></textarea>
+                              placeholder="Describe the product goal for this project!" th:value="*{productGoal}"></textarea>
                 </div>
                 <button type="submit">Save</button>
             </form>
@@ -56,13 +56,13 @@
                 <div class="label-input">
                     <label for="definition-of-done">Definition of done:</label>
                     <textarea id="definition-of-done" name="definitionOfDone"
-                              placeholder="Describe when a task is considered done!"></textarea>
+                              placeholder="Describe when a task is considered done!" th:value="*{definitionOfDone}"></textarea>
                 </div>
                 <button type="submit">Save</button>
             </form>
         </div>
 
-        <a class="btn">
+        <a class="btn" th:href="@{/projects/{id}(id=*{projectId})}">
             <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
             Back
         </a>

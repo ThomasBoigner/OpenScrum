@@ -40,8 +40,8 @@
         </nav>
     </header>
 
-    <section id="project-details">
-        <h1 class="project-title">Project Name</h1>
+    <section id="project-details" th:object="${project}">
+        <h1 class="project-title" th:text="*{projectName}">Project Name</h1>
 
         <div class="details-grid">
             <div class="details-row">
@@ -59,7 +59,7 @@
                             </div>
                             <div class="info-group">
                                 <label>Sprint Length</label>
-                                <p>2 weeks</p>
+                                <p th:text="|*{sprintLength} weeks|">2 weeks</p>
                             </div>
                         </div>
                     </div>
@@ -84,7 +84,7 @@
                 </div>
             </div>
 
-            <div class="details-row">
+            <div class="details-row" th:if="*{productGoal != null}">
                 <div class="detail-card">
                     <img th:src="@{/assets/svg/rocket.svg}" alt="Rocket">
                     <div class="card-info">
@@ -93,7 +93,7 @@
                     </div>
                 </div>
 
-                <div class="detail-card">
+                <div class="detail-card" th:if="*{definitionOfDone != null}">
                     <img th:src="@{/assets/svg/check.svg}" alt="Check">
                     <div class="card-info">
                         <label>Definition of Done</label>
@@ -103,7 +103,7 @@
             </div>
         </div>
 
-        <a class="settings-button">
+        <a class="settings-button" th:href="@{/projects/{id}/configure(id=*{projectId})}">
             <img th:src="@{/assets/svg/gear.svg}" alt="Gear">
         </a>
     </section>
