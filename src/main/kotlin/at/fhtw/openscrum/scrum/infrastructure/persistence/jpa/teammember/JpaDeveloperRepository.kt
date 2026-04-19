@@ -15,7 +15,6 @@ class JpaDeveloperRepository(
         return developer
     }
 
-    override fun findByProjectId(projectId: UUID): List<Developer> {
-        TODO("Not yet implemented")
-    }
+    override fun findByProjectId(projectId: UUID): List<Developer> =
+        developerEntityRepository.findAllByProjectId(projectId).map { it.toDeveloper() }
 }

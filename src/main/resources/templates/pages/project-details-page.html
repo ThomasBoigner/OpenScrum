@@ -65,20 +65,12 @@
                     </div>
                 </div>
 
-                <div class="detail-card">
+                <div class="detail-card" th:if="${!#lists.isEmpty(developers)}">
                     <img th:src="@{/assets/svg/dev.svg}" alt="Dev">
                     <div class="card-info">
                         <label>Developers</label>
-                        <div class="developers-list">
-                            <p>Maria Garcia</p>
-                            <p>Jane Smith</p>
-                            <p>Alex Johnson</p>
-                            <p>Chris Lee</p>
-                            <p>Sam Wilson</p>
-                            <p>Pat Brown</p>
-                            <p>Fred Smith</p>
-                            <p>Patrick Star</p>
-                            <p>Max Mustermann</p>
+                        <div class="developers-list" th:each="developer : ${developers}">
+                            <p th:text="${developer.fullName}">Maria Garcia</p>
                         </div>
                     </div>
                 </div>

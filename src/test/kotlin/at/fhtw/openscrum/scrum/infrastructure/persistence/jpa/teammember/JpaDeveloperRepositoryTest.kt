@@ -28,6 +28,34 @@ class JpaDeveloperRepositoryTest {
     }
 
     @Test
+    fun ensureFindByProjectIdWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developers =
+            listOf(
+                Developer(
+                    teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                    username = "jdoe",
+                    fullName = FullName(firstName = "John", lastName = "Doe"),
+                ),
+                Developer(
+                    teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                    username = "mmueller",
+                    fullName = FullName(firstName = "Max", lastName = "Mueller"),
+                ),
+            )
+        developers.forEach { developerRepository.save(it) }
+
+        // When
+        val result = developerRepository.findByProjectId(projectId)
+
+        // Then
+        assertThat(result).hasSize(2)
+        assertThat(result.map { it.teamMemberId }).containsExactlyInAnyOrderElementsOf(developers.map { it.teamMemberId })
+        assertThat(result.map { it.username }).containsExactlyInAnyOrder("jdoe", "mmueller")
+    }
+
+    @Test
     fun ensureSaveWorksProperly() {
         // Given
         val developer =

@@ -31,10 +31,12 @@ class ProjectController(
     ): String {
         log.debug("Serving project details page for id {}", id)
         val project = projectApplicationService.getProject(id) ?: return "error/404"
+        val developers = teamMemberApplicationService.getDevelopersOfProject(id)
         val scrumMaster = teamMemberApplicationService.getScrumMasterOfProject(id) ?: return "error/404"
         val productOwner = teamMemberApplicationService.getProductOwnerOfProject(id) ?: return "error/404"
 
         model.addAttribute("project", project)
+        model.addAttribute("developers", developers)
         model.addAttribute("scrumMaster", scrumMaster)
         model.addAttribute("productOwner", productOwner)
 

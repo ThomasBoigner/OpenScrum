@@ -43,20 +43,20 @@
                     <option value="">Select a product owner!</option>
                     <option th:each="user : ${users}"
                             th:value="${user.userId}"
-                            th:text="${user.username}"></option>
+                            th:text="${user.fullName}"></option>
                 </select>
                 <label for="scrum-master">Scrum Master:</label>
                 <select id="scrum-master" th:field="*{scrumMasterId}">
                     <option value="">Select a scrum master!</option>
                     <option th:each="user : ${users}"
                             th:value="${user.userId}"
-                            th:text="${user.username}"></option>
+                            th:text="${user.fullName}"></option>
                 </select>
                 <label for="developers">Developers:</label>
                 <select id="developers" th:field="*{developerIds}" multiple>
                     <option th:each="user : ${users}"
                             th:value="${user.userId}"
-                            th:text="${user.username}"></option>
+                            th:text="${user.fullName}"></option>
                 </select>
             </div>
             <button type="submit">
