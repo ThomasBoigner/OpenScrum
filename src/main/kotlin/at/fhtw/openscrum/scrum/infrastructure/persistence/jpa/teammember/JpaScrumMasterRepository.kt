@@ -15,7 +15,5 @@ class JpaScrumMasterRepository(
         return scrumMaster
     }
 
-    override fun findByProjectId(projectId: UUID): ScrumMaster? {
-        TODO("Not yet implemented")
-    }
+    override fun findByProjectId(projectId: UUID): ScrumMaster? = scrumMasterEntityRepository.findByProjectId(projectId)?.toScrumMaster()
 }

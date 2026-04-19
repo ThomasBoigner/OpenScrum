@@ -48,10 +48,10 @@ class ProjectService(
                 productOwnerAssignedEvents =
                     mutableListOf(
                         ProductOwnerAssigned(
-                            scrumMaster.userId,
+                            productOwner.userId,
                             projectId,
-                            scrumMaster.username,
-                            scrumMaster.fullName,
+                            productOwner.username,
+                            productOwner.fullName,
                         ),
                     ),
                 developerAssignedEvents =
