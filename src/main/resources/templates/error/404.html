@@ -15,10 +15,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet" th:href="@{/css/error/404.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/error/404.css}">
 </head>
 <body>
-    <h1>404</h1>
+<div class="container">
+    <section id="hero">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Rotate">
+        </a>
+        <h1>404 - Page not found!</h1>
+        <h3>We could not find the requested page</h3>
+    </section>
+
+    <a class="btn" th:href="@{/projects}">
+        <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
+        Go Back
+    </a>
+</div>
 </body>
 </html>
