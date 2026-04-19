@@ -15,7 +15,5 @@ class JpaProjectRepository(
         return project
     }
 
-    override fun findByProjectId(projectId: ProjectId): Project? {
-        TODO("Not yet implemented")
-    }
+    override fun findByProjectId(projectId: ProjectId): Project? = projectEntityRepository.findByProjectId(projectId.token)?.toProject()
 }

@@ -46,9 +46,26 @@ class JpaProjectRepositoryTest {
         assertThat(savedEntities).hasSize(1)
         val savedProject = savedEntities.first().toProject()
         assertThat(savedProject).isEqualTo(project)
-        assertThat(savedProject.projectName).isEqualTo(project.projectName)
-        assertThat(savedProject.sprintLength).isEqualTo(project.sprintLength)
-        assertThat(savedProject.definitionOfDone).isEqualTo(project.definitionOfDone)
-        assertThat(savedProject.productGoal).isEqualTo(project.productGoal)
+    }
+
+    @Test
+    fun ensureFindByProjectIdWorksProperly() {
+        // Given
+        val project =
+            Project(
+                projectId = ProjectId(UUID.randomUUID()),
+                projectName = "OpenScrum",
+                sprintLength = 3,
+                definitionOfDone = "All tests pass",
+                productGoal = "Deliver MVP",
+            )
+        projectRepository.save(project)
+
+        // When
+        val result = projectRepository.findByProjectId(project.projectId)
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result).isEqualTo(project)
     }
 }
