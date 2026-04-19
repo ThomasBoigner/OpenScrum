@@ -1,6 +1,8 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
+import at.fhtw.openscrum.scrum.domain.model.project.Project
+import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -22,6 +24,41 @@ class ProjectApplicationServiceTest {
     @BeforeEach
     fun setUp() {
         projectApplicationService = ProjectApplicationService(projectRepository)
+    }
+
+    @Test
+    fun ensureGetProjectWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val project =
+            Project(
+                projectId = ProjectId(projectId),
+                projectName = "projectName",
+            )
+
+        whenever(projectRepository.findByProjectId(ProjectId(projectId))).thenReturn(project)
+
+        // When
+        val result = projectApplicationService.getProject(projectId)
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result!!.projectId).isEqualTo(projectId)
+        assertThat(result.projectName).isEqualTo(project.projectName)
+    }
+
+    @Test
+    fun ensureGetProjectReturnsNullWhenProjectDoesNotExist() {
+        // Given
+        val projectId = UUID.randomUUID()
+
+        whenever(projectRepository.findByProjectId(ProjectId(projectId))).thenReturn(null)
+
+        // When
+        val result = projectApplicationService.getProject(projectId)
+
+        // Then
+        assertThat(result).isNull()
     }
 
     @Test

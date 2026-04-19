@@ -9,6 +9,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service("scrumProjectApplicationService")
 @Transactional(readOnly = true)
@@ -16,6 +17,13 @@ class ProjectApplicationService(
     private val projectRepository: ProjectRepository,
     private val log: Logger = LoggerFactory.getLogger(ProjectApplicationService::class.java),
 ) {
+    fun getProject(projectId: UUID): ProjectDto? {
+        log.debug("Trying to get project with id {}", projectId)
+        val project = projectRepository.findByProjectId(ProjectId(projectId))
+        log.info(project?.let { "Found project $it" } ?: "Project with project id $projectId could not be found")
+        return project?.let { ProjectDto(it) }
+    }
+
     @Transactional(readOnly = false)
     fun createProject(command: CreateProjectCommand): ProjectDto {
         log.debug("Trying to create project with command: {}", command)
