@@ -29,6 +29,13 @@ class TeamMemberApplicationService(
     private val productOwnerRepository: ProductOwnerRepository,
     private val log: Logger = LoggerFactory.getLogger(TeamMemberApplicationService::class.java),
 ) {
+    fun getDevelopersOfProject(projectId: UUID): List<DeveloperDto> {
+        log.debug("Trying to get all developers of project with id {}", projectId)
+        val developers = developerRepository.findByProjectId(projectId)
+        log.info("Found all ({}) developers of project with id {}", developers.size, projectId)
+        return developers.map { DeveloperDto(it) }
+    }
+
     fun getScrumMasterOfProject(projectId: UUID): ScrumMasterDto? {
         log.debug("Trying to get scrum master of project with id {}", projectId)
         val scrumMaster = scrumMasterRepository.findByProjectId(projectId)

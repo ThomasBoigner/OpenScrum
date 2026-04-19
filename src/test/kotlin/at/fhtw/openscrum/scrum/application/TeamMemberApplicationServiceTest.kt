@@ -3,6 +3,8 @@ package at.fhtw.openscrum.scrum.application
 import at.fhtw.openscrum.scrum.application.command.AssignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.AssignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.dtos.DeveloperDto
+import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
@@ -37,6 +39,49 @@ class TeamMemberApplicationServiceTest {
     fun setUp() {
         teamMemberApplicationService =
             TeamMemberApplicationService(developerRepository, scrumMasterRepository, productOwnerRepository)
+    }
+
+    @Test
+    fun ensureGetDevelopersOfProjectWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developers =
+            listOf(
+                Developer(
+                    teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                    username = "jdoe",
+                    fullName = FullName(firstName = "John", lastName = "Doe"),
+                ),
+                Developer(
+                    teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                    username = "mmueller",
+                    fullName = FullName(firstName = "Max", lastName = "Mueller"),
+                ),
+            )
+
+        whenever(developerRepository.findByProjectId(projectId)).thenReturn(developers)
+
+        // When
+        val result = teamMemberApplicationService.getDevelopersOfProject(projectId)
+
+        // Then
+        assertThat(result).hasSize(2)
+        assertThat(result[0]).isEqualTo(DeveloperDto(developers[0]))
+        assertThat(result[1]).isEqualTo(DeveloperDto(developers[1]))
+    }
+
+    @Test
+    fun ensureGetDevelopersOfProjectReturnsEmptyListWhenNoDevelopersExist() {
+        // Given
+        val projectId = UUID.randomUUID()
+
+        whenever(developerRepository.findByProjectId(projectId)).thenReturn(emptyList())
+
+        // When
+        val result = teamMemberApplicationService.getDevelopersOfProject(projectId)
+
+        // Then
+        assertThat(result).isEmpty()
     }
 
     @Test
