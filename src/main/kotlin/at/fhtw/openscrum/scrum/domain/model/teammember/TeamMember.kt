@@ -1,6 +1,6 @@
 package at.fhtw.openscrum.scrum.domain.model.teammember
 
-open class TeamMember(
+abstract class TeamMember(
     val id: Long? = null,
     val teamMemberId: TeamMemberId,
     val username: String,

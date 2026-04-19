@@ -18,6 +18,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 @Transactional(readOnly = true)
@@ -27,6 +28,16 @@ class TeamMemberApplicationService(
     private val productOwnerRepository: ProductOwnerRepository,
     private val log: Logger = LoggerFactory.getLogger(TeamMemberApplicationService::class.java),
 ) {
+    fun getProductOwnerOfProject(projectId: UUID): ProductOwnerDto? {
+        log.debug("Trying to get product owner of project with id {}", projectId)
+        val productOwner = productOwnerRepository.findByProjectId(projectId)
+        log.info(
+            productOwner?.let { "Found product owner $it" }
+                ?: "Product owner of project with project id $projectId could not be found",
+        )
+        return productOwner?.let { ProductOwnerDto(it) }
+    }
+
     @Transactional(readOnly = false)
     fun assignDeveloper(command: AssignDeveloperCommand): DeveloperDto {
         log.debug("Trying to assign developer with command: {}", command)

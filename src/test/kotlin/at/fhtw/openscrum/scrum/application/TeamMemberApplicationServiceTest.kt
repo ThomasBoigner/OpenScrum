@@ -4,8 +4,11 @@ import at.fhtw.openscrum.scrum.application.command.AssignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.AssignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,6 +35,46 @@ class TeamMemberApplicationServiceTest {
     @BeforeEach
     fun setUp() {
         teamMemberApplicationService = TeamMemberApplicationService(developerRepository, scrumMasterRepository, productOwnerRepository)
+    }
+
+    @Test
+    fun ensureGetProductOwnerOfProjectWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jsmith",
+                fullName = FullName(firstName = "Jane", lastName = "Smith"),
+            )
+
+        whenever(productOwnerRepository.findByProjectId(projectId)).thenReturn(productOwner)
+
+        // When
+        val result = teamMemberApplicationService.getProductOwnerOfProject(projectId)
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result!!.userId).isEqualTo(productOwner.teamMemberId.userId)
+        assertThat(result.projectId).isEqualTo(projectId)
+        assertThat(result.username).isEqualTo(productOwner.username)
+        assertThat(result.firstName).isEqualTo(productOwner.fullName.firstName)
+        assertThat(result.lastName).isEqualTo(productOwner.fullName.lastName)
+        assertThat(result.fullName).isEqualTo("${productOwner.fullName.firstName} ${productOwner.fullName.lastName}")
+    }
+
+    @Test
+    fun ensureGetProductOwnerOfProjectReturnsNullWhenNotFound() {
+        // Given
+        val projectId = UUID.randomUUID()
+
+        whenever(productOwnerRepository.findByProjectId(projectId)).thenReturn(null)
+
+        // When
+        val result = teamMemberApplicationService.getProductOwnerOfProject(projectId)
+
+        // Then
+        assertThat(result).isNull()
     }
 
     @Test
