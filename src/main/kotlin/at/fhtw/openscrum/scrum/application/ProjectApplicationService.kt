@@ -1,11 +1,13 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
+import at.fhtw.openscrum.scrum.application.command.DefineProductGoalCommand
 import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProjectDto
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -18,6 +20,7 @@ import java.util.UUID
 class ProjectApplicationService(
     private val projectRepository: ProjectRepository,
     private val scrumMasterRepository: ScrumMasterRepository,
+    private val productOwnerRepository: ProductOwnerRepository,
     private val log: Logger = LoggerFactory.getLogger(ProjectApplicationService::class.java),
 ) {
     fun getProject(projectId: UUID): ProjectDto? {
@@ -55,6 +58,24 @@ class ProjectApplicationService(
         val scrumMaster = scrumMasterRepository.findByUsername(authenticatedUserUsername)
 
         project.defineSprintLength(scrumMaster, command.sprintLength)
+        log.info("Updated sprint length of project {}", project)
+        return ProjectDto(projectRepository.save(project))
+    }
+
+    @Transactional(readOnly = false)
+    fun defineProductGoal(
+        authenticatedUserUsername: String,
+        command: DefineProductGoalCommand,
+    ): ProjectDto {
+        log.debug("Trying to define product goal of project with command {}", command)
+        val project =
+            projectRepository.findByProjectId(ProjectId(command.projectId)) ?: throw IllegalArgumentException(
+                "Could not find project with id ${command.projectId}",
+            )
+        val productOwner = productOwnerRepository.findByUsername(authenticatedUserUsername)
+
+        project.defineProductGoal(productOwner, command.productGoal)
+        log.info("Updated product goal of project {}", project)
         return ProjectDto(projectRepository.save(project))
     }
 }

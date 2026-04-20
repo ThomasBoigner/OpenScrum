@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember
 
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
@@ -16,4 +17,8 @@ class JpaProductOwnerRepository(
     }
 
     override fun findByProjectId(projectId: UUID): ProductOwner? = productOwnerEntityRepository.findByProjectId(projectId)?.toProductOwner()
+
+    override fun findByUsername(username: String): ProductOwner? {
+        TODO("Not yet implemented")
+    }
 }
