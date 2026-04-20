@@ -69,13 +69,22 @@ class ProjectController(
         principal: Principal,
         @PathVariable id: UUID,
         sprintLength: Int,
-    ) {
+    ): String {
         log.debug(
             "Received http PUT request to update sprint length of project with id {} to sprint length {}",
             id,
             sprintLength,
         )
-        projectApplicationService.defineSprintLength(principal.name, DefineSprintLengthCommand(id, sprintLength))
+        try {
+            projectApplicationService.defineSprintLength(
+                principal.name,
+                DefineSprintLengthCommand(id, sprintLength),
+            )
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while configuring sprint length with message: {}", ex.message)
+            return "fragments/error-message"
+        }
+        return "fragments/saved-changes"
     }
 
     @HxRequest
@@ -84,13 +93,22 @@ class ProjectController(
         principal: Principal,
         @PathVariable id: UUID,
         productGoal: String,
-    ) {
+    ): String {
         log.debug(
             "Received http PUT request to update product goal of project with id {} to product goal {}",
             id,
             productGoal,
         )
-        projectApplicationService.defineProductGoal(principal.name, DefineProductGoalCommand(id, productGoal))
+        try {
+            projectApplicationService.defineProductGoal(
+                principal.name,
+                DefineProductGoalCommand(id, productGoal),
+            )
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while configuring product goal with message: {}", ex.message)
+            return "fragments/error-message"
+        }
+        return "fragments/saved-changes"
     }
 
     @HxRequest
@@ -99,15 +117,21 @@ class ProjectController(
         principal: Principal,
         @PathVariable id: UUID,
         definitionOfDone: String,
-    ) {
+    ): String {
         log.debug(
             "Received http PUT request to update definition of done of project with id {} to definition of done {}",
             id,
             definitionOfDone,
         )
-        projectApplicationService.defineDefinitionOfDone(
-            principal.name,
-            DefineDefinitionOfDoneCommand(id, definitionOfDone),
-        )
+        try {
+            projectApplicationService.defineDefinitionOfDone(
+                principal.name,
+                DefineDefinitionOfDoneCommand(id, definitionOfDone),
+            )
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while configuring definition of done with message: {}", ex.message)
+            return "fragments/error-message"
+        }
+        return "fragments/saved-changes"
     }
 }

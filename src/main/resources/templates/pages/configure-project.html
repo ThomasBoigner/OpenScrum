@@ -30,35 +30,40 @@
     </section>
 
     <section id="configure-form" th:object="${project}">
-        <div class="error-message">
-            <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-            <p>Error while configuring project!</p>
+        <div id="message-placeholder">
+            Placeholder
         </div>
 
         <div class="input-fields">
-            <form hx:put="@{/projects/{id}/configure/sprint-length(id=*{projectId})}">
+            <form hx:put="@{/projects/{id}/configure/sprint-length(id=*{projectId})}"
+                  hx-target="div#message-placeholder" hx-swap="outerHTML">
                 <div class="label-input">
                     <label for="sprint-length">Sprint length:</label>
                     <input type="number" id="sprint-length" name="sprintLength"
-                           placeholder="Enter the length of Sprints in weeks!" min="0" max="4" th:value="*{sprintLength}">
+                           placeholder="Enter the length of Sprints in weeks!" min="0" max="4"
+                           th:value="*{sprintLength}">
                 </div>
                 <button type="submit">Save</button>
             </form>
 
-            <form hx:put="@{/projects/{id}/configure/product-goal(id=*{projectId})}">
+            <form hx:put="@{/projects/{id}/configure/product-goal(id=*{projectId})}"
+                  hx-target="div#message-placeholder" hx-swap="outerHTML">
                 <div class="label-input">
                     <label for="product-goal">Product goal:</label>
                     <textarea id="product-goal" name="productGoal"
-                              placeholder="Describe the product goal for this project!" th:text="*{productGoal}"></textarea>
+                              placeholder="Describe the product goal for this project!"
+                              th:text="*{productGoal}"></textarea>
                 </div>
                 <button type="submit">Save</button>
             </form>
 
-            <form hx:put="@{/projects/{id}/configure/definition-of-done(id=*{projectId})}">
+            <form hx:put="@{/projects/{id}/configure/definition-of-done(id=*{projectId})}"
+                  hx-target="div#message-placeholder" hx-swap="outerHTML">
                 <div class="label-input">
                     <label for="definition-of-done">Definition of done:</label>
                     <textarea id="definition-of-done" name="definitionOfDone"
-                              placeholder="Describe when a task is considered done!" th:text="*{definitionOfDone}"></textarea>
+                              placeholder="Describe when a task is considered done!"
+                              th:text="*{definitionOfDone}"></textarea>
                 </div>
                 <button type="submit">Save</button>
             </form>

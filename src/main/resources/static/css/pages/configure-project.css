@@ -47,6 +47,25 @@ div.error-message p {
     color: var(--error);
 }
 
+div.saved-changes {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border: solid 3px var(--primary-color);
+    border-radius: 8px;
+    gap: 16px;
+    padding: 16px 24px;
+}
+
+div.saved-changes p {
+    color: var(--primary-color);
+}
+
+div#message-placeholder {
+    display: none;
+}
+
 div.input-fields {
     display: flex;
     flex-direction: column;
@@ -132,7 +151,8 @@ section#configure-form a img {
         width: 512px;
     }
 
-    div.error-message img {
+    div.error-message img,
+    div.saved-changes img {
         height: 24px;
     }
 
@@ -169,7 +189,8 @@ section#configure-form a img {
     }
 
     section#configure-form button,
-    div.error-message {
+    div.error-message,
+    div.saved-changes {
         width: 100%;
     }
 
