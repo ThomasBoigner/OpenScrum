@@ -10,6 +10,78 @@ import java.util.UUID
 
 class ProjectTest {
     @Test
+    fun ensureDefineSprintLengthWorksProperly() {
+        // Given
+        val projectId = ProjectId(UUID.randomUUID())
+        val scrumMaster =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId.token),
+                username = "username",
+                fullName = FullName("First", "Last"),
+            )
+        val project = Project(projectId = projectId, projectName = "Test Project")
+
+        // When
+        project.defineSprintLength(scrumMaster, 3)
+
+        // Then
+        assertThat(project.sprintLength.length).isEqualTo(3)
+    }
+
+    @Test
+    fun ensureDefineSprintLengthThrowsWhenScrumMasterBelongsToAnotherProject() {
+        // Given
+        val scrumMasterOfAnotherProject =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = UUID.randomUUID()),
+                username = "username",
+                fullName = FullName("First", "Last"),
+            )
+        val project = Project(projectId = ProjectId(UUID.randomUUID()), projectName = "Test Project")
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            project.defineSprintLength(scrumMasterOfAnotherProject, 0)
+        }
+    }
+
+    @Test
+    fun ensureDefineSprintLengthThrowsWhenSmallerThanOne() {
+        // Given
+        val projectId = ProjectId(UUID.randomUUID())
+        val scrumMaster =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId.token),
+                username = "username",
+                fullName = FullName("First", "Last"),
+            )
+        val project = Project(projectId = projectId, projectName = "Test Project")
+
+        // When + Then
+        assertThrows<IllegalArgumentException> {
+            project.defineSprintLength(scrumMaster, 0)
+        }
+    }
+
+    @Test
+    fun ensureDefineSprintLengthThrowsWhenBiggerThanFour() {
+        // Given
+        val projectId = ProjectId(UUID.randomUUID())
+        val scrumMaster =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId.token),
+                username = "username",
+                fullName = FullName("First", "Last"),
+            )
+        val project = Project(projectId = projectId, projectName = "Test Project")
+
+        // When + Then
+        assertThrows<IllegalArgumentException> {
+            project.defineSprintLength(scrumMaster, 5)
+        }
+    }
+
+    @Test
     fun ensureDefineDefinitionOfDoneWorksProperly() {
         // Given
         val projectId = ProjectId(UUID.randomUUID())
