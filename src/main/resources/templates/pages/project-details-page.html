@@ -76,12 +76,12 @@
                 </div>
             </div>
 
-            <div class="details-row" th:if="*{productGoal != null}">
-                <div class="detail-card">
+            <div class="details-row">
+                <div class="detail-card" th:if="*{productGoal != null}">
                     <img th:src="@{/assets/svg/rocket.svg}" alt="Rocket">
                     <div class="card-info">
                         <label>Product Goal</label>
-                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas.</p>
+                        <p th:text="*{productGoal}">Product Goal text</p>
                     </div>
                 </div>
 
@@ -89,7 +89,7 @@
                     <img th:src="@{/assets/svg/check.svg}" alt="Check">
                     <div class="card-info">
                         <label>Definition of Done</label>
-                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas.</p>
+                        <p th:text="*{definitionOfDone}">Definition of Done text</p>
                     </div>
                 </div>
             </div>

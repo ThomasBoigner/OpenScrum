@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:hx="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -17,6 +17,8 @@
 
     <link rel="stylesheet" th:href="@{/css/pages/configure-project.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
 </head>
 <body>
 <div class="container">
@@ -34,29 +36,29 @@
         </div>
 
         <div class="input-fields">
-            <form>
+            <form hx:put="@{/projects/{id}/configure/sprint-length(id=*{projectId})}">
                 <div class="label-input">
                     <label for="sprint-length">Sprint length:</label>
-                    <input type="number" id="sprint-length" name="sprintLengthInWeeks"
+                    <input type="number" id="sprint-length" name="sprintLength"
                            placeholder="Enter the length of Sprints in weeks!" min="0" max="4" th:value="*{sprintLength}">
                 </div>
                 <button type="submit">Save</button>
             </form>
 
-            <form>
+            <form hx:put="@{/projects/{id}/configure/product-goal(id=*{projectId})}">
                 <div class="label-input">
                     <label for="product-goal">Product goal:</label>
                     <textarea id="product-goal" name="productGoal"
-                              placeholder="Describe the product goal for this project!" th:value="*{productGoal}"></textarea>
+                              placeholder="Describe the product goal for this project!" th:text="*{productGoal}"></textarea>
                 </div>
                 <button type="submit">Save</button>
             </form>
 
-            <form>
+            <form hx:put="@{/projects/{id}/configure/definition-of-done(id=*{projectId})}">
                 <div class="label-input">
                     <label for="definition-of-done">Definition of done:</label>
                     <textarea id="definition-of-done" name="definitionOfDone"
-                              placeholder="Describe when a task is considered done!" th:value="*{definitionOfDone}"></textarea>
+                              placeholder="Describe when a task is considered done!" th:text="*{definitionOfDone}"></textarea>
                 </div>
                 <button type="submit">Save</button>
             </form>
