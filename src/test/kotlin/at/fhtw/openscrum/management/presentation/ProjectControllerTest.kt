@@ -47,15 +47,12 @@ class ProjectControllerTest {
     fun ensureCreateProjectWorksProperly() {
         // Given
         val projectName = "OpenScrum"
-        val productOwnerUsername = "product.owner"
-        val scrumMasterUsername = "scrum.master"
-        val developerUsername = "developer"
 
         val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         userService.registerUser(
             authenticatedUser = admin,
-            username = productOwnerUsername,
+            username = "product.owner",
             firstName = "Product",
             lastName = "Owner",
             password = "abc123",
@@ -63,7 +60,7 @@ class ProjectControllerTest {
         )
         userService.registerUser(
             authenticatedUser = admin,
-            username = scrumMasterUsername,
+            username = "scrum.master",
             firstName = "Scrum",
             lastName = "Master",
             password = "abc123",
@@ -71,7 +68,7 @@ class ProjectControllerTest {
         )
         userService.registerUser(
             authenticatedUser = admin,
-            username = developerUsername,
+            username = "developer",
             firstName = "Developer",
             lastName = "User",
             password = "abc123",
@@ -92,9 +89,9 @@ class ProjectControllerTest {
         // fill in create project form
         webDriver.get("http://localhost:8080/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
-        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwnerUsername)
-        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMasterUsername)
-        Select(webDriver.findElement(By.cssSelector("select#developers"))).selectByVisibleText(developerUsername)
+        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
+        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
+        Select(webDriver.findElement(By.cssSelector("select#developers"))).selectByVisibleText("Developer User")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
@@ -155,13 +152,12 @@ class ProjectControllerTest {
     fun ensureCreateProjectDoesNotWorkWithMissingProductOwner() {
         // Given
         val projectName = "OpenScrum"
-        val scrumMasterUsername = "scrum.master"
 
         val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         userService.registerUser(
             authenticatedUser = admin,
-            username = scrumMasterUsername,
+            username = "scrum.master",
             firstName = "Scrum",
             lastName = "Master",
             password = "abc123",
@@ -182,7 +178,7 @@ class ProjectControllerTest {
         // fill in create project form without product owner
         webDriver.get("http://localhost:8080/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
-        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMasterUsername)
+        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
@@ -201,13 +197,12 @@ class ProjectControllerTest {
     fun ensureCreateProjectDoesNotWorkWithMissingScrumMaster() {
         // Given
         val projectName = "OpenScrum"
-        val productOwnerUsername = "product.owner"
 
         val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         userService.registerUser(
             authenticatedUser = admin,
-            username = productOwnerUsername,
+            username = "product.owner",
             firstName = "Product",
             lastName = "Owner",
             password = "abc123",
@@ -228,7 +223,7 @@ class ProjectControllerTest {
         // fill in create project form without scrum master
         webDriver.get("http://localhost:8080/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
-        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwnerUsername)
+        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
@@ -294,8 +289,8 @@ class ProjectControllerTest {
         // fill in create project form with already taken project name
         webDriver.get("http://localhost:8080/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
-        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwnerUsername)
-        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMasterUsername)
+        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwner.fullName.fullName)
+        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMaster.fullName.fullName)
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
@@ -313,14 +308,11 @@ class ProjectControllerTest {
     @Test
     fun ensureCreateProjectDoesNotWorkWithBlankProjectName() {
         // Given
-        val productOwnerUsername = "product.owner"
-        val scrumMasterUsername = "scrum.master"
-
         val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         userService.registerUser(
             authenticatedUser = admin,
-            username = productOwnerUsername,
+            username = "product.owner",
             firstName = "Product",
             lastName = "Owner",
             password = "abc123",
@@ -328,7 +320,7 @@ class ProjectControllerTest {
         )
         userService.registerUser(
             authenticatedUser = admin,
-            username = scrumMasterUsername,
+            username = "scrum.master",
             firstName = "Scrum",
             lastName = "Master",
             password = "abc123",
@@ -348,8 +340,8 @@ class ProjectControllerTest {
 
         // fill in create project form with blank project name
         webDriver.get("http://localhost:8080/projects/create")
-        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwnerUsername)
-        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMasterUsername)
+        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
+        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
@@ -368,13 +360,12 @@ class ProjectControllerTest {
     fun ensureCreateProjectDoesNotWorkWhenOneUserHasMultipleRoles() {
         // Given
         val projectName = "OpenScrum"
-        val userUsername = "user"
 
         val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         userService.registerUser(
             authenticatedUser = admin,
-            username = userUsername,
+            username = "User",
             firstName = "Regular",
             lastName = "User",
             password = "abc123",
@@ -395,9 +386,9 @@ class ProjectControllerTest {
         // fill in create project form with the same user in all roles
         webDriver.get("http://localhost:8080/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
-        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(userUsername)
-        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(userUsername)
-        Select(webDriver.findElement(By.cssSelector("select#developers"))).selectByVisibleText(userUsername)
+        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Regular User")
+        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Regular User")
+        Select(webDriver.findElement(By.cssSelector("select#developers"))).selectByVisibleText("Regular User")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
