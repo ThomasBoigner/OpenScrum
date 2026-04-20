@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
+import at.fhtw.openscrum.scrum.application.command.DefineDefinitionOfDoneCommand
 import at.fhtw.openscrum.scrum.application.command.DefineProductGoalCommand
 import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProjectDto
@@ -76,6 +77,23 @@ class ProjectApplicationService(
 
         project.defineProductGoal(productOwner, command.productGoal)
         log.info("Updated product goal of project {}", project)
+        return ProjectDto(projectRepository.save(project))
+    }
+
+    @Transactional(readOnly = false)
+    fun defineDefinitionOfDone(
+        authenticatedUserUsername: String,
+        command: DefineDefinitionOfDoneCommand,
+    ): ProjectDto {
+        log.debug("Trying to define definition of done of project with command {}", command)
+        val project =
+            projectRepository.findByProjectId(ProjectId(command.projectId)) ?: throw IllegalArgumentException(
+                "Could not find project with id ${command.projectId}",
+            )
+        val scrumMaster = scrumMasterRepository.findByUsername(authenticatedUserUsername)
+
+        project.defineDefinitionOfDone(scrumMaster, command.definitionOfDone)
+        log.info("Updated definition of done of project {}", project)
         return ProjectDto(projectRepository.save(project))
     }
 }

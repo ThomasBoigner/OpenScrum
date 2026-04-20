@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
+import at.fhtw.openscrum.scrum.application.command.DefineDefinitionOfDoneCommand
 import at.fhtw.openscrum.scrum.application.command.DefineProductGoalCommand
 import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
 import at.fhtw.openscrum.scrum.domain.model.project.Project
@@ -166,5 +167,41 @@ class ProjectApplicationServiceTest {
 
         // When
         assertThrows<IllegalArgumentException> { projectApplicationService.defineProductGoal("productowner", command) }
+    }
+
+    @Test
+    fun ensureDefineDefinitionOfDoneWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val username = "scrummaster"
+        val command = DefineDefinitionOfDoneCommand(projectId = projectId, definitionOfDone = "All acceptance criteria are met")
+        val project = Project(projectId = ProjectId(projectId), projectName = "Test Project")
+        val scrumMaster =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = username,
+                fullName = FullName("First", "Last"),
+            )
+
+        whenever(projectRepository.findByProjectId(ProjectId(projectId))).thenReturn(project)
+        whenever(scrumMasterRepository.findByUsername(username)).thenReturn(scrumMaster)
+        whenever(projectRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = projectApplicationService.defineDefinitionOfDone(username, command)
+
+        // Then
+        assertThat(result.definitionOfDone).isEqualTo("All acceptance criteria are met")
+    }
+
+    @Test
+    fun ensureDefineDefinitionOfDoneThrowsWhenProjectNotFound() {
+        // Given
+        val command = DefineDefinitionOfDoneCommand(projectId = UUID.randomUUID(), definitionOfDone = "All acceptance criteria are met")
+
+        whenever(projectRepository.findByProjectId(any())).thenReturn(null)
+
+        // When + Then
+        assertThrows<IllegalArgumentException> { projectApplicationService.defineDefinitionOfDone("scrummaster", command) }
     }
 }
