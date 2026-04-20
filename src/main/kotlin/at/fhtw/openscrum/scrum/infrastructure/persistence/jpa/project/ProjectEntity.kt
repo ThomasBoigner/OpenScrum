@@ -1,6 +1,5 @@
 package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.project
 
-import at.fhtw.openscrum.scrum.domain.model.project.DefinitionOfDone
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.SprintLength
@@ -27,7 +26,7 @@ class ProjectEntity(
         projectId = project.projectId.token,
         projectName = project.projectName,
         sprintLength = project.sprintLength.length,
-        definitionOfDone = project.definitionOfDone?.definitionOfDone,
+        definitionOfDone = project.definitionOfDone,
         productGoal = project.productGoal,
     )
 
@@ -46,7 +45,7 @@ class ProjectEntity(
             projectId = ProjectId(projectId),
             projectName = projectName,
             sprintLength = SprintLength(sprintLength),
-            definitionOfDone = definitionOfDone?.let { DefinitionOfDone(it) },
+            definitionOfDone = definitionOfDone,
             productGoal = productGoal,
         )
 }

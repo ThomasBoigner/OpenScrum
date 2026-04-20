@@ -14,7 +14,7 @@ class ProjectDto(
         projectId = project.projectId.token,
         projectName = project.projectName,
         sprintLength = project.sprintLength.length,
-        definitionOfDone = project.definitionOfDone?.definitionOfDone,
+        definitionOfDone = project.definitionOfDone,
         productGoal = project.productGoal,
     )
 }

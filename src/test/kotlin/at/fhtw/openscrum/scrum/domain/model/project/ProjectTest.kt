@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.domain.model.project
 
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.assertj.core.api.Assertions.assertThat
@@ -82,6 +83,61 @@ class ProjectTest {
     }
 
     @Test
+    fun ensureDefineProductGoalWorksProperly() {
+        // Given
+        val projectId = ProjectId(UUID.randomUUID())
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId.token),
+                username = "username",
+                fullName = FullName("First", "Last"),
+            )
+        val project = Project(projectId = projectId, projectName = "Test Project")
+
+        // When
+        project.defineProductGoal(productOwner, "Deliver MVP")
+
+        // Then
+        assertThat(project.productGoal).isEqualTo("Deliver MVP")
+    }
+
+    @Test
+    fun ensureDefineProductGoalThrowsWhenProductOwnerBelongsToAnotherProject() {
+        // Given
+        val productOwnerOfAnotherProject =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = UUID.randomUUID()),
+                username = "username",
+                fullName = FullName("First", "Last"),
+            )
+        val project = Project(projectId = ProjectId(UUID.randomUUID()), projectName = "Test Project")
+
+        // When + Then
+        assertThrows<IllegalArgumentException> {
+            project.defineProductGoal(productOwnerOfAnotherProject, "Deliver MVP")
+        }
+    }
+
+    @Test
+    fun ensureDefineProductGoalIsNullWhenBlank() {
+        // Given
+        val projectId = ProjectId(UUID.randomUUID())
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId.token),
+                username = "username",
+                fullName = FullName("First", "Last"),
+            )
+        val project = Project(projectId = projectId, projectName = "Test Project")
+
+        // When
+        project.defineProductGoal(productOwner, "   ")
+
+        // Then
+        assertThat(project.productGoal).isNull()
+    }
+
+    @Test
     fun ensureDefineDefinitionOfDoneWorksProperly() {
         // Given
         val projectId = ProjectId(UUID.randomUUID())
@@ -98,7 +154,7 @@ class ProjectTest {
         project.defineDefinitionOfDone(scrumMaster, definitionOfDone)
 
         // Then
-        assertThat(project.definitionOfDone?.definitionOfDone).isEqualTo(definitionOfDone)
+        assertThat(project.definitionOfDone).isEqualTo(definitionOfDone)
     }
 
     @Test

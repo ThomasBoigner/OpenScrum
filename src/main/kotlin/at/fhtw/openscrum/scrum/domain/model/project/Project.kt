@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.scrum.domain.model.project
 
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 
 class Project(
@@ -7,12 +8,14 @@ class Project(
     val projectId: ProjectId,
     val projectName: String,
     sprintLength: SprintLength = SprintLength(2),
-    val productGoal: String? = null,
-    definitionOfDone: DefinitionOfDone? = null,
+    productGoal: String? = null,
+    definitionOfDone: String? = null,
 ) {
     var sprintLength: SprintLength = sprintLength
         private set
-    var definitionOfDone: DefinitionOfDone? = definitionOfDone
+    var productGoal: String? = productGoal
+        private set
+    var definitionOfDone: String? = definitionOfDone
         private set
 
     fun defineSprintLength(
@@ -23,12 +26,20 @@ class Project(
         this.sprintLength = SprintLength(sprintLength)
     }
 
+    fun defineProductGoal(
+        productOwner: ProductOwner?,
+        productGoal: String?,
+    ) {
+        require(productOwner?.teamMemberId?.projectId == this.projectId.token) { "You are not the product owner of this project!" }
+        this.productGoal = if (!productGoal.isNullOrBlank()) productGoal else null
+    }
+
     fun defineDefinitionOfDone(
         scrumMaster: ScrumMaster?,
         definitionOfDone: String?,
     ) {
         require(scrumMaster?.teamMemberId?.projectId == this.projectId.token) { "You are not the scrum master of this project!" }
-        this.definitionOfDone = if (!definitionOfDone.isNullOrBlank()) DefinitionOfDone(definitionOfDone) else null
+        this.definitionOfDone = if (!definitionOfDone.isNullOrBlank()) definitionOfDone else null
     }
 
     override fun equals(other: Any?): Boolean {
