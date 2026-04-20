@@ -5,7 +5,6 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -73,8 +72,6 @@ class JpaDeveloperRepositoryTest {
         assertThat(savedEntities).hasSize(1)
         val savedDeveloper = savedEntities.first().toDeveloper()
         assertThat(savedDeveloper.id).isNotNull
-        assertThat(savedDeveloper.teamMemberId).isEqualTo(developer.teamMemberId)
-        assertThat(savedDeveloper.username).isEqualTo(developer.username)
-        assertThat(savedDeveloper.fullName).isEqualTo(developer.fullName)
+        assertThat(savedDeveloper).isEqualTo(developer)
     }
 }

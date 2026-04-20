@@ -7,4 +7,6 @@ import java.util.UUID
 @Repository
 interface ProductOwnerEntityRepository : JpaRepository<ProductOwnerEntity, Long> {
     fun findByProjectId(projectId: UUID): ProductOwnerEntity?
+
+    fun findByUsername(username: String): ProductOwnerEntity?
 }

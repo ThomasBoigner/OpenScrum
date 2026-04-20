@@ -6,7 +6,6 @@ import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.dtos.DeveloperDto
 import at.fhtw.openscrum.scrum.application.dtos.ProductOwnerDto
 import at.fhtw.openscrum.scrum.application.dtos.ScrumMasterDto
-import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName

@@ -7,4 +7,6 @@ import java.util.UUID
 @Repository
 interface ScrumMasterEntityRepository : JpaRepository<ScrumMasterEntity, Long> {
     fun findByProjectId(projectId: UUID): ScrumMasterEntity?
+
+    fun findByUsername(username: String): ScrumMasterEntity?
 }
