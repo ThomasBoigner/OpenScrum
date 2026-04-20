@@ -4,5 +4,8 @@ import java.util.UUID
 
 interface ScrumMasterRepository {
     fun save(scrumMaster: ScrumMaster): ScrumMaster
+
     fun findByProjectId(projectId: UUID): ScrumMaster?
+
+    fun findByUsername(username: String): ScrumMaster?
 }

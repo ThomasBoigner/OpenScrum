@@ -1,10 +1,16 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
+import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
+import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
+import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -21,9 +27,12 @@ class ProjectApplicationServiceTest {
     @Mock
     lateinit var projectRepository: ProjectRepository
 
+    @Mock
+    lateinit var scrumMasterRepository: ScrumMasterRepository
+
     @BeforeEach
     fun setUp() {
-        projectApplicationService = ProjectApplicationService(projectRepository)
+        projectApplicationService = ProjectApplicationService(projectRepository, scrumMasterRepository)
     }
 
     @Test
@@ -78,5 +87,42 @@ class ProjectApplicationServiceTest {
         // Then
         assertThat(result.projectId).isEqualTo(command.projectId)
         assertThat(result.projectName).isEqualTo(command.projectName)
+    }
+
+    @Test
+    fun ensureDefineSprintLengthWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val username = "scrummaster"
+        val command = DefineSprintLengthCommand(projectId = projectId, sprintLength = 3)
+        val project = Project(projectId = ProjectId(projectId), projectName = "Test Project")
+        val scrumMaster =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = username,
+                fullName = FullName("First", "Last"),
+            )
+
+        whenever(projectRepository.findByProjectId(ProjectId(projectId))).thenReturn(project)
+        whenever(scrumMasterRepository.findByUsername(username)).thenReturn(scrumMaster)
+        whenever(projectRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = projectApplicationService.defineSprintLength(username, command)
+
+        // Then
+        assertThat(result.sprintLength).isEqualTo(3)
+    }
+
+    @Test
+    fun ensureDefineSprintLengthThrowsWhenProjectNotFound() {
+        // Given
+        val command = DefineSprintLengthCommand(projectId = UUID.randomUUID(), sprintLength = 3)
+
+        whenever(projectRepository.findByProjectId(any())).thenReturn(null)
+
+        // When + Then
+        assertThatThrownBy { projectApplicationService.defineSprintLength("scrummaster", command) }
+            .isInstanceOf(IllegalArgumentException::class.java)
     }
 }

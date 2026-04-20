@@ -1,10 +1,12 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
+import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProjectDto
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -15,6 +17,7 @@ import java.util.UUID
 @Transactional(readOnly = true)
 class ProjectApplicationService(
     private val projectRepository: ProjectRepository,
+    private val scrumMasterRepository: ScrumMasterRepository,
     private val log: Logger = LoggerFactory.getLogger(ProjectApplicationService::class.java),
 ) {
     fun getProject(projectId: UUID): ProjectDto? {
@@ -35,6 +38,23 @@ class ProjectApplicationService(
             )
 
         log.info("Created project {}", project)
+        return ProjectDto(projectRepository.save(project))
+    }
+
+    @Transactional(readOnly = false)
+    fun defineSprintLength(
+        authenticatedUserUsername: String,
+        command: DefineSprintLengthCommand,
+    ): ProjectDto {
+        log.debug("Trying to define sprint length of project with command {}", command)
+
+        val project =
+            projectRepository.findByProjectId(ProjectId(command.projectId)) ?: throw IllegalArgumentException(
+                "Could not find project with id ${command.projectId}",
+            )
+        val scrumMaster = scrumMasterRepository.findByUsername(authenticatedUserUsername)
+
+        project.defineSprintLength(scrumMaster, command.sprintLength)
         return ProjectDto(projectRepository.save(project))
     }
 }
