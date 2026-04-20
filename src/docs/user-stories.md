@@ -84,37 +84,47 @@ Then he receives an error one user can not have multiple roles
 
 ## 6. As a product owner or scrum master I want to configure the project, so that I can define the way of working.
 ### Test 1
-Given a product owner and a product goal
-When the product owner enters the information into the configure project form
-Then the product goal should be set
-
-### Test 2
-Given a product owner and a blank product goal
-When the product owner enters the information into the configure project form
-Then the product goal should be null
-
-### Test 3
-Given a scrum master and a sprint length
+Given a scrum master, a project and a sprint length
 When the scrum master enters the information into the configure project form
 Then the sprint length should be set
 
-### Test 4
-Given a scrum master and a sprint length smaller than 1
+### Test 2
+Given a scrum master, a project and a sprint length smaller than 1
 When the scrum master enters the information into the configure project form
 Then he receives an error that the sprint length can not smaller than 1
 
-### Test 5
-Given a scrum master and a sprint length bigger than 4
+### Test 3
+Given a scrum master, a project and a sprint length bigger than 4
 When the scrum master enters the information into the configure project form
 Then he receives an error that the sprint length can not be bigger than 4
 
+### Test 4
+Given a product owner, a project and a product goal
+When the product owner enters the information into the configure project form
+Then the product goal should be set
+
+### Test 5
+Given a product owner of another project, a project and a product goal
+When the product owner enters the information into the configure project form
+Then he receives an error that he is not the product owner of this project
+
 ### Test 6
-Given a scrum master and a definition of done
+Given a product owner, a project and a blank product goal
+When the product owner enters the information into the configure project form
+Then the product goal should be null
+
+### Test 7
+Given a scrum master, a project and a definition of done
 When the scrum master enters the information into the configure project form
 Then the definition of done should be set
 
-### Test 7
-Given a scrum master and a blank definition of done
+### Test 8
+Given a scrum master of another project, a project and a definition of done
+When the scrum master enters the information into the configure project form
+Then he receives an error that he is not the scrum master of this project
+
+### Test 9
+Given a scrum master, a project and a blank definition of done
 When the scrum master enters the information into the configure project form
 Then the definition of done should be null
 

@@ -1,8 +1,10 @@
 package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.project
 
+import at.fhtw.openscrum.scrum.domain.model.project.DefinitionOfDone
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectRepository
+import at.fhtw.openscrum.scrum.domain.model.project.SprintLength
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -33,8 +35,8 @@ class JpaProjectRepositoryTest {
             Project(
                 projectId = ProjectId(UUID.randomUUID()),
                 projectName = "OpenScrum",
-                sprintLength = 3,
-                definitionOfDone = "All tests pass",
+                sprintLength = SprintLength(3),
+                definitionOfDone = DefinitionOfDone("All tests pass"),
                 productGoal = "Deliver MVP",
             )
 
@@ -55,8 +57,8 @@ class JpaProjectRepositoryTest {
             Project(
                 projectId = ProjectId(UUID.randomUUID()),
                 projectName = "OpenScrum",
-                sprintLength = 3,
-                definitionOfDone = "All tests pass",
+                sprintLength = SprintLength(3),
+                definitionOfDone = DefinitionOfDone("All tests pass"),
                 productGoal = "Deliver MVP",
             )
         projectRepository.save(project)

@@ -13,8 +13,8 @@ class ProjectDto(
     constructor(project: Project) : this(
         projectId = project.projectId.token,
         projectName = project.projectName,
-        sprintLength = project.sprintLength,
-        definitionOfDone = project.definitionOfDone,
+        sprintLength = project.sprintLength.length,
+        definitionOfDone = project.definitionOfDone?.definitionOfDone,
         productGoal = project.productGoal,
     )
 }
