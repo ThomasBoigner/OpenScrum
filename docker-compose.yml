@@ -1,0 +1,20 @@
+services:
+  open-scrum-database:
+    image: 'postgres:17.5'
+    container_name: open-scrum-database
+    environment:
+      - POSTGRES_USER=open-scrum
+      - POSTGRES_PASSWORD=change-me
+    ports:
+      - "5432:5432"
+    volumes:
+      - open-scrum-database:/var/lib/postgresql/data
+    networks:
+      - open-scrum
+
+volumes:
+  open-scrum-database: {}
+
+networks:
+  open-scrum:
+    driver: bridge

@@ -37,6 +37,12 @@ class UserService(
     }
 
     fun registerAdmin(): User {
+        val existingAdmin = userRepository.findByUsername("admin")
+
+        if (existingAdmin != null) {
+            return existingAdmin
+        }
+
         val hashedPassword =
             encryptionService.hashPassword("admin") ?: throw IllegalStateException("Password must not be null!")
 
