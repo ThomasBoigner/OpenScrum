@@ -2,13 +2,9 @@ package at.fhtw.openscrum.scrum.presentation
 
 import at.fhtw.openscrum.management.domain.model.project.ProjectService
 import at.fhtw.openscrum.management.domain.model.user.UserService
+import at.fhtw.openscrum.management.infrastructure.persistence.jpa.project.ProjectEntityRepository
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
 import at.fhtw.openscrum.management.presentation.createHeadlessChromeDriver
-import at.fhtw.openscrum.scrum.application.ProjectApplicationService
-import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
-import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
-import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
-import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.project.ProjectEntityRepository
 import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember.TeamMemberEntityRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -22,7 +18,6 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import java.time.Duration
-import java.util.UUID
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("postgres")
@@ -35,6 +30,26 @@ class ProjectControllerTest {
 
     @Autowired
     lateinit var userEntityRepository: UserEntityRepository
+
+    @Autowired
+    @Qualifier("managementProjectEntityRepository")
+    lateinit var managementProjectEntityRepository: ProjectEntityRepository
+
+    @Autowired
+    @Qualifier("scrumProjectEntityRepository")
+    lateinit var scrumProjectEntityRepository: at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.project.ProjectEntityRepository
+
+    @Autowired
+    lateinit var teamMemberEntityRepository: TeamMemberEntityRepository
+
+    @BeforeEach
+    fun cleanUp() {
+        teamMemberEntityRepository.deleteAll()
+        scrumProjectEntityRepository.deleteAll()
+        managementProjectEntityRepository.deleteAll()
+        userEntityRepository.deleteAll()
+        userService.registerAdmin()
+    }
 
     /*
     Given a scrum master, a project and a sprint length
@@ -78,7 +93,7 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -102,5 +117,139 @@ class ProjectControllerTest {
         webDriver.close()
     }
 
-    
+    /*
+    Given a scrum master of another project, a project and a sprint length smaller than 1
+    When the scrum master enters the information into the configure project form
+    Then he receives an error that he is not the scrum master of this project
+     */
+    @Test
+    fun ensureConfigureSprintLengthDoesNotWorkWhenUserIsNotScrumMasterOfThisProject() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster1 =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster1,
+                developers = setOf(),
+            )
+
+        val scrumMaster2Password = "abc123"
+        val scrumMaster2 =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master.other",
+                firstName = "Other",
+                lastName = "Master",
+                password = scrumMaster2Password,
+                email = "scrum.master.other@gmail.com",
+            )
+
+        val webDriver = ChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster2.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMaster2Password)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/configure")
+
+        // Then
+        val pageSource = webDriver.pageSource
+        assertThat(pageSource).contains("404")
+        webDriver.close()
+    }
+
+    /*
+    Given a developer, a project and a sprint length
+    When the developer enters the information into the configure project form
+    Then he receives an error that he has no permission to change the sprint length
+     */
+    @Test
+    fun ensureConfigureSprintLengthDoesNotWorkWhenUserIsDeveloper() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val developerPassword = "abc123"
+        val developer =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "developer",
+                firstName = "Developer",
+                lastName = "Developer",
+                password = developerPassword,
+                email = "developer@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(developer),
+            )
+
+        val webDriver = ChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(developer.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(developerPassword)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/configure")
+
+        // Then
+        val pageSource = webDriver.pageSource
+        assertThat(pageSource).contains("403")
+        webDriver.close()
+    }
 }
