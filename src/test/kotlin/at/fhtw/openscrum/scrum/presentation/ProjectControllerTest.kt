@@ -93,7 +93,7 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = createHeadlessChromeDriver()
+        val webDriver = ChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -107,11 +107,11 @@ class ProjectControllerTest {
         webDriver.findElement(By.cssSelector("input#sprint-length")).clear()
         webDriver.findElement(By.cssSelector("input#sprint-length")).sendKeys(sprintLength)
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("form#sprint-length-form button"))).click()
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#message.saved-changes")))
 
         webDriver.get("http://localhost:8080/projects/${project.projectId.token}")
 
         // Then
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.team-info")))
         val pageSource = webDriver.pageSource
         assertThat(pageSource).contains(sprintLength)
         webDriver.close()
@@ -378,6 +378,208 @@ class ProjectControllerTest {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#message.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase("sprint length")
+        webDriver.close()
+    }
+
+    /*
+    Given a product owner, a project and a product goal
+    When the product owner enters the information into the configure project form
+    Then the product goal should be set
+     */
+    @Test
+    fun ensureConfigureProductGoalWorksProperly() {
+        // Given
+        val productGoal = "Build the best scrum tool"
+
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwnerPassword = "abc123"
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = productOwnerPassword,
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        val webDriver = ChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(productOwner.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(productOwnerPassword)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/configure")
+        webDriver.findElement(By.cssSelector("textarea#product-goal")).clear()
+        webDriver.findElement(By.cssSelector("textarea#product-goal")).sendKeys(productGoal)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("form#product-goal-form button"))).click()
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#message.saved-changes")))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}")
+
+        // Then
+        val pageSource = webDriver.pageSource
+        assertThat(pageSource).contains(productGoal)
+        webDriver.close()
+    }
+
+    /*
+    Given a product owner of another project, a project and a product goal
+    When the product owner enters the information into the configure project form
+    Then he receives an error that he is not the product owner of this project
+     */
+    @Test
+    fun ensureConfigureProductGoalDoesNotWorkWhenUserIsNotProductOwnerOfThisProject() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwner1 =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner1,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        val productOwner2Password = "abc123"
+        val productOwner2 =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner.other",
+                firstName = "Other",
+                lastName = "Owner",
+                password = productOwner2Password,
+                email = "product.owner.other@gmail.com",
+            )
+
+        val webDriver = ChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(productOwner2.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(productOwner2Password)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/configure")
+
+        // Then
+        val pageSource = webDriver.pageSource
+        assertThat(pageSource).contains("404")
+        webDriver.close()
+    }
+
+    /*
+    Given a developer, a project and a product goal
+    When the developer enters the information into the configure project form
+    Then he receives an error that he has no permission to change the product goal
+     */
+    @Test
+    fun ensureConfigureProductGoalDoesNotWorkWhenUserIsDeveloper() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val developerPassword = "abc123"
+        val developer =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "developer",
+                firstName = "Developer",
+                lastName = "Developer",
+                password = developerPassword,
+                email = "developer@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(developer),
+            )
+
+        val webDriver = ChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(developer.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(developerPassword)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/configure")
+
+        // Then
+        val pageSource = webDriver.pageSource
+        assertThat(pageSource).contains("403")
         webDriver.close()
     }
 }
