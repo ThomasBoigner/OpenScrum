@@ -30,15 +30,6 @@ class ProjectEntity(
         productGoal = project.productGoal,
     )
 
-    constructor() : this(
-        id = null,
-        projectId = UUID.randomUUID(),
-        projectName = "",
-        sprintLength = 1,
-        definitionOfDone = null,
-        productGoal = null,
-    )
-
     fun toProject(): Project =
         Project(
             id = id,

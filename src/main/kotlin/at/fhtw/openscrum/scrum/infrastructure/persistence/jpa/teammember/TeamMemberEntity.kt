@@ -21,14 +21,5 @@ abstract class TeamMemberEntity(
     var firstName: String,
     var lastName: String,
 ) {
-    constructor() : this(
-        null,
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        "",
-        "",
-        "",
-    )
-
     abstract fun toTeamMember(): TeamMember
 }

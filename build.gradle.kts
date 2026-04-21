@@ -4,6 +4,7 @@ plugins {
     id("org.springframework.boot") version libs.versions.spring.boot
     id("io.spring.dependency-management") version libs.versions.spring.dependency.management
     id("org.jlleitschuh.gradle.ktlint") version libs.versions.ktlint
+    kotlin("plugin.jpa") version libs.versions.plugin.jpa
 }
 
 group = "at.fhtw"

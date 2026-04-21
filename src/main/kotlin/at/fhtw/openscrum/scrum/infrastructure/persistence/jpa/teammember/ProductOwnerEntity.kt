@@ -25,15 +25,6 @@ class ProductOwnerEntity(
         lastName = productOwner.fullName.lastName,
     )
 
-    constructor() : this(
-        id = null,
-        userId = UUID.randomUUID(),
-        projectId = UUID.randomUUID(),
-        username = "",
-        firstName = "",
-        lastName = "",
-    )
-
     fun toProductOwner(): ProductOwner =
         ProductOwner(
             id = id,

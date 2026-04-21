@@ -20,6 +20,7 @@ selenium-java = "4.41.0"
 # plugins
 spring-dependency-management = "1.1.7"
 ktlint = "14.0.1"
+plugin-jpa = "2.3.20"
 
 [libraries]
 # kotlin

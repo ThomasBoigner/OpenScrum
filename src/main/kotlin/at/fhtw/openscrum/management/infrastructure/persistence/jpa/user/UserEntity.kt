@@ -35,16 +35,6 @@ class UserEntity(
         role = user.role,
     )
 
-    constructor() : this(
-        id = null,
-        userId = UUID.randomUUID(),
-        username = "",
-        emailAddress = "",
-        fullName = FullNameEmbeddable(),
-        password = "",
-        role = Role.USER,
-    )
-
     fun toUser(): User =
         User(
             id = id,

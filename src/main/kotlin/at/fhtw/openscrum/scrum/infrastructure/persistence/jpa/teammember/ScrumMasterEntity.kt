@@ -25,15 +25,6 @@ class ScrumMasterEntity(
         lastName = scrumMaster.fullName.lastName,
     )
 
-    constructor() : this(
-        id = null,
-        userId = UUID.randomUUID(),
-        projectId = UUID.randomUUID(),
-        username = "",
-        firstName = "",
-        lastName = "",
-    )
-
     fun toScrumMaster(): ScrumMaster =
         ScrumMaster(
             id = id,

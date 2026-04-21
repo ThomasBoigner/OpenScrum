@@ -35,15 +35,6 @@ class ProjectEntity(
         project.developerAssignedEvents.forEach { this.registerEvent(it) }
     }
 
-    constructor() : this(
-        id = null,
-        projectId = UUID.randomUUID(),
-        projectName = "",
-        productOwnerId = UUID.randomUUID(),
-        scrumMasterId = UUID.randomUUID(),
-        developerIds = setOf(),
-    )
-
     fun toProject(): Project =
         Project(
             id = id,
