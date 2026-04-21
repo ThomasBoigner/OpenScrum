@@ -582,4 +582,67 @@ class ProjectControllerTest {
         assertThat(pageSource).contains("403")
         webDriver.close()
     }
+
+    /*
+    Given a product owner, a project and a blank product goal
+    When the product owner enters the information into the configure project form
+    Then the product goal should be null
+     */
+    @Test
+    fun ensureConfigureProductGoalWithBlankValueSetsProductGoalToNull() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwnerPassword = "abc123"
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = productOwnerPassword,
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        val webDriver = ChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(productOwner.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(productOwnerPassword)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/configure")
+        webDriver.findElement(By.cssSelector("textarea#product-goal")).clear()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("form#product-goal-form button"))).click()
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#message.saved-changes")))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}")
+
+        // Then
+        val pageSource = webDriver.pageSource
+        assertThat(pageSource).doesNotContain("Product Goal")
+        webDriver.close()
+    }
 }
