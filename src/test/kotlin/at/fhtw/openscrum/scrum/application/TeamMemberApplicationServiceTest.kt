@@ -12,6 +12,7 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,6 +28,9 @@ class TeamMemberApplicationServiceTest {
     lateinit var teamMemberApplicationService: TeamMemberApplicationService
 
     @Mock
+    lateinit var teamMemberRepository: TeamMemberRepository
+
+    @Mock
     lateinit var developerRepository: DeveloperRepository
 
     @Mock
@@ -38,7 +42,46 @@ class TeamMemberApplicationServiceTest {
     @BeforeEach
     fun setUp() {
         teamMemberApplicationService =
-            TeamMemberApplicationService(developerRepository, scrumMasterRepository, productOwnerRepository)
+            TeamMemberApplicationService(teamMemberRepository, developerRepository, scrumMasterRepository, productOwnerRepository)
+    }
+
+    @Test
+    fun ensureGetTeamMemberOfProjectWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jdoe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+
+        whenever(teamMemberRepository.findByProjectIdAndUsername(projectId, "jdoe")).thenReturn(developer)
+
+        // When
+        val result = teamMemberApplicationService.getTeamMemberOfProject(projectId, "jdoe")
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result!!.userId).isEqualTo(developer.teamMemberId.userId)
+        assertThat(result.projectId).isEqualTo(projectId)
+        assertThat(result.username).isEqualTo(developer.username)
+        assertThat(result.firstName).isEqualTo(developer.fullName.firstName)
+        assertThat(result.lastName).isEqualTo(developer.fullName.lastName)
+    }
+
+    @Test
+    fun ensureGetTeamMemberOfProjectReturnsNullWhenNotFound() {
+        // Given
+        val projectId = UUID.randomUUID()
+
+        whenever(teamMemberRepository.findByProjectIdAndUsername(projectId, "unknown")).thenReturn(null)
+
+        // When
+        val result = teamMemberApplicationService.getTeamMemberOfProject(projectId, "unknown")
+
+        // Then
+        assertThat(result).isNull()
     }
 
     @Test

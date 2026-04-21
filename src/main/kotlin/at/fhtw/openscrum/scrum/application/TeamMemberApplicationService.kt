@@ -6,6 +6,7 @@ import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.dtos.DeveloperDto
 import at.fhtw.openscrum.scrum.application.dtos.ProductOwnerDto
 import at.fhtw.openscrum.scrum.application.dtos.ScrumMasterDto
+import at.fhtw.openscrum.scrum.application.dtos.TeamMemberDto
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
@@ -14,6 +15,7 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -23,11 +25,25 @@ import java.util.UUID
 @Service
 @Transactional(readOnly = true)
 class TeamMemberApplicationService(
+    private val teamMemberRepository: TeamMemberRepository,
     private val developerRepository: DeveloperRepository,
     private val scrumMasterRepository: ScrumMasterRepository,
     private val productOwnerRepository: ProductOwnerRepository,
     private val log: Logger = LoggerFactory.getLogger(TeamMemberApplicationService::class.java),
 ) {
+    fun getTeamMemberOfProject(
+        projectId: UUID,
+        username: String,
+    ): TeamMemberDto? {
+        log.debug("Trying to get team member with username {} in project with id {}", username, projectId)
+        val teamMember = teamMemberRepository.findByProjectIdAndUsername(projectId, username)
+        log.info(
+            teamMember?.let { "Found team member $it" }
+                ?: "Team member with username $username of project with project id $projectId could not be found",
+        )
+        return teamMember?.let { TeamMemberDto(it) }
+    }
+
     fun getDevelopersOfProject(projectId: UUID): List<DeveloperDto> {
         log.debug("Trying to get all developers of project with id {}", projectId)
         val developers = developerRepository.findByProjectId(projectId)
