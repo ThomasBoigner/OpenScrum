@@ -10,7 +10,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
-import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.springframework.beans.factory.annotation.Autowired
@@ -93,7 +92,7 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -167,7 +166,7 @@ class ProjectControllerTest {
                 email = "scrum.master.other@gmail.com",
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -235,7 +234,7 @@ class ProjectControllerTest {
                 developers = setOf(developer),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -293,7 +292,7 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -357,7 +356,7 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -423,7 +422,7 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -497,7 +496,7 @@ class ProjectControllerTest {
                 email = "product.owner.other@gmail.com",
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -565,7 +564,7 @@ class ProjectControllerTest {
                 developers = setOf(developer),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -623,7 +622,7 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -688,7 +687,7 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -764,7 +763,7 @@ class ProjectControllerTest {
                 email = "scrum.master.other@gmail.com",
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -832,7 +831,7 @@ class ProjectControllerTest {
                 developers = setOf(developer),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
@@ -890,7 +889,7 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = ChromeDriver()
+        val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
 
         // When
