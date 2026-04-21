@@ -4,6 +4,7 @@ plugins {
     id("org.springframework.boot") version libs.versions.spring.boot
     id("io.spring.dependency-management") version libs.versions.spring.dependency.management
     id("org.jlleitschuh.gradle.ktlint") version libs.versions.ktlint
+    kotlin("plugin.jpa") version libs.versions.plugin.jpa
 }
 
 group = "at.fhtw"
@@ -46,7 +47,7 @@ dependencies {
     implementation(libs.spring.boot.starter.log4j2)
     // spring modulith
     implementation(libs.spring.modulith.core)
-    implementation(libs.spring.modulith.starter.jpa)
+    implementation(libs.spring.modulith.starter.jdbc)
     // spring security
     implementation(libs.spring.boot.starter.security)
     // thymeleaf
@@ -62,7 +63,7 @@ dependencies {
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.postgresql)
-    implementation(libs.selenium.java)
+    testImplementation(libs.selenium.java)
 }
 
 kotlin {

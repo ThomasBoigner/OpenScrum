@@ -141,6 +141,10 @@ button:focus {
     outline: none;
 }
 
+.display-none {
+    display: none;
+}
+
 /* 1200px - 600px */
 @media screen and (max-width: 1200px) {
     /* Typography */

@@ -28,8 +28,9 @@ div.projects-list-item div.edit-delete-buttons {
     height: 100%;
 }
 
-div.projects-list-item button.edit-button,
-div.projects-list-item button.delete-button {
+div.projects-list-item a.details-button,
+div.projects-list-item a.edit-button,
+div.projects-list-item a.delete-button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -37,11 +38,19 @@ div.projects-list-item button.delete-button {
     padding: 8px;
 }
 
-div.projects-list-item button.edit-button {
+div.projects-list-item a.details-button {
+    border: solid 3px var(--primary-color);
+}
+
+div.projects-list-item a.details-button img {
+    transform: rotate(90deg);
+}
+
+div.projects-list-item a.edit-button {
     border: solid 3px var(--secondary-color);
 }
 
-div.projects-list-item button.delete-button {
+div.projects-list-item a.delete-button {
     border: solid 3px var(--error);
 }
 
@@ -51,8 +60,9 @@ div.projects-list-item button.delete-button {
         margin-bottom: 24px;
     }
 
-    section#projects-list div.projects-list-item button.edit-button img,
-    section#projects-list div.projects-list-item button.delete-button img {
+    section#projects-list div.projects-list-item a.details-button img,
+    section#projects-list div.projects-list-item a.edit-button img,
+    section#projects-list div.projects-list-item a.delete-button img {
         height: 24px;
     }
 }

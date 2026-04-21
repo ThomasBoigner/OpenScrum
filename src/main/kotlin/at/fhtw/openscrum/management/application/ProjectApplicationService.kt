@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-@Service
+@Service("managementProjectApplicationService")
 @Transactional(readOnly = true)
 class ProjectApplicationService(
     private val projectService: ProjectService,

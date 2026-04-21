@@ -84,6 +84,20 @@ class UserApplicationServiceTest {
     }
 
     @Test
+    fun ensureGetUserByUsernameReturnsNullWhenUserDoesNotExist() {
+        // Given
+        val username = "John.Doe"
+
+        whenever(userRepository.findByUsername(username)).thenReturn(null)
+
+        // When
+        val result = userApplicationService.getUserByUsername(username)
+
+        // Then
+        assertThat(result).isNull()
+    }
+
+    @Test
     fun ensureRegisterUserWorksProperly() {
         // Given
         val username = "John.Doe"

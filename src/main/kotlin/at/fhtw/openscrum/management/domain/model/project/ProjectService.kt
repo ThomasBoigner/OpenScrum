@@ -28,12 +28,36 @@ class ProjectService(
                 productOwner.userId != scrumMaster.userId,
         ) { "A user cannot have multiple roles in the same project!" }
 
+        val projectId = ProjectId()
         val project =
             Project(
+                projectId = projectId,
                 projectName = projectName,
                 productOwnerId = productOwner.userId,
                 scrumMasterId = scrumMaster.userId,
                 developerIds = developerIds,
+                scrumMasterAssignedEvents =
+                    mutableListOf(
+                        ScrumMasterAssigned(
+                            scrumMaster.userId,
+                            projectId,
+                            scrumMaster.username,
+                            scrumMaster.fullName,
+                        ),
+                    ),
+                productOwnerAssignedEvents =
+                    mutableListOf(
+                        ProductOwnerAssigned(
+                            productOwner.userId,
+                            projectId,
+                            productOwner.username,
+                            productOwner.fullName,
+                        ),
+                    ),
+                developerAssignedEvents =
+                    developers
+                        .map { DeveloperAssigned(it.userId, projectId, it.username, it.fullName) }
+                        .toMutableList(),
             )
 
         log.info("Created Project {}", project)

@@ -7,19 +7,20 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import org.springframework.data.domain.AbstractAggregateRoot
 import java.util.UUID
 
-@Entity
+@Entity(name = "managementProjectEntity")
 class ProjectEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
-    val projectId: UUID,
-    val projectName: String,
-    val productOwnerId: UUID,
-    val scrumMasterId: UUID,
-    val developerIds: Set<UUID> = setOf(),
-) {
+    var id: Long? = null,
+    var projectId: UUID,
+    var projectName: String,
+    var productOwnerId: UUID,
+    var scrumMasterId: UUID,
+    var developerIds: Set<UUID> = setOf(),
+) : AbstractAggregateRoot<ProjectEntity>() {
     constructor(project: Project) : this(
         id = project.id,
         projectId = project.projectId.token,
@@ -27,16 +28,12 @@ class ProjectEntity(
         productOwnerId = project.productOwnerId.token,
         scrumMasterId = project.scrumMasterId.token,
         developerIds = project.developerIds.map { it.token }.toSet(),
-    )
-
-    constructor() : this(
-        id = null,
-        projectId = UUID.randomUUID(),
-        projectName = "",
-        productOwnerId = UUID.randomUUID(),
-        scrumMasterId = UUID.randomUUID(),
-        developerIds = setOf(),
-    )
+    ) {
+        project.projectCreatedEvents.forEach { this.registerEvent(it) }
+        project.scrumMasterAssignedEvents.forEach { this.registerEvent(it) }
+        project.productOwnerAssignedEvents.forEach { this.registerEvent(it) }
+        project.developerAssignedEvents.forEach { this.registerEvent(it) }
+    }
 
     fun toProject(): Project =
         Project(

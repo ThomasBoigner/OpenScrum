@@ -9,6 +9,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import org.springframework.data.domain.AbstractAggregateRoot
 import java.util.UUID
 
 @Entity
@@ -23,7 +24,7 @@ class UserEntity(
     val fullName: FullNameEmbeddable,
     val password: String,
     val role: Role,
-) {
+) : AbstractAggregateRoot<UserEntity>() {
     constructor(user: User) : this(
         id = user.id,
         userId = user.userId.token,
@@ -32,16 +33,6 @@ class UserEntity(
         fullName = FullNameEmbeddable(user.fullName),
         password = user.password,
         role = user.role,
-    )
-
-    constructor() : this(
-        id = null,
-        userId = UUID.randomUUID(),
-        username = "",
-        emailAddress = "",
-        fullName = FullNameEmbeddable(),
-        password = "",
-        role = Role.USER,
     )
 
     fun toUser(): User =

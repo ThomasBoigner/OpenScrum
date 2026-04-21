@@ -10,6 +10,7 @@ fun createHeadlessChromeDriver(): ChromeDriver {
             addArguments("--no-sandbox")
             addArguments("--disable-dev-shm-usage")
             addArguments("--disable-gpu")
+            addArguments("--window-size=1920,1080")
         }
     return ChromeDriver(options)
 }
