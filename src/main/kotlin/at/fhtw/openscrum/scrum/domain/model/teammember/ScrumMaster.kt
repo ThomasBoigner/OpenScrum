@@ -5,4 +5,10 @@ class ScrumMaster(
     teamMemberId: TeamMemberId,
     username: String,
     fullName: FullName,
-) : TeamMember(id, teamMemberId, username, fullName)
+) : TeamMember(id, teamMemberId, username, fullName) {
+    override fun isDeveloper(): Boolean = false
+
+    override fun isScrumMaster(): Boolean = true
+
+    override fun isProductOwner(): Boolean = false
+}

@@ -5,4 +5,10 @@ class ProductOwner(
     teamMemberId: TeamMemberId,
     username: String,
     fullName: FullName,
-) : TeamMember(id, teamMemberId, username, fullName)
+) : TeamMember(id, teamMemberId, username, fullName) {
+    override fun isDeveloper(): Boolean = false
+
+    override fun isScrumMaster(): Boolean = false
+
+    override fun isProductOwner(): Boolean = true
+}

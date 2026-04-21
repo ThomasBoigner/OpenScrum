@@ -6,6 +6,12 @@ abstract class TeamMember(
     val username: String,
     val fullName: FullName,
 ) {
+    abstract fun isDeveloper(): Boolean
+
+    abstract fun isScrumMaster(): Boolean
+
+    abstract fun isProductOwner(): Boolean
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

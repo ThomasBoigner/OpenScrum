@@ -5,4 +5,10 @@ class Developer(
     teamMemberId: TeamMemberId,
     username: String,
     fullName: FullName,
-) : TeamMember(id, teamMemberId, username, fullName)
+) : TeamMember(id, teamMemberId, username, fullName) {
+    override fun isDeveloper(): Boolean = true
+
+    override fun isScrumMaster(): Boolean = false
+
+    override fun isProductOwner(): Boolean = true
+}
