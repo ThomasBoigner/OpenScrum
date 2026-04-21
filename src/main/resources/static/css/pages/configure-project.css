@@ -32,36 +32,6 @@ section#configure-form {
     width: 1024px;
 }
 
-div.error-message {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    border: solid 3px var(--error);
-    border-radius: 8px;
-    gap: 16px;
-    padding: 16px 24px;
-}
-
-div.error-message p {
-    color: var(--error);
-}
-
-div.saved-changes {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    border: solid 3px var(--primary-color);
-    border-radius: 8px;
-    gap: 16px;
-    padding: 16px 24px;
-}
-
-div.saved-changes p {
-    color: var(--primary-color);
-}
-
 div.input-fields {
     display: flex;
     flex-direction: column;
