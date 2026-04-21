@@ -17,5 +17,8 @@ class JpaScrumMasterRepository(
 
     override fun findByProjectId(projectId: UUID): ScrumMaster? = scrumMasterEntityRepository.findByProjectId(projectId)?.toScrumMaster()
 
-    override fun findByUsername(username: String): ScrumMaster? = scrumMasterEntityRepository.findByUsername(username)?.toScrumMaster()
+    override fun findByProjectIdAndUsername(
+        projectId: UUID,
+        username: String,
+    ): ScrumMaster? = scrumMasterEntityRepository.findByProjectIdAndUsername(projectId, username)?.toScrumMaster()
 }

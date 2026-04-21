@@ -111,7 +111,7 @@ class ProjectApplicationServiceTest {
             )
 
         whenever(projectRepository.findByProjectId(ProjectId(projectId))).thenReturn(project)
-        whenever(scrumMasterRepository.findByUsername(username)).thenReturn(scrumMaster)
+        whenever(scrumMasterRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(scrumMaster)
         whenever(projectRepository.save(any())).thenAnswer { it.arguments[0] }
 
         // When
@@ -147,7 +147,7 @@ class ProjectApplicationServiceTest {
             )
 
         whenever(projectRepository.findByProjectId(ProjectId(projectId))).thenReturn(project)
-        whenever(productOwnerRepository.findByUsername(username)).thenReturn(productOwner)
+        whenever(productOwnerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(productOwner)
         whenever(projectRepository.save(any())).thenAnswer { it.arguments[0] }
 
         // When
@@ -183,7 +183,7 @@ class ProjectApplicationServiceTest {
             )
 
         whenever(projectRepository.findByProjectId(ProjectId(projectId))).thenReturn(project)
-        whenever(scrumMasterRepository.findByUsername(username)).thenReturn(scrumMaster)
+        whenever(scrumMasterRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(scrumMaster)
         whenever(projectRepository.save(any())).thenAnswer { it.arguments[0] }
 
         // When

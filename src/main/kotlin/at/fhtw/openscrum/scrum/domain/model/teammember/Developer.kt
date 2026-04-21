@@ -10,5 +10,5 @@ class Developer(
 
     override fun isScrumMaster(): Boolean = false
 
-    override fun isProductOwner(): Boolean = true
+    override fun isProductOwner(): Boolean = false
 }

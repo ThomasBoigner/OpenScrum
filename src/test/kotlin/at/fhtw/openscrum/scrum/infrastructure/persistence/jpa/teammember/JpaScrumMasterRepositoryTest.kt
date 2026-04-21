@@ -68,18 +68,19 @@ class JpaScrumMasterRepositoryTest {
     }
 
     @Test
-    fun ensureFindByUsernameWorksProperly() {
+    fun ensureFindByProjectIdAndUsernameWorksProperly() {
         // Given
+        val projectId = UUID.randomUUID()
         val scrumMaster =
             ScrumMaster(
-                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = UUID.randomUUID()),
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "mmueller",
                 fullName = FullName(firstName = "Max", lastName = "Mueller"),
             )
         scrumMasterRepository.save(scrumMaster)
 
         // When
-        val result = scrumMasterRepository.findByUsername("mmueller")
+        val result = scrumMasterRepository.findByProjectIdAndUsername(projectId, "mmueller")
 
         // Then
         assertThat(result).isNotNull

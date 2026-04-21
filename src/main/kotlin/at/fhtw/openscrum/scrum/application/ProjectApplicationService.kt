@@ -56,7 +56,7 @@ class ProjectApplicationService(
             projectRepository.findByProjectId(ProjectId(command.projectId)) ?: throw IllegalArgumentException(
                 "Could not find project with id ${command.projectId}",
             )
-        val scrumMaster = scrumMasterRepository.findByUsername(authenticatedUserUsername)
+        val scrumMaster = scrumMasterRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
         project.defineSprintLength(scrumMaster, command.sprintLength)
         log.info("Updated sprint length of project {}", project)
@@ -73,7 +73,7 @@ class ProjectApplicationService(
             projectRepository.findByProjectId(ProjectId(command.projectId)) ?: throw IllegalArgumentException(
                 "Could not find project with id ${command.projectId}",
             )
-        val productOwner = productOwnerRepository.findByUsername(authenticatedUserUsername)
+        val productOwner = productOwnerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
         project.defineProductGoal(productOwner, command.productGoal)
         log.info("Updated product goal of project {}", project)
@@ -90,7 +90,7 @@ class ProjectApplicationService(
             projectRepository.findByProjectId(ProjectId(command.projectId)) ?: throw IllegalArgumentException(
                 "Could not find project with id ${command.projectId}",
             )
-        val scrumMaster = scrumMasterRepository.findByUsername(authenticatedUserUsername)
+        val scrumMaster = scrumMasterRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
         project.defineDefinitionOfDone(scrumMaster, command.definitionOfDone)
         log.info("Updated definition of done of project {}", project)

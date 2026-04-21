@@ -7,5 +7,8 @@ interface ScrumMasterRepository {
 
     fun findByProjectId(projectId: UUID): ScrumMaster?
 
-    fun findByUsername(username: String): ScrumMaster?
+    fun findByProjectIdAndUsername(
+        projectId: UUID,
+        username: String,
+    ): ScrumMaster?
 }

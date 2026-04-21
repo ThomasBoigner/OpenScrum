@@ -36,14 +36,18 @@ class ProjectController(
     @GetMapping(value = ["", PATH_INDEX])
     fun index(
         model: Model,
+        principal: Principal,
         @PathVariable id: UUID,
     ): String {
         log.debug("Serving project details page for id {}", id)
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
         val project = projectApplicationService.getProject(id) ?: return "error/404"
         val developers = teamMemberApplicationService.getDevelopersOfProject(id)
         val scrumMaster = teamMemberApplicationService.getScrumMasterOfProject(id) ?: return "error/404"
         val productOwner = teamMemberApplicationService.getProductOwnerOfProject(id) ?: return "error/404"
 
+        model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("project", project)
         model.addAttribute("developers", developers)
         model.addAttribute("scrumMaster", scrumMaster)
@@ -55,11 +59,18 @@ class ProjectController(
     @GetMapping(value = [ROUTE_CONFIGURE])
     fun showConfigurationForm(
         model: Model,
+        principal: Principal,
         @PathVariable id: UUID,
     ): String {
         log.debug("Serving project configuration page for id {}", id)
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
+        if (!authenticatedTeamMember.isScrumMaster && !authenticatedTeamMember.isProductOwner) return "error/403"
         val project = projectApplicationService.getProject(id) ?: return "error/404"
+
+        model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("project", project)
+
         return "pages/configure-project"
     }
 

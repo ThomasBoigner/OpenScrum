@@ -7,5 +7,8 @@ interface ProductOwnerRepository {
 
     fun findByProjectId(projectId: UUID): ProductOwner?
 
-    fun findByUsername(username: String): ProductOwner?
+    fun findByProjectIdAndUsername(
+        projectId: UUID,
+        username: String,
+    ): ProductOwner?
 }

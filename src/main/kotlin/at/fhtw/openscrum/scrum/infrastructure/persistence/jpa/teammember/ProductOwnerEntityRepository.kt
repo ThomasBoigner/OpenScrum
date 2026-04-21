@@ -8,5 +8,8 @@ import java.util.UUID
 interface ProductOwnerEntityRepository : JpaRepository<ProductOwnerEntity, Long> {
     fun findByProjectId(projectId: UUID): ProductOwnerEntity?
 
-    fun findByUsername(username: String): ProductOwnerEntity?
+    fun findByProjectIdAndUsername(
+        projectId: UUID,
+        username: String,
+    ): ProductOwnerEntity?
 }

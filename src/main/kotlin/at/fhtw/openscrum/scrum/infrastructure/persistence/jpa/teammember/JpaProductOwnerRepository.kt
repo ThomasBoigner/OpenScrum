@@ -17,5 +17,8 @@ class JpaProductOwnerRepository(
 
     override fun findByProjectId(projectId: UUID): ProductOwner? = productOwnerEntityRepository.findByProjectId(projectId)?.toProductOwner()
 
-    override fun findByUsername(username: String): ProductOwner? = productOwnerEntityRepository.findByUsername(username)?.toProductOwner()
+    override fun findByProjectIdAndUsername(
+        projectId: UUID,
+        username: String,
+    ): ProductOwner? = productOwnerEntityRepository.findByProjectIdAndUsername(projectId, username)?.toProductOwner()
 }

@@ -68,18 +68,19 @@ class JpaProductOwnerRepositoryTest {
     }
 
     @Test
-    fun ensureFindByUsernameWorksProperly() {
+    fun ensureFindByProjectIdAndUsernameWorksProperly() {
         // Given
+        val projectId = UUID.randomUUID()
         val productOwner =
             ProductOwner(
-                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = UUID.randomUUID()),
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "jsmith",
                 fullName = FullName(firstName = "Jane", lastName = "Smith"),
             )
         productOwnerRepository.save(productOwner)
 
         // When
-        val result = productOwnerRepository.findByUsername("jsmith")
+        val result = productOwnerRepository.findByProjectIdAndUsername(projectId, "jsmith")
 
         // Then
         assertThat(result).isNotNull
