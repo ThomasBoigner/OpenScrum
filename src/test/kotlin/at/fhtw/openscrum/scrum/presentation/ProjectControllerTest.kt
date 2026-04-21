@@ -252,4 +252,132 @@ class ProjectControllerTest {
         assertThat(pageSource).contains("403")
         webDriver.close()
     }
+
+    /*
+    Given a scrum master, a project and a sprint length smaller than 1
+    When the scrum master enters the information into the configure project form
+    Then he receives an error that the sprint length can not be smaller than 1
+     */
+    @Test
+    fun ensureConfigureSprintLengthDoesNotWorkWhenSprintLengthIsSmallerThanOne() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMasterPassword = "abc123"
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = scrumMasterPassword,
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        val webDriver = ChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/configure")
+        webDriver.executeScript("document.getElementById('sprint-length').removeAttribute('min')")
+        webDriver.findElement(By.cssSelector("input#sprint-length")).clear()
+        webDriver.findElement(By.cssSelector("input#sprint-length")).sendKeys("0")
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("form#sprint-length-form button"))).click()
+
+        // Then
+        val error =
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#message.error-message")))
+        assertThat(error).isNotNull
+        assertThat(error.text).containsIgnoringCase("sprint length")
+        webDriver.close()
+    }
+
+    /*
+    Given a scrum master, a project and a sprint length bigger than 4
+    When the scrum master enters the information into the configure project form
+    Then he receives an error that the sprint length can not be bigger than 4
+     */
+    @Test
+    fun ensureConfigureSprintLengthDoesNotWorkWhenSprintLengthIsBiggerThanFour() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMasterPassword = "abc123"
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = scrumMasterPassword,
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        val webDriver = ChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/configure")
+        webDriver.executeScript("document.getElementById('sprint-length').removeAttribute('max')")
+        webDriver.findElement(By.cssSelector("input#sprint-length")).clear()
+        webDriver.findElement(By.cssSelector("input#sprint-length")).sendKeys("5")
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("form#sprint-length-form button"))).click()
+
+        // Then
+        val error =
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#message.error-message")))
+        assertThat(error).isNotNull
+        assertThat(error.text).containsIgnoringCase("sprint length")
+        webDriver.close()
+    }
 }
