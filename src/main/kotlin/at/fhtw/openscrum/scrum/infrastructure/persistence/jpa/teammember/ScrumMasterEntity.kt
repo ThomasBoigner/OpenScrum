@@ -2,24 +2,20 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember
 
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMember
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
 import java.util.UUID
 
 @Entity
 class ScrumMasterEntity(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
-    var userId: UUID,
-    var projectId: UUID,
-    var username: String,
-    var firstName: String,
-    var lastName: String,
-) {
+    id: Long? = null,
+    userId: UUID,
+    projectId: UUID,
+    username: String,
+    firstName: String,
+    lastName: String,
+) : TeamMemberEntity(id, userId, projectId, username, firstName, lastName) {
     constructor(scrumMaster: ScrumMaster) : this(
         id = scrumMaster.id,
         userId = scrumMaster.teamMemberId.userId,
@@ -39,6 +35,14 @@ class ScrumMasterEntity(
     )
 
     fun toScrumMaster(): ScrumMaster =
+        ScrumMaster(
+            id = id,
+            teamMemberId = TeamMemberId(userId = userId, projectId = projectId),
+            username = username,
+            fullName = FullName(firstName = firstName, lastName = lastName),
+        )
+
+    override fun toTeamMember(): TeamMember =
         ScrumMaster(
             id = id,
             teamMemberId = TeamMemberId(userId = userId, projectId = projectId),
