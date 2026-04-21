@@ -1,4 +1,4 @@
-<div th:fragment="error-message" class="error-message">
+<div id="message" th:fragment="error-message" class="error-message">
     <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-    <p>Error while configuring project!</p>
+    <p th:text="${errorMessage}">Error while configuring project!</p>
 </div>

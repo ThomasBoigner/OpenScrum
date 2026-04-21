@@ -66,6 +66,7 @@ class ProjectController(
     @HxRequest
     @PutMapping(value = [ROUTE_CONFIGURE_SPRINT_LENGTH])
     fun configureSprintLength(
+        model: Model,
         principal: Principal,
         @PathVariable id: UUID,
         sprintLength: Int,
@@ -82,14 +83,17 @@ class ProjectController(
             )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while configuring sprint length with message: {}", ex.message)
+            model.addAttribute("errorMessage", ex.message)
             return "fragments/error-message"
         }
+        model.addAttribute("message", "Saved sprint length")
         return "fragments/saved-changes"
     }
 
     @HxRequest
     @PutMapping(value = [ROUTE_CONFIGURE_PRODUCT_GOAL])
     fun configureProductGoal(
+        model: Model,
         principal: Principal,
         @PathVariable id: UUID,
         productGoal: String,
@@ -106,14 +110,17 @@ class ProjectController(
             )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while configuring product goal with message: {}", ex.message)
+            model.addAttribute("errorMessage", ex.message)
             return "fragments/error-message"
         }
+        model.addAttribute("message", "Saved product goal")
         return "fragments/saved-changes"
     }
 
     @HxRequest
     @PutMapping(value = [ROUTE_CONFIGURE_DEFINITION_OF_DONE])
     fun configureDefinitionOfDone(
+        model: Model,
         principal: Principal,
         @PathVariable id: UUID,
         definitionOfDone: String,
@@ -130,8 +137,10 @@ class ProjectController(
             )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while configuring definition of done with message: {}", ex.message)
+            model.addAttribute("errorMessage", ex.message)
             return "fragments/error-message"
         }
+        model.addAttribute("message", "Saved definition of done")
         return "fragments/saved-changes"
     }
 }

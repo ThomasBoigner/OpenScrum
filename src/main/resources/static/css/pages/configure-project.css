@@ -62,10 +62,6 @@ div.saved-changes p {
     color: var(--primary-color);
 }
 
-div#message-placeholder {
-    display: none;
-}
-
 div.input-fields {
     display: flex;
     flex-direction: column;

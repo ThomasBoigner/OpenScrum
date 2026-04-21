@@ -103,6 +103,10 @@ div.card-info {
     gap: 8px;
 }
 
+div.card-info > p {
+    white-space: pre-line;
+}
+
 div.info-group {
     display: flex;
     flex-direction: column;
@@ -113,11 +117,6 @@ div.team-info {
     display: flex;
     flex-direction: column;
     gap: 32px;
-}
-
-p.info-label {
-    font-weight: 700;
-    color: var(--black);
 }
 
 div.developers-list {
