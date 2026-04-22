@@ -18,18 +18,18 @@
     <link rel="stylesheet" th:href="@{/css/pages/project-details-page.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
-<body>
+<body th:object="${project}">
 <div class="container">
     <header id="scrum-header">
         <a th:href="@{/projects}">
             <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
         </a>
         <nav>
-            <a class="btn selected">
+            <a class="btn selected" th:href="@{/projects/{id}(id=*{projectId})}">
                 <img th:src="@{/assets/svg/sticky.svg}" alt="Sticky">
                 Details
             </a>
-            <a class="btn">
+            <a class="btn" th:href="@{/projects/{id}/backlog(id=*{projectId})}">
                 <img th:src="@{/assets/svg/list.svg}" alt="List">
                 Backlog
             </a>
@@ -40,7 +40,7 @@
         </nav>
     </header>
 
-    <section id="project-details" th:object="${project}">
+    <section id="project-details">
         <h1 class="project-title" th:text="*{projectName}">Project Name</h1>
 
         <div class="details-grid">
