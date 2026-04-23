@@ -1,0 +1,160 @@
+/* Container */
+body {
+    height: 100vh;
+}
+
+div.container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+/* Sidebar */
+header#scrum-header {
+    width: 384px;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    padding: 64px 16px;
+    box-shadow: 4px 0 6px rgba(0, 0, 0, 0.25);
+    overflow: scroll;
+}
+
+header#scrum-header nav {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+}
+
+header#scrum-header a.btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    border: solid 3px var(--black85);
+    border-radius: 32px;
+    width: 100%;
+    padding: 16px 24px;
+    background-color: var(--white);
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
+}
+
+header#scrum-header a.selected {
+    border: solid 3px var(--primary-color);
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+header#scrum-header a.btn:hover {
+    gap: 8px;
+}
+
+/* Product Backlog */
+section#product-backlog {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    background-color: var(--black5);
+    padding: 64px 32px;
+    flex: 1;
+    overflow: scroll;
+}
+
+/* Search input */
+section#product-backlog div.search-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    border-radius: 8px;
+    padding: 24px;
+    background-color: var(--white);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+section#product-backlog div.search-input label {
+    display: flex;
+    align-items: center;
+}
+
+section#product-backlog div.search-input input {
+    width: 100%;
+}
+
+/* Backlog list item */
+div.product-backlog-list-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+    width: 100%;
+}
+
+div.product-backlog-item-information {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    flex: 1;
+}
+
+div.status-description-information {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+div.info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+div.edit-delete-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: flex-start;
+}
+
+div.edit-delete-buttons button.edit-button,
+div.edit-delete-buttons button.delete-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+div.edit-delete-buttons button.edit-button {
+    border: solid 3px var(--secondary-color);
+}
+
+div.edit-delete-buttons button.delete-button {
+    border: solid 3px var(--error);
+}
+
+/* Add button */
+a.add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    border-radius: 128px;
+    padding: 32px;
+    width: 128px;
+    height: 128px;
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
+}
