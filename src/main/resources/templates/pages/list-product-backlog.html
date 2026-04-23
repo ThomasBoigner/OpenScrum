@@ -20,9 +20,9 @@
 
     <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
 </head>
-<body>
+<body th:object="${project}">
 <div class="container">
-    <header id="scrum-header" th:object="${project}">
+    <header id="scrum-header">
         <a th:href="@{/projects}">
             <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
         </a>
@@ -47,29 +47,7 @@
             <label for="search"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
             <input type="text" id="search" placeholder="Search">
         </div>
-        <div class="product-backlog-list-item">
-            <div class="product-backlog-item-information">
-                <h2>Title</h2>
-                <div class="status-description-information">
-                    <div class="info-group">
-                        <label>Status</label>
-                        <p>In backlog</p>
-                    </div>
-                    <div class="info-group">
-                        <label>Description</label>
-                        <p>Lorem ipsum dolor sit amet.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="edit-delete-buttons">
-                <a class="edit-button">
-                    <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
-                </a>
-                <a class="delete-button">
-                    <img th:src="@{/assets/svg/trash.svg}" alt="Trash">
-                </a>
-            </div>
-        </div>
+        <p hx:get="@{/projects/{id}/backlog/list(id=*{projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog!</p>
         <a class="add-button">
             <img th:src="@{/assets/svg/plus.svg}" alt="Add">
         </a>
