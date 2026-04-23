@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class BeanConfiguration {
+class ManagementBeanConfiguration {
     @Bean
     fun userService(
         encryptionService: EncryptionService,

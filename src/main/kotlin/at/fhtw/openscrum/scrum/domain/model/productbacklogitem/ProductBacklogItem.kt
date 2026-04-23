@@ -5,6 +5,7 @@ class ProductBacklogItem(
     val productBacklogItemId: ProductBacklogItemId,
     title: String,
     description: String,
+    status: ProductBacklogItemStatus = ProductBacklogItemStatus.IN_BACKLOG,
 ) {
     var title: String = ""
         private set(value) {
@@ -17,7 +18,7 @@ class ProductBacklogItem(
             field = value
         }
 
-    var status: ProductBacklogItemStatus = ProductBacklogItemStatus.IN_BACKLOG
+    var status: ProductBacklogItemStatus = status
         private set
 
     init {
