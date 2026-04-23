@@ -2,6 +2,9 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.productbacklogite
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
-interface ProductBacklogItemEntityRepository : JpaRepository<ProductBacklogItemEntity, Long>
+interface ProductBacklogItemEntityRepository : JpaRepository<ProductBacklogItemEntity, Long> {
+    fun findProductBacklogItemEntitiesByProjectId(projectId: UUID): List<ProductBacklogItemEntity>
+}

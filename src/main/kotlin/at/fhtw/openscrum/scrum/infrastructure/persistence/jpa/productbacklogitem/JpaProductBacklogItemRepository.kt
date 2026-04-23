@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.productbacklogite
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
 class JpaProductBacklogItemRepository(
@@ -13,4 +14,9 @@ class JpaProductBacklogItemRepository(
         productBacklogItemEntityRepository.save(entity)
         return productBacklogItem
     }
+
+    override fun findProductBacklogItemsByProjectId(projectId: UUID): List<ProductBacklogItem> =
+        productBacklogItemEntityRepository
+            .findProductBacklogItemEntitiesByProjectId(projectId)
+            .map { it.toProductBacklogItem() }
 }

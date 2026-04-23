@@ -7,13 +7,26 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
+@Service
+@Transactional(readOnly = true)
 class ProductBacklogItemApplicationService(
     private val productBacklogItemService: ProductBacklogItemService,
     private val productBacklogItemRepository: ProductBacklogItemRepository,
     private val productOwnerRepository: ProductOwnerRepository,
     private val log: Logger = LoggerFactory.getLogger(ProductBacklogItemApplicationService::class.java),
 ) {
+    fun getProductBacklogOfProject(projectId: UUID): List<ProductBacklogItemDto> {
+        log.debug("Trying to get all product backlog items of project with id {}", projectId)
+        val productBacklogItems = productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId)
+        log.info("Found all ({}) product backlog items of project with id {}", productBacklogItems.size, projectId)
+        return productBacklogItems.map { ProductBacklogItemDto(it) }
+    }
+
+    @Transactional(readOnly = false)
     fun defineProductBacklogItem(
         authenticatedUserUsername: String,
         command: DefineProductBacklogItemCommand,

@@ -44,4 +44,31 @@ class JpaProductBacklogItemRepositoryTest {
         val savedItem = savedEntities.first().toProductBacklogItem()
         assertThat(savedItem).isEqualTo(productBacklogItem)
     }
+
+    @Test
+    fun ensureFindProductBacklogItemsByProjectIdWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+        val productBacklogItem2 =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Other Backlog Item",
+                description = "As a product owner, I want to define other backlog items.",
+            )
+        productBacklogItemRepository.save(productBacklogItem)
+        productBacklogItemRepository.save(productBacklogItem2)
+
+        // When
+        val result = productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId)
+
+        // Then
+        assertThat(result).hasSize(2)
+        assertThat(result).isEqualTo(listOf(productBacklogItem, productBacklogItem2))
+    }
 }

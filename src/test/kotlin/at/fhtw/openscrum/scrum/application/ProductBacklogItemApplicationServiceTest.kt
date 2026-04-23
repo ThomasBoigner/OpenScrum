@@ -43,6 +43,39 @@ class ProductBacklogItemApplicationServiceTest {
     }
 
     @Test
+    fun ensureGetProductBacklogOfProjectWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val item1 =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+        val item2 =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            )
+
+        whenever(productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId))
+            .thenReturn(listOf(item1, item2))
+
+        // When
+        val result = productBacklogItemApplicationService.getProductBacklogOfProject(projectId)
+
+        // Then
+        assertThat(result).hasSize(2)
+        assertThat(result[0].title).isEqualTo(item1.title)
+        assertThat(result[0].description).isEqualTo(item1.description)
+        assertThat(result[0].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+        assertThat(result[1].title).isEqualTo(item2.title)
+        assertThat(result[1].description).isEqualTo(item2.description)
+        assertThat(result[1].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+    }
+
+    @Test
     fun ensureDefineProductBacklogItemWorksProperly() {
         // Given
         val projectId = UUID.randomUUID()
@@ -67,8 +100,14 @@ class ProductBacklogItemApplicationServiceTest {
             )
 
         whenever(productOwnerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(productOwner)
-        whenever(productBacklogItemService.defineBacklogItem(productOwner, projectId, command.title, command.description))
-            .thenReturn(productBacklogItem)
+        whenever(
+            productBacklogItemService.defineBacklogItem(
+                productOwner,
+                projectId,
+                command.title,
+                command.description,
+            ),
+        ).thenReturn(productBacklogItem)
 
         // When
         val result = productBacklogItemApplicationService.defineProductBacklogItem(username, command)
