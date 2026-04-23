@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>List Product Backlog</title>
+    <title>Product Backlog</title>
     <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +21,59 @@
     <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
 </head>
 <body>
-<h1>Product Backlog</h1>
+<div class="container">
+    <header id="scrum-header" th:object="${project}">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
+        <nav>
+            <a class="btn" th:href="@{/projects/{id}(id=*{projectId})}">
+                <img th:src="@{/assets/svg/sticky.svg}" alt="Sticky">
+                Details
+            </a>
+            <a class="btn selected" th:href="@{/projects/{id}/backlog(id=*{projectId})}">
+                <img th:src="@{/assets/svg/list-white.svg}" alt="List">
+                Backlog
+            </a>
+            <a class="btn">
+                <img th:src="@{/assets/svg/rotate.svg}" alt="Rotate">
+                Sprints
+            </a>
+        </nav>
+    </header>
+
+    <section id="product-backlog">
+        <div class="search-input">
+            <label for="search"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
+            <input type="text" id="search" placeholder="Search">
+        </div>
+        <div class="product-backlog-list-item">
+            <div class="product-backlog-item-information">
+                <h2>Title</h2>
+                <div class="status-description-information">
+                    <div class="info-group">
+                        <label>Status</label>
+                        <p>In backlog</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Description</label>
+                        <p>Lorem ipsum dolor sit amet.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="edit-delete-buttons">
+                <button class="edit-button">
+                    <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
+                </button>
+                <button class="delete-button">
+                    <img th:src="@{/assets/svg/trash.svg}" alt="Trash">
+                </button>
+            </div>
+        </div>
+        <a class="add-button">
+            <img th:src="@{/assets/svg/plus.svg}" alt="Add">
+        </a>
+    </section>
+</div>
 </body>
 </html>
