@@ -126,8 +126,8 @@ div.edit-delete-buttons {
     justify-content: flex-start;
 }
 
-div.edit-delete-buttons button.edit-button,
-div.edit-delete-buttons button.delete-button {
+div.edit-delete-buttons a.edit-button,
+div.edit-delete-buttons a.delete-button {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -135,11 +135,11 @@ div.edit-delete-buttons button.delete-button {
     padding: 8px;
 }
 
-div.edit-delete-buttons button.edit-button {
+div.edit-delete-buttons a.edit-button {
     border: solid 3px var(--secondary-color);
 }
 
-div.edit-delete-buttons button.delete-button {
+div.edit-delete-buttons a.delete-button {
     border: solid 3px var(--error);
 }
 
@@ -157,4 +157,71 @@ a.add-button {
     right: 32px;
     bottom: 32px;
     box-shadow: 0 4px 24px rgb(196, 196, 196);
+}
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    body {
+        height: auto;
+    }
+
+    div.container {
+        flex-direction: column;
+    }
+
+    /* Sidebar */
+    header#scrum-header {
+        width: 100%;
+        flex-direction: row;
+        gap: 32px;
+        padding: 48px 32px;
+    }
+
+    header#scrum-header > a > img {
+        width: 64px;
+        height: 64px;
+    }
+
+    header#scrum-header nav {
+        flex-direction: row;
+        gap: 16px;
+    }
+
+    header#scrum-header a.btn img {
+        display: none;
+    }
+
+    /* Product Backlog */
+    section#product-backlog {
+        overflow: auto;
+        gap: 24px;
+        padding: 48px 32px;
+    }
+
+    section#product-backlog div.search-input img {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Backlog list item */
+    div.product-backlog-item-information {
+        gap: 24px;
+    }
+
+    a.edit-button img,
+    a.delete-button img {
+        height: 24px;
+    }
+
+    /* Add button */
+    a.add-button {
+        padding: 24px;
+        width: 96px;
+        height: 96px;
+    }
+
+    a.add-button img {
+        width: 48px;
+        height: 48px;
+    }
 }
