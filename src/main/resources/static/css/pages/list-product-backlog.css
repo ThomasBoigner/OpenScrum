@@ -225,3 +225,51 @@ a.add-button {
         height: 48px;
     }
 }
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    /* Sidebar */
+    header#scrum-header {
+        flex-direction: column;
+        padding: 32px 16px;
+    }
+
+    header#scrum-header nav {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* Product Backlog */
+    section#product-backlog {
+        padding: 32px 16px;
+    }
+
+    /* Backlog list item */
+    div.product-backlog-list-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    div.product-backlog-item-information {
+        gap: 16px;
+    }
+
+    div.edit-delete-buttons {
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    /* Add button */
+    a.add-button {
+        padding: 16px;
+        width: 64px;
+        height: 64px;
+        right: 16px;
+        bottom: 16px;
+    }
+
+    a.add-button img {
+        width: 32px;
+        height: 32px;
+    }
+}
