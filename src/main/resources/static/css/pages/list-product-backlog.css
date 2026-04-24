@@ -87,62 +87,6 @@ section#product-backlog div.search-input input {
     width: 100%;
 }
 
-/* Backlog list item */
-div.product-backlog-list-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 32px;
-    background-color: var(--white);
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
-    width: 100%;
-}
-
-div.product-backlog-item-information {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    flex: 1;
-}
-
-div.status-description-information {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-div.info-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-div.edit-delete-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    justify-content: flex-start;
-}
-
-div.edit-delete-buttons a.edit-button,
-div.edit-delete-buttons a.delete-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    padding: 8px;
-}
-
-div.edit-delete-buttons a.edit-button {
-    border: solid 3px var(--secondary-color);
-}
-
-div.edit-delete-buttons a.delete-button {
-    border: solid 3px var(--error);
-}
-
 /* Add button */
 a.add-button {
     display: flex;
@@ -203,16 +147,6 @@ a.add-button {
         height: 24px;
     }
 
-    /* Backlog list item */
-    div.product-backlog-item-information {
-        gap: 24px;
-    }
-
-    a.edit-button img,
-    a.delete-button img {
-        height: 24px;
-    }
-
     /* Add button */
     a.add-button {
         padding: 24px;
@@ -242,21 +176,6 @@ a.add-button {
     /* Product Backlog */
     section#product-backlog {
         padding: 32px 16px;
-    }
-
-    /* Backlog list item */
-    div.product-backlog-list-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    div.product-backlog-item-information {
-        gap: 16px;
-    }
-
-    div.edit-delete-buttons {
-        flex-direction: row;
-        gap: 8px;
     }
 
     /* Add button */
