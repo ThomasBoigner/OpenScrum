@@ -29,6 +29,10 @@ div.info-group {
     gap: 4px;
 }
 
+div.info-group p {
+    white-space: pre-line;
+}
+
 div.edit-delete-buttons {
     display: flex;
     flex-direction: column;

@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.presentation
 
 import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
+import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.presentation.forms.DefineProductBacklogItemForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import jakarta.validation.Valid
@@ -23,6 +24,7 @@ import java.util.UUID
 class ProductBacklogController(
     private val productBacklogApplicationService: ProductBacklogItemApplicationService,
     private val projectApplicationService: ProjectApplicationService,
+    private val teamMemberApplicationService: TeamMemberApplicationService,
     private val log: Logger = LoggerFactory.getLogger(ProductBacklogController::class.java),
 ) {
     companion object {
@@ -35,11 +37,15 @@ class ProductBacklogController(
     @GetMapping(value = ["", PATH_INDEX])
     fun index(
         model: Model,
+        principal: Principal,
         @PathVariable id: UUID,
     ): String {
         log.debug("Serving list product backlog page for project with id {}", id)
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
         val project = projectApplicationService.getProject(id)
 
+        model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("project", project)
 
         return "pages/list-product-backlog"
@@ -58,9 +64,13 @@ class ProductBacklogController(
     @GetMapping(value = [ROUTE_DEFINE])
     fun showDefineBacklogItemForm(
         model: Model,
+        principal: Principal,
         @PathVariable id: UUID,
     ): String {
         log.debug("Serving list define product backlog item page for project with id {}", id)
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
+        if (!authenticatedTeamMember.isProductOwner) return "error/403"
         val project = projectApplicationService.getProject(id) ?: return "error/404"
         val defineProductBacklogItemForm = DefineProductBacklogItemForm()
 
