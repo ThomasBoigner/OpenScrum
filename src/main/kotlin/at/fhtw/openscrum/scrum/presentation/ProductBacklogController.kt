@@ -23,6 +23,7 @@ class ProductBacklogController(
         const val BASE_URL = "/projects/{id}/backlog"
         const val PATH_INDEX = "/"
         const val FRAGMENT_PRODUCT_BACKLOG_LIST_ITEM = "/list"
+        const val ROUTE_DEFINE = "/define"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -46,5 +47,17 @@ class ProductBacklogController(
     ): String {
         model.addAttribute("productBacklog", productBacklogApplicationService.getProductBacklogOfProject(id))
         return "fragments/product-backlog-list-item"
+    }
+
+    @GetMapping(value = [ROUTE_DEFINE])
+    fun showDefineBacklogItemForm(
+        model: Model,
+        @PathVariable id: UUID,
+    ): String {
+        log.debug("Serving list define product backlog item page for project with id {}", id)
+        val project = projectApplicationService.getProject(id)
+
+        model.addAttribute("project", project)
+        return "pages/define-product-backlog-item"
     }
 }

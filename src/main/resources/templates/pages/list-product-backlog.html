@@ -49,7 +49,7 @@
             <input type="text" id="search" placeholder="Search">
         </div>
         <p hx:get="@{/projects/{id}/backlog/list(id=*{projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog!</p>
-        <a class="add-button">
+        <a class="add-button" th:href="@{/projects/{id}/backlog/define(id=*{projectId})}">
             <img th:src="@{/assets/svg/plus.svg}" alt="Add">
         </a>
     </section>

@@ -108,7 +108,7 @@ section#login-form button:hover {
     }
 
     section#hero h1 {
-        width: 768px;
+        width: 600px;
     }
 
     section#hero h3 {
@@ -129,7 +129,7 @@ section#login-form button:hover {
     }
 
     section#login-form input:nth-child(2) {
-        margin-bottom: 24px;
+        margin-bottom: 32px;
     }
 
     section#login-form button {
