@@ -1,4 +1,4 @@
-package at.fhtw.openscrum.management.presentation
+package at.fhtw.openscrum
 
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions

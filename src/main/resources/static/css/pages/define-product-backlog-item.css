@@ -190,6 +190,10 @@ div.submit-go-back > p a {
         width: 100%;
     }
 
+    section#define-product-backlog-item-form {
+        width: 100%;
+    }
+
     section#define-product-backlog-item-form form {
         gap: 32px;
         width: 100%;
