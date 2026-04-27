@@ -28,7 +28,7 @@
         <h3>Describe the work that needs to be done</h3>
     </section>
     <section id="define-product-backlog-item-form">
-        <form method="post">
+        <form method="post" th:action="@{/projects/{id}/backlog/define(id=${project.projectId})}" th:object="${defineProductBacklogItemForm}">
             <div class="error-message">
                 <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
                 <p>Error while defining product backlog item!</p>
@@ -39,11 +39,11 @@
             <div class="input-fields">
                 <div class="label-input">
                     <label for="title">Title</label>
-                    <input type="text" id="title" placeholder="Enter the title of the product backlog item!">
+                    <input type="text" id="title" placeholder="Enter the title of the product backlog item!" th:field="*{title}">
                 </div>
                 <div class="label-input">
                     <label for="description">Description</label>
-                    <textarea id="description" placeholder="Add a description to the product backlog item!"></textarea>
+                    <textarea id="description" placeholder="Add a description to the product backlog item!" th:field="*{description}"></textarea>
                 </div>
             </div>
             <div class="submit-go-back">

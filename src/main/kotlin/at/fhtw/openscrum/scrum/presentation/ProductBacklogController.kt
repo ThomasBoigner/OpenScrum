@@ -2,14 +2,20 @@ package at.fhtw.openscrum.scrum.presentation
 
 import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
+import at.fhtw.openscrum.scrum.presentation.forms.DefineProductBacklogItemForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
+import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import java.security.Principal
 import java.util.UUID
 
 @Controller
@@ -55,9 +61,31 @@ class ProductBacklogController(
         @PathVariable id: UUID,
     ): String {
         log.debug("Serving list define product backlog item page for project with id {}", id)
-        val project = projectApplicationService.getProject(id)
+        val project = projectApplicationService.getProject(id) ?: return "error/404"
+        val defineProductBacklogItemForm = DefineProductBacklogItemForm()
 
         model.addAttribute("project", project)
+        model.addAttribute("defineProductBacklogItemForm", defineProductBacklogItemForm)
         return "pages/define-product-backlog-item"
+    }
+
+    @PostMapping(value = [ROUTE_DEFINE])
+    fun handleDefineBacklogItemForm(
+        model: Model,
+        principal: Principal,
+        @Valid @ModelAttribute(name = "defineProductBacklogItemForm") form: DefineProductBacklogItemForm,
+        @PathVariable id: UUID,
+        brDefineProductBacklogItemForm: BindingResult,
+    ): String {
+        log.debug("Received http POST request to define product backlog item with form {}", form)
+        if (brDefineProductBacklogItemForm.hasErrors()) {
+            log.warn("Define product backlog item form {} has validation errors", form)
+            return "pages/define-product-backlog-item"
+        }
+        productBacklogApplicationService.defineProductBacklogItem(
+            principal.name,
+            form.toDefineProductBacklogItemCommand(id),
+        )
+        return "redirect:/projects/$id/backlog"
     }
 }
