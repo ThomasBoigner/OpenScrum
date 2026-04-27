@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotBlank
 import java.util.UUID
 
 data class DefineProductBacklogItemForm(
-    @NotBlank(message = "Project name must not be blank!")
+    @NotBlank(message = "Title name must not be blank!")
     val title: String? = null,
-    @NotBlank(message = "Product name must not be blank!")
+    @NotBlank(message = "Description name must not be blank!")
     val description: String? = null,
 ) {
     fun toDefineProductBacklogItemCommand(projectId: UUID): DefineProductBacklogItemCommand =

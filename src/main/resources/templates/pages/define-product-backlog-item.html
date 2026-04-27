@@ -29,11 +29,11 @@
     </section>
     <section id="define-product-backlog-item-form">
         <form method="post" th:action="@{/projects/{id}/backlog/define(id=${project.projectId})}" th:object="${defineProductBacklogItemForm}">
-            <div class="error-message">
+            <div class="error-message" th:if="${#fields.hasErrors() || errorMessage != null}">
                 <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-                <p>Error while defining product backlog item!</p>
+                <p th:text="${errorMessage}">Error while defining product backlog item!</p>
                 <div>
-                    <p>Validation error while defining product backlog item!</p>
+                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}">Validation error while defining product backlog item!</p>
                 </div>
             </div>
             <div class="input-fields">

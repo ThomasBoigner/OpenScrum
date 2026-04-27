@@ -73,19 +73,31 @@ class ProductBacklogController(
     fun handleDefineBacklogItemForm(
         model: Model,
         principal: Principal,
-        @Valid @ModelAttribute(name = "defineProductBacklogItemForm") form: DefineProductBacklogItemForm,
         @PathVariable id: UUID,
+        @Valid @ModelAttribute(name = "defineProductBacklogItemForm") form: DefineProductBacklogItemForm,
         brDefineProductBacklogItemForm: BindingResult,
     ): String {
         log.debug("Received http POST request to define product backlog item with form {}", form)
         if (brDefineProductBacklogItemForm.hasErrors()) {
             log.warn("Define product backlog item form {} has validation errors", form)
+            val project = projectApplicationService.getProject(id) ?: return "error/404"
+            model.addAttribute("project", project)
             return "pages/define-product-backlog-item"
         }
-        productBacklogApplicationService.defineProductBacklogItem(
-            principal.name,
-            form.toDefineProductBacklogItemCommand(id),
-        )
+        try {
+            productBacklogApplicationService.defineProductBacklogItem(
+                principal.name,
+                form.toDefineProductBacklogItemCommand(id),
+            )
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while defining product backlog item with message: {}", ex.message)
+            val project = projectApplicationService.getProject(id) ?: return "error/404"
+
+            model.addAttribute("project", project)
+            model.addAttribute("errorMessage", ex.message)
+
+            return "pages/define-product-backlog-item"
+        }
         return "redirect:/projects/$id/backlog"
     }
 }
