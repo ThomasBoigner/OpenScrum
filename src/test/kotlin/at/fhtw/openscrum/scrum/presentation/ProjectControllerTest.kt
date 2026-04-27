@@ -1,10 +1,10 @@
 package at.fhtw.openscrum.scrum.presentation
 
+import at.fhtw.openscrum.createHeadlessChromeDriver
 import at.fhtw.openscrum.management.domain.model.project.ProjectService
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.project.ProjectEntityRepository
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
-import at.fhtw.openscrum.management.presentation.createHeadlessChromeDriver
 import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember.TeamMemberEntityRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -901,7 +901,9 @@ class ProjectControllerTest {
 
         webDriver.get("http://localhost:8080/projects/${project.projectId.token}/configure")
         webDriver.findElement(By.cssSelector("textarea#definition-of-done")).clear()
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("form#definition-of-done-form button"))).click()
+        wait
+            .until(ExpectedConditions.elementToBeClickable(By.cssSelector("form#definition-of-done-form button")))
+            .click()
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#message.saved-changes")))
 
         webDriver.get("http://localhost:8080/projects/${project.projectId.token}")

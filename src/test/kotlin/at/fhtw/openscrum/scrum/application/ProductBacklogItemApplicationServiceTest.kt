@@ -1,0 +1,120 @@
+package at.fhtw.openscrum.scrum.application
+
+import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
+import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemStatusDto
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemService
+import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
+import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.whenever
+import java.util.UUID
+
+@ExtendWith(MockitoExtension::class)
+class ProductBacklogItemApplicationServiceTest {
+    lateinit var productBacklogItemApplicationService: ProductBacklogItemApplicationService
+
+    @Mock
+    lateinit var productBacklogItemService: ProductBacklogItemService
+
+    @Mock
+    lateinit var productBacklogItemRepository: ProductBacklogItemRepository
+
+    @Mock
+    lateinit var productOwnerRepository: ProductOwnerRepository
+
+    @BeforeEach
+    fun setUp() {
+        productBacklogItemApplicationService =
+            ProductBacklogItemApplicationService(
+                productBacklogItemService,
+                productBacklogItemRepository,
+                productOwnerRepository,
+            )
+    }
+
+    @Test
+    fun ensureGetProductBacklogOfProjectWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val item1 =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+        val item2 =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            )
+
+        whenever(productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId))
+            .thenReturn(listOf(item1, item2))
+
+        // When
+        val result = productBacklogItemApplicationService.getProductBacklogOfProject(projectId)
+
+        // Then
+        assertThat(result).hasSize(2)
+        assertThat(result[0].title).isEqualTo(item1.title)
+        assertThat(result[0].description).isEqualTo(item1.description)
+        assertThat(result[0].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+        assertThat(result[1].title).isEqualTo(item2.title)
+        assertThat(result[1].description).isEqualTo(item2.description)
+        assertThat(result[1].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+    }
+
+    @Test
+    fun ensureDefineProductBacklogItemWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val username = "productowner"
+        val command =
+            DefineProductBacklogItemCommand(
+                projectId = projectId,
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = username,
+                fullName = FullName("First", "Last"),
+            )
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = command.title,
+                description = command.description,
+            )
+
+        whenever(productOwnerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(productOwner)
+        whenever(
+            productBacklogItemService.defineBacklogItem(
+                productOwner,
+                projectId,
+                command.title,
+                command.description,
+            ),
+        ).thenReturn(productBacklogItem)
+
+        // When
+        val result = productBacklogItemApplicationService.defineProductBacklogItem(username, command)
+
+        // Then
+        assertThat(result.title).isEqualTo(command.title)
+        assertThat(result.description).isEqualTo(command.description)
+        assertThat(result.status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+    }
+}

@@ -6,6 +6,8 @@ import at.fhtw.openscrum.management.domain.model.user.User
 import at.fhtw.openscrum.management.domain.model.user.UserId
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -23,6 +25,7 @@ class UserEntity(
     @Embedded
     val fullName: FullNameEmbeddable,
     val password: String,
+    @Enumerated(EnumType.STRING)
     val role: Role,
 ) : AbstractAggregateRoot<UserEntity>() {
     constructor(user: User) : this(

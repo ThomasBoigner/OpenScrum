@@ -1,0 +1,24 @@
+<p th:if="${#lists.isEmpty(productBacklog)}">No product backlog items found!</p>
+<div th:fragment="product-backlog-list-item" class="product-backlog-list-item" th:each="productBacklogItem : ${productBacklog}" th:object="${productBacklogItem}">
+    <div class="product-backlog-item-information">
+        <h2 th:text="*{title}">Title</h2>
+        <div class="status-description-information">
+            <div class="info-group">
+                <label>Status</label>
+                <p th:text="*{status.displayName}">In backlog</p>
+            </div>
+            <div class="info-group">
+                <label>Description</label>
+                <p th:text="*{description}">Lorem ipsum dolor sit amet.</p>
+            </div>
+        </div>
+    </div>
+    <div class="edit-delete-buttons">
+        <a class="edit-button">
+            <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
+        </a>
+        <a class="delete-button">
+            <img th:src="@{/assets/svg/trash.svg}" alt="Trash">
+        </a>
+    </div>
+</div>
