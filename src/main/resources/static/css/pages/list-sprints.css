@@ -1,0 +1,128 @@
+/* Container */
+body {
+    height: 100vh;
+}
+
+div.container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+/* Sidebar */
+header#scrum-header {
+    width: 384px;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    padding: 64px 16px;
+    box-shadow: 4px 0 6px rgba(0, 0, 0, 0.25);
+    overflow: scroll;
+}
+
+header#scrum-header nav {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+}
+
+header#scrum-header a.btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    border: solid 3px var(--black85);
+    border-radius: 32px;
+    width: 100%;
+    padding: 16px 24px;
+    background-color: var(--white);
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
+}
+
+header#scrum-header a.selected {
+    border: solid 3px var(--primary-color);
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+header#scrum-header a.btn:hover {
+    gap: 8px;
+}
+
+/* Sprint list */
+section#sprint-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    background-color: var(--black5);
+    padding: 64px 32px;
+    flex: 1;
+    overflow: scroll;
+}
+
+/* Search input */
+section#sprint-list div.search-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    border-radius: 8px;
+    padding: 24px;
+    background-color: var(--white);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+section#sprint-list div.search-input label {
+    display: flex;
+    align-items: center;
+}
+
+section#sprint-list div.search-input input {
+    width: 100%;
+}
+
+/* Sprint list item */
+div.sprint-list-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+    width: 100%;
+}
+
+div.sprint-information {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+div.sprint-status {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+a.sprint-details-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid 3px var(--primary-color);
+    border-radius: 8px;
+    padding: 8px;
+    flex-shrink: 0;
+    width: 54px;
+}
+
+a.sprint-details-button img {
+    transform: rotate(90deg);
+}

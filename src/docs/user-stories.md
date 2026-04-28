@@ -193,12 +193,27 @@ Given a scrum master, a sprint, a sprint goal and product backlog items
 When the scrum master enters the information into the plan sprint form  
 Then the sprint goal should be set and the product backlog items get commited to the sprint
 
+### Test 1
+Given a scrum master of another project, a sprint, a sprint goal and product backlog items  
+When the scrum master enters the information into the plan sprint form  
+Then he receives an error that he is not the product owner of this project
+
 ### Test 2
+Given a product owner, a sprint, a sprint goal and product backlog items  
+When the scrum master enters the information into the plan sprint form  
+Then he receives an error that he has no permission to plan the sprint
+
+### Test 3
+Given a developer, a sprint, a sprint goal and product backlog items  
+When the scrum master enters the information into the plan sprint form  
+Then he receives an error that he has no permission to plan the sprint
+
+### Test 4
 Given a scrum master, a sprint, a blank sprint goal and product backlog items  
 When the scrum master enters the information into the plan sprint form  
 Then the sprint goal should be null and the product backlog items get commited to the sprint
 
-### Test 2
+### Test 5
 Given a scrum master, a sprint and a sprint goal and no product backlog items  
 When the scrum master enters the information into the plan sprint form  
 Then the scrum master should receive an error that the sprint backlog can not be null

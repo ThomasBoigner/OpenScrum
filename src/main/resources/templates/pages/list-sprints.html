@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:hx="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -20,7 +20,46 @@
 
     <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
 </head>
-<body>
-<h1>List sprints</h1>
+<body th:object="${project}">
+<div class="container">
+    <header id="scrum-header">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
+        <nav>
+            <a class="btn" th:href="@{/projects/{id}(id=*{projectId})}">
+                <img th:src="@{/assets/svg/sticky.svg}" alt="Sticky">
+                Details
+            </a>
+            <a class="btn" th:href="@{/projects/{id}/backlog(id=*{projectId})}">
+                <img th:src="@{/assets/svg/list.svg}" alt="List">
+                Backlog
+            </a>
+            <a class="btn selected" th:href="@{/projects/{id}/sprints(id=*{projectId})}">
+                <img th:src="@{/assets/svg/rotate-white.svg}" alt="Rotate">
+                Sprints
+            </a>
+        </nav>
+    </header>
+
+    <section id="sprint-list">
+        <div class="search-input">
+            <label for="search"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
+            <input type="text" id="search" placeholder="Search">
+        </div>
+        <div class="sprint-list-item">
+            <div class="sprint-information">
+                <h2>Sprint 1</h2>
+                <div class="sprint-status">
+                    <label>Status</label>
+                    <p>In progress</p>
+                </div>
+            </div>
+            <a class="sprint-details-button">
+                <img th:src="@{/assets/svg/arrow-primary.svg}" alt="arrow">
+            </a>
+        </div>
+    </section>
+</div>
 </body>
 </html>
