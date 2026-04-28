@@ -44,8 +44,8 @@ header#scrum-header a.btn {
 }
 
 header#scrum-header a.selected {
-    border: solid 3px var(--primary-color);
-    background-color: var(--primary-color);
+    border: solid 3px var(--secondary-color);
+    background-color: var(--secondary-color);
     color: var(--white);
 }
 
