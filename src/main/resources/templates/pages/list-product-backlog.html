@@ -36,7 +36,7 @@
                 <img th:src="@{/assets/svg/list-white.svg}" alt="List">
                 Backlog
             </a>
-            <a class="btn">
+            <a class="btn" th:href="@{/projects/{id}/sprints(id=*{projectId})}">
                 <img th:src="@{/assets/svg/rotate.svg}" alt="Rotate">
                 Sprints
             </a>
