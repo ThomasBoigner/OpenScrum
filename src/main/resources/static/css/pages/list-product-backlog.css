@@ -105,12 +105,11 @@ a.add-button {
 
 /* 1200px - 600px */
 @media screen and (max-width: 1200px) {
-    body {
-        height: auto;
-    }
-
+    /* Container */
     div.container {
         flex-direction: column;
+        height: auto;
+        min-height: 100%;
     }
 
     /* Sidebar */
