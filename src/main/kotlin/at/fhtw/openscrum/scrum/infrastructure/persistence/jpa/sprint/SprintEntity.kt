@@ -19,6 +19,7 @@ class SprintEntity(
     var id: Long? = null,
     var projectId: UUID,
     var sprintId: UUID,
+    var sprintName: String,
     var startDate: LocalDate,
     var endDate: LocalDate,
     @Enumerated(EnumType.STRING)
@@ -28,6 +29,7 @@ class SprintEntity(
         id = sprint.id,
         projectId = sprint.sprintId.projectId,
         sprintId = sprint.sprintId.sprintId,
+        sprintName = sprint.sprintName,
         startDate = sprint.startDate,
         endDate = sprint.endDate,
         status = sprint.status,
@@ -37,6 +39,7 @@ class SprintEntity(
         Sprint(
             id = id,
             sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+            sprintName = sprintName,
             startDate = startDate,
             endDate = endDate,
             status = status,

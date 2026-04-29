@@ -2,9 +2,8 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
-import at.fhtw.openscrum.scrum.domain.model.sprint.Sprint
-import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -14,6 +13,7 @@ import java.util.UUID
 @Service
 @Transactional(readOnly = true)
 class SprintApplicationService(
+    private val sprintService: SprintService,
     private val sprintRepository: SprintRepository,
     private val log: Logger = LoggerFactory.getLogger(SprintApplicationService::class.java),
 ) {
@@ -27,13 +27,6 @@ class SprintApplicationService(
     fun initializeSprint(command: InitializeSprintCommand): SprintDto {
         log.debug("Trying to initialize sprint with command {}", command)
 
-        val sprint =
-            Sprint(
-                sprintId = SprintId(projectId = command.projectId),
-                sprintLength = command.sprintLength,
-            )
-
-        log.info("Initialized sprint {}", sprint)
-        return SprintDto(sprintRepository.save(sprint))
+        return SprintDto(sprintService.initializeSprint(command.projectId, command.sprintLength))
     }
 }

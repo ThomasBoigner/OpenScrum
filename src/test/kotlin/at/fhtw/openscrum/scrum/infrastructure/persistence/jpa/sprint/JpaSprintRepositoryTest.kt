@@ -32,6 +32,7 @@ class JpaSprintRepositoryTest {
         val sprint =
             Sprint(
                 sprintId = SprintId(projectId = UUID.randomUUID()),
+                sprintNumber = 1,
                 startDate = LocalDate.of(2025, 1, 6),
                 sprintLength = 2,
             )
@@ -44,5 +45,6 @@ class JpaSprintRepositoryTest {
         assertThat(savedEntities).hasSize(1)
         val savedSprint = savedEntities.first().toSprint()
         assertThat(savedSprint).isEqualTo(sprint)
+        assertThat(savedSprint.sprintName).isEqualTo("Sprint 1")
     }
 }

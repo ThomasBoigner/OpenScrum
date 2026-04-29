@@ -8,6 +8,7 @@ import java.util.UUID
 data class SprintDto(
     val sprintId: UUID,
     val projectId: UUID,
+    val sprintName: String,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val status: SprintStatusDto,
@@ -15,6 +16,7 @@ data class SprintDto(
     constructor(sprint: Sprint) : this(
         sprintId = sprint.sprintId.sprintId,
         projectId = sprint.sprintId.projectId,
+        sprintName = sprint.sprintName,
         startDate = sprint.startDate,
         endDate = sprint.endDate,
         status =

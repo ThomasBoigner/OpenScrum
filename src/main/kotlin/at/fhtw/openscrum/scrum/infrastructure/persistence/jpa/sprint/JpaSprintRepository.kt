@@ -11,7 +11,8 @@ class JpaSprintRepository(
 ) : SprintRepository {
     override fun save(sprint: Sprint): Sprint = sprintEntityRepository.save(SprintEntity(sprint)).toSprint()
 
-    override fun findSprintsByProjectId(projectId: UUID): List<Sprint> {
-        TODO("Not yet implemented")
-    }
+    override fun findSprintsByProjectId(projectId: UUID): List<Sprint> =
+        sprintEntityRepository.findByProjectId(projectId).map { it.toSprint() }
+
+    override fun countByProjectId(projectId: UUID): Int = sprintEntityRepository.countByProjectId(projectId)
 }

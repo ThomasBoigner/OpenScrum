@@ -6,4 +6,6 @@ interface SprintRepository {
     fun save(sprint: Sprint): Sprint
 
     fun findSprintsByProjectId(projectId: UUID): List<Sprint>
+
+    fun countByProjectId(projectId: UUID): Int
 }

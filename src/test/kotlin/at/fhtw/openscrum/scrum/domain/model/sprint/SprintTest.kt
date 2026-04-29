@@ -15,10 +15,11 @@ class SprintTest {
 
         // When
         val sprint =
-            Sprint(sprintId = SprintId(projectId = projectId), startDate = startDate, sprintLength = sprintLength)
+            Sprint(sprintId = SprintId(projectId = projectId), sprintNumber = 1, startDate = startDate, sprintLength = sprintLength)
 
         // Then
         assertThat(sprint.sprintId.projectId).isEqualTo(projectId)
+        assertThat(sprint.sprintName).isEqualTo("Sprint 1")
         assertThat(sprint.startDate).isEqualTo(startDate)
         assertThat(sprint.endDate).isEqualTo(LocalDate.of(2000, 1, 17))
     }
@@ -32,10 +33,11 @@ class SprintTest {
 
         // When
         val sprint =
-            Sprint(sprintId = SprintId(projectId = projectId), startDate = startDate, sprintLength = sprintLength)
+            Sprint(sprintId = SprintId(projectId = projectId), sprintNumber = 2, startDate = startDate, sprintLength = sprintLength)
 
         // Then
         assertThat(sprint.sprintId.projectId).isEqualTo(projectId)
+        assertThat(sprint.sprintName).isEqualTo("Sprint 2")
         assertThat(sprint.startDate).isEqualTo(startDate)
         assertThat(sprint.endDate).isEqualTo(LocalDate.of(2000, 1, 17))
     }

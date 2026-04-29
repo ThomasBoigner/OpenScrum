@@ -2,6 +2,11 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.sprint
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 @Repository
-interface SprintEntityRepository : JpaRepository<SprintEntity, Long>
+interface SprintEntityRepository : JpaRepository<SprintEntity, Long> {
+    fun findByProjectId(projectId: UUID): List<SprintEntity>
+
+    fun countByProjectId(projectId: UUID): Int
+}
