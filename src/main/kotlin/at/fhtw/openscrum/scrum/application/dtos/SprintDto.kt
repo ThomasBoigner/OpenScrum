@@ -5,7 +5,7 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 import java.time.LocalDate
 import java.util.UUID
 
-class SprintDto(
+data class SprintDto(
     val sprintId: UUID,
     val projectId: UUID,
     val startDate: LocalDate,
