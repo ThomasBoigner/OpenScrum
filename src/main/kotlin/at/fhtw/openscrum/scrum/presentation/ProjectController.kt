@@ -80,7 +80,7 @@ class ProjectController(
         model: Model,
         principal: Principal,
         @PathVariable id: UUID,
-        sprintLength: Int,
+        sprintLength: Long,
     ): String {
         log.debug(
             "Received http PUT request to update sprint length of project with id {} to sprint length {}",

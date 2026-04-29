@@ -11,7 +11,7 @@ class SprintTest {
         // Given
         val projectId = UUID.randomUUID()
         val startDate = LocalDate.of(2000, 1, 1)
-        val sprintLength = 2
+        val sprintLength = 2L
 
         // When
         val sprint =
@@ -28,7 +28,7 @@ class SprintTest {
         // Given
         val projectId = UUID.randomUUID()
         val startDate = LocalDate.of(2000, 1, 3)
-        val sprintLength = 2
+        val sprintLength = 2L
 
         // When
         val sprint =

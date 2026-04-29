@@ -6,7 +6,7 @@ import java.util.UUID
 class ProjectDto(
     val projectId: UUID,
     val projectName: String,
-    val sprintLength: Int,
+    val sprintLength: Long,
     val definitionOfDone: String?,
     val productGoal: String?,
 ) {

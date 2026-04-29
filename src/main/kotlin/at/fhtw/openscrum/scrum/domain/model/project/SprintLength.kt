@@ -1,7 +1,7 @@
 package at.fhtw.openscrum.scrum.domain.model.project
 
 data class SprintLength(
-    val length: Int,
+    val length: Long,
 ) {
     init {
         require(length > 0) { "Sprint length must not be shorter than 0 Weeks!" }

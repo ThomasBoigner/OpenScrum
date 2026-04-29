@@ -17,7 +17,7 @@ class ProjectEntity(
     var id: Long? = null,
     var projectId: UUID,
     var projectName: String,
-    var sprintLength: Int,
+    var sprintLength: Long,
     var definitionOfDone: String?,
     var productGoal: String?,
 ) : AbstractAggregateRoot<ProjectEntity>() {
@@ -28,7 +28,9 @@ class ProjectEntity(
         sprintLength = project.sprintLength.length,
         definitionOfDone = project.definitionOfDone,
         productGoal = project.productGoal,
-    )
+    ) {
+        project.sprintScheduledEvents.forEach { this.registerEvent(it) }
+    }
 
     fun toProject(): Project =
         Project(

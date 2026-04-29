@@ -8,10 +8,16 @@ class Sprint(
     val id: Long? = null,
     val sprintId: SprintId,
     val startDate: LocalDate = LocalDate.now(),
-    sprintLength: Int,
+    endDate: LocalDate,
     status: SprintStatus = SprintStatus.NOT_PLANNED,
 ) {
-    var endDate: LocalDate = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY)).plusWeeks(sprintLength.toLong())
+    constructor(sprintId: SprintId, startDate: LocalDate = LocalDate.now(), sprintLength: Long) : this(
+        sprintId = sprintId,
+        startDate = startDate,
+        endDate = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY)).plusWeeks(sprintLength),
+    )
+
+    var endDate: LocalDate = endDate
         private set
 
     var status: SprintStatus = status
