@@ -1,0 +1,80 @@
+/* Sprint list item */
+div.sprint-list-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+    width: 100%;
+}
+
+div.sprint-information {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+div.sprint-status {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+a.sprint-details-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid 3px var(--primary-color);
+    border-radius: 8px;
+    padding: 8px;
+    flex-shrink: 0;
+    width: 54px;
+}
+
+a.sprint-details-button img {
+    transform: rotate(90deg);
+}
+
+/* 600px – 1200px */
+@media screen and (max-width: 1200px) {
+    /* Sprint list */
+    section#sprint-list {
+        gap: 24px;
+        overflow: auto;
+        padding: 48px 32px;
+    }
+
+    div.sprint-information {
+        gap: 24px;
+    }
+
+    a.sprint-details-button {
+        width: 46px;
+        height: 46px;
+    }
+
+    a.sprint-details-button img {
+        height: 24px;
+    }
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    /* Sprint list */
+    section#sprint-list {
+        padding: 32px 16px;
+    }
+
+    div.sprint-list-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 32px;
+    }
+
+    div.sprint-information {
+        gap: 16px;
+    }
+}

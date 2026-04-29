@@ -7,12 +7,14 @@ import java.time.temporal.TemporalAdjusters
 class Sprint(
     val id: Long? = null,
     val sprintId: SprintId,
+    val sprintName: String,
     val startDate: LocalDate = LocalDate.now(),
     endDate: LocalDate,
     status: SprintStatus = SprintStatus.NOT_PLANNED,
 ) {
-    constructor(sprintId: SprintId, startDate: LocalDate = LocalDate.now(), sprintLength: Long) : this(
+    constructor(sprintId: SprintId, sprintNumber: Int, startDate: LocalDate = LocalDate.now(), sprintLength: Long) : this(
         sprintId = sprintId,
+        sprintName = "Sprint $sprintNumber",
         startDate = startDate,
         endDate = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY)).plusWeeks(sprintLength),
     )
