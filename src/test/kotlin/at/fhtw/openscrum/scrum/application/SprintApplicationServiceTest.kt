@@ -77,6 +77,42 @@ class SprintApplicationServiceTest {
     }
 
     @Test
+    fun ensureGetSprintWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintNumber = 1,
+                startDate = LocalDate.of(2025, 1, 6),
+                sprintLength = 2,
+            )
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(sprint)
+
+        // When
+        val result = sprintApplicationService.getSprint(projectId, sprintId)
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result).isEqualTo(SprintDto(sprint))
+    }
+
+    @Test
+    fun ensureGetSprintReturnsNullWhenSprintDoesNotExist() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(null)
+
+        // When
+        val result = sprintApplicationService.getSprint(projectId, sprintId)
+
+        // Then
+        assertThat(result).isNull()
+    }
+
+    @Test
     fun ensureInitializeSprintWorksProperly() {
         // Given
         val command =

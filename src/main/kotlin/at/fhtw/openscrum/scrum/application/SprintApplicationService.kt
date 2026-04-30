@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintService
 import org.slf4j.Logger
@@ -22,6 +23,16 @@ class SprintApplicationService(
         val sprints = sprintRepository.findSprintsByProjectId(projectId)
         log.info("Found all ({}) sprints of project with id {}", sprints.size, projectId)
         return sprints.map { SprintDto(it) }
+    }
+
+    fun getSprint(
+        projectId: UUID,
+        sprintId: UUID,
+    ): SprintDto? {
+        log.debug("Trying to get sprint of project with id {} and sprintId {}", projectId, sprintId)
+        val sprint = sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))
+        log.info(sprint?.let { "Found sprint $it" } ?: "Sprint with sprint id $projectId could not be found")
+        return sprint?.let { SprintDto(it) }
     }
 
     fun initializeSprint(command: InitializeSprintCommand): SprintDto {

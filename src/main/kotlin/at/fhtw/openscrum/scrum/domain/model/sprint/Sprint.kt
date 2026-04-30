@@ -11,6 +11,7 @@ class Sprint(
     val startDate: LocalDate = LocalDate.now(),
     endDate: LocalDate,
     status: SprintStatus = SprintStatus.NOT_PLANNED,
+    sprintGoal: String? = null,
 ) {
     constructor(sprintId: SprintId, sprintNumber: Int, startDate: LocalDate = LocalDate.now(), sprintLength: Long) : this(
         sprintId = sprintId,
@@ -23,6 +24,9 @@ class Sprint(
         private set
 
     var status: SprintStatus = status
+        private set
+
+    var sprintGoal: String? = sprintGoal
         private set
 
     override fun toString(): String = "Sprint(sprintId=$sprintId, startDate=$startDate, endDate=$endDate, status=$status)"

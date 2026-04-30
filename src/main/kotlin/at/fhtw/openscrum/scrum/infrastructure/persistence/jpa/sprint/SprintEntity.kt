@@ -24,6 +24,7 @@ class SprintEntity(
     var endDate: LocalDate,
     @Enumerated(EnumType.STRING)
     var status: SprintStatus,
+    var sprintGoal: String?,
 ) {
     constructor(sprint: Sprint) : this(
         id = sprint.id,
@@ -33,6 +34,7 @@ class SprintEntity(
         startDate = sprint.startDate,
         endDate = sprint.endDate,
         status = sprint.status,
+        sprintGoal = sprint.sprintGoal,
     )
 
     fun toSprint(): Sprint =
@@ -43,5 +45,6 @@ class SprintEntity(
             startDate = startDate,
             endDate = endDate,
             status = status,
+            sprintGoal = sprintGoal,
         )
 }

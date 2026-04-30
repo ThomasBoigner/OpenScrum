@@ -7,5 +7,7 @@ interface SprintRepository {
 
     fun findSprintsByProjectId(projectId: UUID): List<Sprint>
 
+    fun findSprintBySprintId(sprintId: SprintId): Sprint?
+
     fun countByProjectId(projectId: UUID): Int
 }

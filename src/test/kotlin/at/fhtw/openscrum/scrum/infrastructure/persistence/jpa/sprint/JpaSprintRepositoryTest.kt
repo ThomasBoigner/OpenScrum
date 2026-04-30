@@ -47,4 +47,26 @@ class JpaSprintRepositoryTest {
         assertThat(savedSprint).isEqualTo(sprint)
         assertThat(savedSprint.sprintName).isEqualTo("Sprint 1")
     }
+
+    @Test
+    fun ensureFindSprintBySprintIdWorksProperly() {
+        // Given
+        val sprintId = SprintId(projectId = UUID.randomUUID())
+        val sprint =
+            Sprint(
+                sprintId = sprintId,
+                sprintNumber = 1,
+                startDate = LocalDate.of(2025, 1, 6),
+                sprintLength = 2,
+            )
+        sprintRepository.save(sprint)
+
+        // When
+        val result = sprintRepository.findSprintBySprintId(sprintId)
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result).isEqualTo(sprint)
+        assertThat(result!!.sprintName).isEqualTo("Sprint 1")
+    }
 }
