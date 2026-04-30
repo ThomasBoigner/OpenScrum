@@ -43,7 +43,7 @@ class ProductBacklogController(
         log.debug("Serving list product backlog page for project with id {}", id)
         val authenticatedTeamMember =
             teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
-        val project = projectApplicationService.getProject(id)
+        val project = projectApplicationService.getProject(id) ?: return "error/404"
 
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("project", project)
