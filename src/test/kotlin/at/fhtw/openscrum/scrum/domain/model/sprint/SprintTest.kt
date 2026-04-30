@@ -21,7 +21,7 @@ class SprintTest {
         assertThat(sprint.sprintId.projectId).isEqualTo(projectId)
         assertThat(sprint.sprintName).isEqualTo("Sprint 1")
         assertThat(sprint.startDate).isEqualTo(startDate)
-        assertThat(sprint.endDate).isEqualTo(LocalDate.of(2000, 1, 17))
+        assertThat(sprint.endDate).isEqualTo(LocalDate.of(2000, 1, 16))
     }
 
     @Test
@@ -39,6 +39,6 @@ class SprintTest {
         assertThat(sprint.sprintId.projectId).isEqualTo(projectId)
         assertThat(sprint.sprintName).isEqualTo("Sprint 2")
         assertThat(sprint.startDate).isEqualTo(startDate)
-        assertThat(sprint.endDate).isEqualTo(LocalDate.of(2000, 1, 17))
+        assertThat(sprint.endDate).isEqualTo(LocalDate.of(2000, 1, 16))
     }
 }

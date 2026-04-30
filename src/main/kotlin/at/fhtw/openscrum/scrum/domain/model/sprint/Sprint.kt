@@ -17,7 +17,7 @@ class Sprint(
         sprintId = sprintId,
         sprintName = "Sprint $sprintNumber",
         startDate = startDate,
-        endDate = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY)).plusWeeks(sprintLength),
+        endDate = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY)).plusWeeks(sprintLength).minusDays(1),
     )
 
     var endDate: LocalDate = endDate

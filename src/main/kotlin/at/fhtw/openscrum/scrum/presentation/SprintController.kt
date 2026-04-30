@@ -56,10 +56,15 @@ class SprintController(
     @GetMapping(value = [ROUTE_DETAILS])
     fun getSprintDetails(
         model: Model,
+        principal: Principal,
         @PathVariable id: UUID,
         @PathVariable sprintId: UUID,
     ): String {
         log.debug("Serving sprint details")
+        teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
+        val sprint = sprintApplicationService.getSprint(id, sprintId) ?: return "error/404"
+
+        model.addAttribute("sprint", sprint)
         return "pages/sprint-details-page"
     }
 }

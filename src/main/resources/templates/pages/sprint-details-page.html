@@ -19,9 +19,9 @@
     <link rel="stylesheet" th:href="@{/css/pages/sprint-details-page.css}">
 </head>
 <body>
-<div class="container">
+<div class="container" th:object="${sprint}">
     <header id="sprint-header">
-        <a class="btn back-button">
+        <a class="btn back-button" th:href="@{/projects/{id}/sprints(id=*{projectId})}">
             <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
             Back
         </a>
@@ -36,7 +36,7 @@
     </header>
 
     <section id="sprint-details">
-        <h1>Sprint Name</h1>
+        <h1 th:text="*{sprintName}">Sprint Name</h1>
 
         <div class="details-row">
             <div class="detail-card">
@@ -44,24 +44,24 @@
                 <div class="card-info">
                     <div class="info-group">
                         <label>Start Date</label>
-                        <p>01.01.2020</p>
+                        <p th:text="*{#temporals.format(startDate, 'dd.MM.yyyy')}">01.01.2020</p>
                     </div>
                     <div class="info-group">
                         <label>End Date</label>
-                        <p>01.02.2020</p>
+                        <p th:text="*{#temporals.format(endDate, 'dd.MM.yyyy')}">01.02.2020</p>
                     </div>
                     <div class="info-group">
                         <label>Status</label>
-                        <p>In progress</p>
+                        <p th:text="*{status.displayName}">In progress</p>
                     </div>
                 </div>
             </div>
 
-            <div class="detail-card">
+            <div class="detail-card" th:if="*{sprintGoal != null}">
                 <img th:src="@{/assets/svg/flag-checkered.svg}" alt="Flag">
                 <div class="card-info">
                     <label>Sprint Goal</label>
-                    <p>Sprint Goal text</p>
+                    <p th:text="*{sprintGoal}">Sprint Goal text</p>
                 </div>
             </div>
         </div>
