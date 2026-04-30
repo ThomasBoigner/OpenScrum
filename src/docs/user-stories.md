@@ -211,12 +211,12 @@ Then he receives an error that he has no permission to plan the sprint
 ### Test 4
 Given a scrum master, a sprint, a blank sprint goal and product backlog items  
 When the scrum master enters the information into the plan sprint form  
-Then the sprint goal should be null and the product backlog items get commited to the sprint
+Then he receives an error that the sprint goal can not be blank
 
 ### Test 5
 Given a scrum master, a sprint and a sprint goal and no product backlog items  
 When the scrum master enters the information into the plan sprint form  
-Then the scrum master should receive an error that the sprint backlog can not be null
+Then the scrum master should receive an error that the sprint backlog can not be empty
 
 ## 13. As a product owner I want to cancel a sprint, so that I can stop a sprint that will not produce any value.
 

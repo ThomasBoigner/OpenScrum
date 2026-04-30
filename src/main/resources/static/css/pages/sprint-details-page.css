@@ -187,3 +187,52 @@ a.sprint-planning-button {
     }
 }
 
+/* < 600px */
+@media screen and (max-width: 600px) {
+    header#sprint-header {
+        flex-direction: column;
+        padding: 32px 16px;
+    }
+
+    a.back-button {
+        width: 100%;
+    }
+
+    header#sprint-header nav {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    header#sprint-header nav a.btn {
+        width: 100%;
+    }
+
+    section#sprint-details {
+        gap: 32px;
+        padding: 32px 16px;
+    }
+
+    div.detail-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    div.card-info:has(div.info-group) {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    a.sprint-planning-button {
+        padding: 16px;
+        width: 64px;
+        height: 64px;
+        right: 16px;
+        bottom: 16px;
+    }
+
+    a.sprint-planning-button img {
+        width: 32px;
+        height: 32px;
+    }
+}
+
