@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -15,10 +15,61 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet" th:href="@{/css/pages/sprint-details-page.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/pages/sprint-details-page.css}">
 </head>
 <body>
-    <h1>Sprint Name</h1>
+<div class="container">
+    <header id="sprint-header">
+        <a class="btn back-button">
+            <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
+            Back
+        </a>
+        <nav>
+            <a class="btn selected">
+                Details
+            </a>
+            <a class="btn">
+                Kanban Board
+            </a>
+        </nav>
+    </header>
+
+    <section id="sprint-details">
+        <h1>Sprint Name</h1>
+
+        <div class="details-row">
+            <div class="detail-card">
+                <img th:src="@{/assets/svg/calendar.svg}" alt="Calendar">
+                <div class="card-info">
+                    <div class="info-group">
+                        <label>Start Date</label>
+                        <p>01.01.2020</p>
+                    </div>
+                    <div class="info-group">
+                        <label>End Date</label>
+                        <p>01.02.2020</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Status</label>
+                        <p>In progress</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <img th:src="@{/assets/svg/flag-checkered.svg}" alt="Flag">
+                <div class="card-info">
+                    <label>Sprint Goal</label>
+                    <p>Sprint Goal text</p>
+                </div>
+            </div>
+        </div>
+
+        <a class="sprint-planning-button">
+            <img th:src="@{/assets/svg/gear.svg}" alt="Gear">
+        </a>
+    </section>
+</div>
 </body>
 </html>
