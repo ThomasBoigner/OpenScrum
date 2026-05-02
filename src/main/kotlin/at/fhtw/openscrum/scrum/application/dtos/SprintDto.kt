@@ -20,12 +20,7 @@ data class SprintDto(
         sprintName = sprint.sprintName,
         startDate = sprint.startDate,
         endDate = sprint.endDate,
-        status =
-            when (sprint.status) {
-                SprintStatus.NOT_PLANNED -> SprintStatusDto.NOT_PLANNED
-                SprintStatus.IN_PROGRESS -> SprintStatusDto.IN_PROGRESS
-                SprintStatus.COMPLETED -> SprintStatusDto.COMPLETED
-            },
+        status = SprintStatusDto.fromSprintStatus(sprint.status),
         sprintGoal = sprint.sprintGoal,
     )
 }

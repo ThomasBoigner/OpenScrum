@@ -20,9 +20,6 @@ data class UserDto(
         user.fullName.firstName,
         user.fullName.lastName,
         user.fullName.fullName,
-        when (user.role) {
-            Role.USER -> RoleDto.USER
-            Role.MANAGER -> RoleDto.MANAGER
-        },
+        RoleDto.Companion.fromRole(user.role),
     )
 }

@@ -209,11 +209,21 @@ When the scrum master enters the information into the plan sprint form
 Then he receives an error that he has no permission to plan the sprint
 
 ### Test 4
+Given a scrum master, a sprint with sprint status that is not "not planned", a sprint goal and product backlog items  
+When the scrum master enters the information into the plan sprint form  
+Then he receives an error that the sprint can not be planned
+
+### Test 4
+Given a scrum master, a sprint, a sprint goal and product backlog items that are already done  
+When the scrum master enters the information into the plan sprint form  
+Then he receives an error he can not commit already finished backlog items to a sprint
+
+### Test 5
 Given a scrum master, a sprint, a blank sprint goal and product backlog items  
 When the scrum master enters the information into the plan sprint form  
 Then he receives an error that the sprint goal can not be blank
 
-### Test 5
+### Test 6
 Given a scrum master, a sprint and a sprint goal and no product backlog items  
 When the scrum master enters the information into the plan sprint form  
 Then the scrum master should receive an error that the sprint backlog can not be empty

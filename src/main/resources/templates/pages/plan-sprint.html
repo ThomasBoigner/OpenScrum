@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -19,6 +19,52 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<h1>Sprint Planning</h1>
+<div class="container">
+    <section id="hero">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
+        <h1>Sprint Planning</h1>
+        <h3>Plan the next sprint, decide what should be done!</h3>
+    </section>
+    <section id="plan-sprint-form">
+        <form method="post">
+            <div class="error-message">
+                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+                <p>Error while defining product backlog item!</p>
+                <div>
+                    <p>Validation error while defining product backlog item!</p>
+                </div>
+            </div>
+
+            <div id="input-fields">
+                <div id="sprint-goal">
+                    <label for="sprint-goal-input">Sprint Goal</label>
+                    <textarea id="sprint-goal-input" name="sprintGoal"
+                              placeholder="Describe the goal of this sprint!"></textarea>
+                </div>
+                <div id="sprint-backlog-items">
+                    <div class="product-backlog-item">
+                        <input type="checkbox" name="selectedItems">
+                        <div class="backlog-item-info">
+                            <h2>Item Title</h2>
+                            <div class="info-group">
+                                <label>Description</label>
+                                <p>Item description goes here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="submit-go-back">
+                <button type="submit">
+                    Commit to sprint
+                    <img th:src="@{/assets/svg/check.svg}" alt="check">
+                </button>
+                <p>Changed your mind? Go <a>back</a>!</p>
+            </div>
+        </form>
+    </section>
+</div>
 </body>
 </html>

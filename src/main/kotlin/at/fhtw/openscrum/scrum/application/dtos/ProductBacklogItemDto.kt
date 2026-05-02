@@ -16,11 +16,6 @@ data class ProductBacklogItemDto(
         projectId = productBacklogItem.productBacklogItemId.projectId,
         title = productBacklogItem.title,
         description = productBacklogItem.description,
-        status =
-            when (productBacklogItem.status) {
-                ProductBacklogItemStatus.IN_BACKLOG -> ProductBacklogItemStatusDto.IN_BACKLOG
-                ProductBacklogItemStatus.COMMITED_TO_SPRINT -> ProductBacklogItemStatusDto.COMMITED_TO_SPRINT
-                ProductBacklogItemStatus.DONE -> ProductBacklogItemStatusDto.DONE
-            },
+        status = ProductBacklogItemStatusDto.Companion.fromProductBacklogItemStatus(productBacklogItem.status),
     )
 }
