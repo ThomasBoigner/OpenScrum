@@ -21,7 +21,7 @@
 <body>
 <div class="container" th:object="${sprint}">
     <header id="sprint-header">
-        <a class="btn back-button" th:href="@{/projects/{id}/sprints(id=*{projectId})}">
+        <a class="btn back-button" th:href="@{/projects/{projectId}/sprints(projectId=*{projectId})}">
             <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
             Back
         </a>
@@ -66,7 +66,7 @@
             </div>
         </div>
 
-        <a class="sprint-planning-button">
+        <a th:if="${authenticatedTeamMember.isScrumMaster()}" class="sprint-planning-button" th:href="@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=*{projectId}, sprintId=*{sprintId})}">
             <img th:src="@{/assets/svg/gear.svg}" alt="Gear">
         </a>
     </section>

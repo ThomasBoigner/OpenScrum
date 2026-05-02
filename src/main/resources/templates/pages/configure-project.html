@@ -37,7 +37,7 @@
         </div>
 
         <div class="input-fields">
-            <form id="sprint-length-form" th:if="${authenticatedTeamMember.isScrumMaster}" hx:put="@{/projects/{id}/configure/sprint-length(id=*{projectId})}"
+            <form id="sprint-length-form" th:if="${authenticatedTeamMember.isScrumMaster}" hx:put="@{/projects/{projectId}/configure/sprint-length(projectId=*{projectId})}"
                   hx-target="div#message" hx-swap="outerHTML">
                 <div class="label-input">
                     <label for="sprint-length">Sprint length:</label>
@@ -48,7 +48,7 @@
                 <button type="submit">Save</button>
             </form>
 
-            <form id="product-goal-form" th:if="${authenticatedTeamMember.isProductOwner}" hx:put="@{/projects/{id}/configure/product-goal(id=*{projectId})}"
+            <form id="product-goal-form" th:if="${authenticatedTeamMember.isProductOwner}" hx:put="@{/projects/{projectId}/configure/product-goal(projectId=*{projectId})}"
                   hx-target="div#message" hx-swap="outerHTML">
                 <div class="label-input">
                     <label for="product-goal">Product goal:</label>
@@ -59,7 +59,7 @@
                 <button type="submit">Save</button>
             </form>
 
-            <form id="definition-of-done-form" th:if="${authenticatedTeamMember.isScrumMaster()}" hx:put="@{/projects/{id}/configure/definition-of-done(id=*{projectId})}"
+            <form id="definition-of-done-form" th:if="${authenticatedTeamMember.isScrumMaster()}" hx:put="@{/projects/{projectId}/configure/definition-of-done(projectId=*{projectId})}"
                   hx-target="div#message" hx-swap="outerHTML">
                 <div class="label-input">
                     <label for="definition-of-done">Definition of done:</label>
@@ -71,7 +71,7 @@
             </form>
         </div>
 
-        <a class="btn" th:href="@{/projects/{id}(id=*{projectId})}">
+        <a class="btn" th:href="@{/projects/{projectId}(projectId=*{projectId})}">
             <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
             Back
         </a>

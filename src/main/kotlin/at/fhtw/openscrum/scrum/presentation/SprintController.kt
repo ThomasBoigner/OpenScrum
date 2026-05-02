@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.presentation
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,21 +24,22 @@ class SprintController(
     private val log: Logger = LoggerFactory.getLogger(SprintController::class.java),
 ) {
     companion object {
-        const val BASE_URL = "/projects/{id}/sprints"
+        const val BASE_URL = "/projects/{projectId}/sprints"
         const val PATH_INDEX = "/"
         const val FRAGMENT_SPRINT_LIST_ITEM = "/list"
         const val ROUTE_DETAILS = "/{sprintId}"
+        const val ROUTE_PLANNING = "/{sprintId}/planning"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
     fun index(
         model: Model,
         principal: Principal,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
     ): String {
-        log.debug("Serving list sprints page for project with id {}", id)
-        teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
-        val project = projectApplicationService.getProject(id) ?: return "error/404"
+        log.debug("Serving list sprints page for project with id {}", projectId)
+        teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
+        val project = projectApplicationService.getProject(projectId) ?: return "error/404"
 
         model.addAttribute("project", project)
         return "pages/list-sprints"
@@ -47,9 +49,9 @@ class SprintController(
     @GetMapping(value = [FRAGMENT_SPRINT_LIST_ITEM])
     fun getSprintListItems(
         model: Model,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
     ): String {
-        model.addAttribute("sprints", sprintApplicationService.getSprintsOfProject(id))
+        model.addAttribute("sprints", sprintApplicationService.getSprintsOfProject(projectId))
         return "fragments/sprint-list-item"
     }
 
@@ -57,14 +59,29 @@ class SprintController(
     fun getSprintDetails(
         model: Model,
         principal: Principal,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
         @PathVariable sprintId: UUID,
     ): String {
         log.debug("Serving sprint details")
-        teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
-        val sprint = sprintApplicationService.getSprint(id, sprintId) ?: return "error/404"
+        val authenticatedTeamMember = teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
+        val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
 
+        model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("sprint", sprint)
         return "pages/sprint-details-page"
+    }
+
+    @GetMapping(value = [ROUTE_PLANNING])
+    fun showPlanSprintForm(
+        model: Model,
+        principal: Principal,
+        @PathVariable projectId: UUID,
+        @PathVariable sprintId: UUID,
+    ): String {
+        log.debug("Serving plan sprint page for sprint with project id {} and sprint id {}", projectId, sprintId)
+        val authenticatedTeamMember = teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
+        if (!authenticatedTeamMember.isScrumMaster) return "error/403"
+        sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
+        return "pages/plan-sprint"
     }
 }

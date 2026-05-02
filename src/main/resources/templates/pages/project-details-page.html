@@ -25,15 +25,15 @@
             <img th:src="@{/assets/svg/logo-secondary.svg}" alt="Logo">
         </a>
         <nav>
-            <a class="btn selected" th:href="@{/projects/{id}(id=*{projectId})}">
+            <a class="btn selected" th:href="@{/projects/{projectId}(projectId=*{projectId})}">
                 <img th:src="@{/assets/svg/sticky-white.svg}" alt="Sticky">
                 Details
             </a>
-            <a class="btn" th:href="@{/projects/{id}/backlog(id=*{projectId})}">
+            <a class="btn" th:href="@{/projects/{projectId}/backlog(projectId=*{projectId})}">
                 <img th:src="@{/assets/svg/list.svg}" alt="List">
                 Backlog
             </a>
-            <a class="btn" th:href="@{/projects/{id}/sprints(id=*{projectId})}">
+            <a class="btn" th:href="@{/projects/{projectId}/sprints(projectId=*{projectId})}">
                 <img th:src="@{/assets/svg/rotate.svg}" alt="Rotate">
                 Sprints
             </a>
@@ -95,7 +95,7 @@
             </div>
         </div>
 
-        <a th:if="${authenticatedTeamMember.isProductOwner || authenticatedTeamMember.isScrumMaster}" class="settings-button" th:href="@{/projects/{id}/configure(id=*{projectId})}">
+        <a th:if="${authenticatedTeamMember.isProductOwner || authenticatedTeamMember.isScrumMaster}" class="settings-button" th:href="@{/projects/{projectId}/configure(id=*{projectId})}">
             <img th:src="@{/assets/svg/gear.svg}" alt="Gear">
         </a>
     </section>

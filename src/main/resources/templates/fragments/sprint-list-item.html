@@ -7,7 +7,7 @@
             <p th:text="*{status.displayName}">In progress</p>
         </div>
     </div>
-    <a class="sprint-details-button" th:href="@{/projects/{id}/sprints/{sprintId}(id=*{projectId}, sprintId=*{sprintId})}">
+    <a class="sprint-details-button" th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">
         <img th:src="@{/assets/svg/arrow-primary.svg}" alt="arrow">
     </a>
 </div>

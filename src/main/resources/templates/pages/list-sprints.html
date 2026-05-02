@@ -28,15 +28,15 @@
             <img th:src="@{/assets/svg/logo-secondary.svg}" alt="Logo">
         </a>
         <nav>
-            <a class="btn" th:href="@{/projects/{id}(id=*{projectId})}">
+            <a class="btn" th:href="@{/projects/{projectId}(projectId=*{projectId})}">
                 <img th:src="@{/assets/svg/sticky.svg}" alt="Sticky">
                 Details
             </a>
-            <a class="btn" th:href="@{/projects/{id}/backlog(id=*{projectId})}">
+            <a class="btn" th:href="@{/projects/{projectId}/backlog(projectId=*{projectId})}">
                 <img th:src="@{/assets/svg/list.svg}" alt="List">
                 Backlog
             </a>
-            <a class="btn selected" th:href="@{/projects/{id}/sprints(id=*{projectId})}">
+            <a class="btn selected" th:href="@{/projects/{projectId}/sprints(projectId=*{projectId})}">
                 <img th:src="@{/assets/svg/rotate-white.svg}" alt="Rotate">
                 Sprints
             </a>
@@ -48,7 +48,7 @@
             <label for="search"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
             <input type="text" id="search" placeholder="Search">
         </div>
-        <p hx:get="@{/projects/{id}/sprints/list(id=*{projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load sprints!</p>
+        <p hx:get="@{/projects/{projectId}/sprints/list(projectId=*{projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load sprints!</p>
     </section>
 </div>
 </body>
