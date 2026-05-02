@@ -10,7 +10,7 @@ class Project(
     sprintLength: SprintLength = SprintLength(2),
     productGoal: String? = null,
     definitionOfDone: String? = null,
-    val sprintScheduledEvents: MutableList<SprintScheduled> = mutableListOf(),
+    val sprintScheduledEvents: MutableList<SprintScheduled> = mutableListOf(SprintScheduled(projectId, sprintLength)),
 ) {
     var sprintLength: SprintLength = sprintLength
         private set
@@ -18,10 +18,6 @@ class Project(
         private set
     var definitionOfDone: String? = definitionOfDone
         private set
-
-    init {
-        sprintScheduledEvents.add(SprintScheduled(projectId = projectId, sprintLength = sprintLength))
-    }
 
     fun defineSprintLength(
         scrumMaster: ScrumMaster?,

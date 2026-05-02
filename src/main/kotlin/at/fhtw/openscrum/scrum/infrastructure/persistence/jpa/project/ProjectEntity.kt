@@ -40,5 +40,6 @@ class ProjectEntity(
             sprintLength = SprintLength(sprintLength),
             definitionOfDone = definitionOfDone,
             productGoal = productGoal,
+            sprintScheduledEvents = mutableListOf(),
         )
 }

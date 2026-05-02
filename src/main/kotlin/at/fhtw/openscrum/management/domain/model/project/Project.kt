@@ -9,14 +9,14 @@ class Project(
     productOwnerId: UserId,
     scrumMasterId: UserId,
     val developerIds: Set<UserId> = setOf(),
-    val projectCreatedEvents: MutableList<ProjectCreated> = mutableListOf(),
+    val projectCreatedEvents: MutableList<ProjectCreated> = mutableListOf(ProjectCreated(projectId, projectName)),
     val scrumMasterAssignedEvents: MutableList<ScrumMasterAssigned> = mutableListOf(),
     val productOwnerAssignedEvents: MutableList<ProductOwnerAssigned> = mutableListOf(),
     val developerAssignedEvents: MutableList<DeveloperAssigned> = mutableListOf(),
 ) {
     var projectName: String = ""
         private set(value) {
-            require(value.isNotBlank()) { "Project name cannot be blank" }
+            require(value.isNotBlank()) { "Project name must not be blank!" }
             field = value
         }
 
@@ -28,7 +28,6 @@ class Project(
 
     init {
         this.projectName = projectName
-        this.projectCreatedEvents.add(ProjectCreated(projectId, projectName))
     }
 
     override fun toString(): String =
