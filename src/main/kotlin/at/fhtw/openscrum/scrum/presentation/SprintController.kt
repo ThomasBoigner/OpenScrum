@@ -90,10 +90,17 @@ class SprintController(
 
     @GetMapping(value = [ROUTE_KANBAN_BOARD])
     fun getSprintKanbanBoard(
+        model: Model,
+        principal: Principal,
         @PathVariable projectId: UUID,
         @PathVariable sprintId: UUID,
     ): String {
         log.debug("Serving sprint kanban board for sprint with project id {} and sprint id {}", projectId, sprintId)
+        val authenticatedTeamMember = teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
+        val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
+
+        model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
+        model.addAttribute("sprint", sprint)
         return "pages/sprint-kanban-board-page"
     }
 }

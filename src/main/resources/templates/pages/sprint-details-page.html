@@ -26,13 +26,19 @@
             Back
         </a>
         <nav>
-            <a class="btn selected" th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">
+            <a class="btn selected"
+               th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">
                 Details
             </a>
-            <a class="btn" th:href="@{/projects/{projectId}/sprints/{sprintId}/kanban-board(projectId=*{projectId}, sprintId=*{sprintId})}">
+            <a class="btn"
+               th:href="@{/projects/{projectId}/sprints/{sprintId}/kanban-board(projectId=*{projectId}, sprintId=*{sprintId})}">
                 Kanban Board
             </a>
         </nav>
+        <a class="btn cancel-sprint-button">
+            <img th:src="@{/assets/svg/cancel.svg}" alt="Cancel">
+            Cancel sprint
+        </a>
     </header>
 
     <section id="sprint-details">
@@ -66,7 +72,8 @@
             </div>
         </div>
 
-        <a th:if="${authenticatedTeamMember.isScrumMaster()}" class="sprint-planning-button" th:href="@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=*{projectId}, sprintId=*{sprintId})}">
+        <a th:if="${authenticatedTeamMember.isScrumMaster()}" class="sprint-planning-button"
+           th:href="@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=*{projectId}, sprintId=*{sprintId})}">
             <img th:src="@{/assets/svg/gear.svg}" alt="Gear">
         </a>
     </section>

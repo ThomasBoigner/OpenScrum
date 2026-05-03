@@ -34,7 +34,7 @@ a.back-button {
     border-radius: 8px;
     padding: 16px 24px;
     box-shadow: 0 4px 24px rgb(196, 196, 196);
-    width: 192px;
+    width: 256px;
 }
 
 a.back-button img {
@@ -71,6 +71,32 @@ header#sprint-header nav a.btn {
 header#sprint-header nav a.selected {
     background-color: var(--primary-color);
     color: var(--white);
+}
+
+/* Cancel sprint button */
+a.cancel-sprint-button {
+    position: absolute;
+    right: 32px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background-color: var(--error);
+    color: var(--white);
+    border-radius: 8px;
+    padding: 16px 24px;
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
+    width: 256px;
+}
+
+a.cancel-sprint-button img {
+    width: 32px;
+    height: auto;
+}
+
+a.cancel-sprint-button:hover {
+    gap: 8px;
 }
 
 /* Sprint details section */

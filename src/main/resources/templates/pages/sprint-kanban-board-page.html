@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -19,6 +19,88 @@
     <link rel="stylesheet" th:href="@{/css/pages/sprint-kanban-board-page.css}">
 </head>
 <body>
-<h1>Sprint kanban board</h1>
+<div class="container" th:object="${sprint}">
+    <header id="sprint-header">
+        <a class="btn back-button" th:href="@{/projects/{projectId}/sprints(projectId=*{projectId})}">
+            <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
+            Back
+        </a>
+        <nav>
+            <a class="btn"
+               th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">
+                Details
+            </a>
+            <a class="btn selected"
+               th:href="@{/projects/{projectId}/sprints/{sprintId}/kanban-board(projectId=*{projectId}, sprintId=*{sprintId})}">
+                Kanban Board
+            </a>
+        </nav>
+        <a class="btn cancel-sprint-button">
+            <img th:src="@{/assets/svg/cancel.svg}" alt="Cancel">
+            Cancel sprint
+        </a>
+    </header>
+
+    <div id="kanban-board">
+        <div class="kanban-column" id="todo-column">
+            <h3>To-Do</h3>
+            <div class="sprint-backlog-item">
+                <h4>Item Title</h4>
+                <div class="info-group">
+                    <label>Description</label>
+                    <p>Item description goes here.</p>
+                </div>
+                <div class="move-buttons">
+                    <button class="move-right-button">
+                        <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move right" class="arrow-right">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="kanban-column" id="in-progress-column">
+            <h3>In progress</h3>
+            <div class="sprint-backlog-item">
+                <h4>Item Title</h4>
+                <div class="info-group">
+                    <label>Assigned to</label>
+                    <p>Team member</p>
+                </div>
+                <div class="info-group">
+                    <label>Description</label>
+                    <p>Item description goes here.</p>
+                </div>
+                <div class="move-buttons">
+                    <button class="move-left-button">
+                        <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move left" class="arrow-left">
+                    </button>
+                    <button class="move-right-button">
+                        <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move right" class="arrow-right">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="kanban-column" id="done-column">
+            <h3>Done</h3>
+            <div class="sprint-backlog-item">
+                <h4>Item Title</h4>
+                <div class="info-group">
+                    <label>Assigned to</label>
+                    <p>Team member</p>
+                </div>
+                <div class="info-group">
+                    <label>Description</label>
+                    <p>Item description goes here.</p>
+                </div>
+                <div class="move-buttons">
+                    <button class="move-left-button">
+                        <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move left" class="arrow-left">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
