@@ -173,13 +173,14 @@ a.sprint-planning-button {
 @media screen and (max-width: 1200px) {
     /* Header */
     header#sprint-header {
+        flex-direction: column;
         padding: 48px 32px;
         gap: 32px;
     }
 
-    a.back-button {
+    a.back-button,
+    a.cancel-sprint-button {
         position: static;
-        width: 144px;
     }
 
     /* Sprint details section */
@@ -216,11 +217,11 @@ a.sprint-planning-button {
 /* < 600px */
 @media screen and (max-width: 600px) {
     header#sprint-header {
-        flex-direction: column;
         padding: 32px 16px;
     }
 
-    a.back-button {
+    a.back-button,
+    a.cancel-sprint-button {
         width: 100%;
     }
 

@@ -169,3 +169,74 @@ img.arrow-left {
 img.arrow-right {
     transform: rotate(90deg);
 }
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    /* Header */
+    header#sprint-header {
+        flex-direction: column;
+        padding: 48px 32px;
+        gap: 32px;
+    }
+
+    a.back-button,
+    a.cancel-sprint-button {
+        position: static;
+    }
+
+    /* Kanban board */
+    div#kanban-board {
+        flex-direction: column;
+        flex: none;
+    }
+
+    /* Kanban columns */
+    div.kanban-column {
+        flex: none;
+        width: 100%;
+        padding: 48px 32px;
+        gap: 24px;
+        align-items: flex-start;
+    }
+
+    img.arrow-left {
+        transform: rotate(0deg);
+    }
+
+    img.arrow-right {
+        transform: rotate(180deg);
+    }
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    /* Header */
+    header#sprint-header {
+        padding: 32px 16px;
+    }
+
+    a.back-button,
+    a.cancel-sprint-button {
+        width: 100%;
+    }
+
+    header#sprint-header nav {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    header#sprint-header nav a.btn {
+        width: 100%;
+    }
+
+    /* Kanban columns */
+    div.kanban-column {
+        padding: 32px 16px;
+        gap: 16px;
+    }
+
+    /* Move buttons stack vertically */
+    div.move-buttons {
+        flex-direction: column;
+    }
+}
