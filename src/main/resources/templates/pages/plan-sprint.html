@@ -45,9 +45,11 @@
                 </div>
                 <div id="sprint-backlog-items">
                     <div class="product-backlog-item">
-                        <input type="checkbox" name="selectedItems">
+                        <input id="select-backlog-item" type="checkbox">
                         <div class="backlog-item-info">
-                            <h2>Item Title</h2>
+                            <h2>
+                                <label for="select-backlog-item">Item Title</label>
+                            </h2>
                             <div class="info-group">
                                 <label>Description</label>
                                 <p>Item description goes here.</p>
@@ -59,7 +61,7 @@
             <div class="submit-go-back">
                 <button type="submit">
                     Commit to sprint
-                    <img th:src="@{/assets/svg/check.svg}" alt="check">
+                    <img th:src="@{/assets/svg/check-white.svg}" alt="check">
                 </button>
                 <p>Changed your mind? Go <a>back</a>!</p>
             </div>
