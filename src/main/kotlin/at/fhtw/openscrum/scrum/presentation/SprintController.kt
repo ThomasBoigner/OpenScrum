@@ -81,7 +81,9 @@ class SprintController(
         log.debug("Serving plan sprint page for sprint with project id {} and sprint id {}", projectId, sprintId)
         val authenticatedTeamMember = teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         if (!authenticatedTeamMember.isScrumMaster) return "error/403"
-        sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
+        val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
+
+        model.addAttribute("sprint", sprint)
         return "pages/plan-sprint"
     }
 }

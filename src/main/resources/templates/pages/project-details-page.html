@@ -95,7 +95,7 @@
             </div>
         </div>
 
-        <a th:if="${authenticatedTeamMember.isProductOwner || authenticatedTeamMember.isScrumMaster}" class="settings-button" th:href="@{/projects/{projectId}/configure(id=*{projectId})}">
+        <a th:if="${authenticatedTeamMember.isProductOwner || authenticatedTeamMember.isScrumMaster}" class="settings-button" th:href="@{/projects/{projectId}/configure(projectId=*{projectId})}">
             <img th:src="@{/assets/svg/gear.svg}" alt="Gear">
         </a>
     </section>

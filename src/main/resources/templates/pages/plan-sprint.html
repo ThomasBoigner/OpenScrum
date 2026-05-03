@@ -60,10 +60,10 @@
             </div>
             <div class="submit-go-back">
                 <button type="submit">
-                    Commit to sprint
+                    Commit
                     <img th:src="@{/assets/svg/check-white.svg}" alt="check">
                 </button>
-                <p>Changed your mind? Go <a>back</a>!</p>
+                <p>Changed your mind? Go <a th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=${sprint.projectId}, sprintId=${sprint.sprintId})}">back</a>!</p>
             </div>
         </form>
     </section>
