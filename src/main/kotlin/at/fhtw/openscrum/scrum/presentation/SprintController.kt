@@ -29,6 +29,7 @@ class SprintController(
         const val FRAGMENT_SPRINT_LIST_ITEM = "/list"
         const val ROUTE_DETAILS = "/{sprintId}"
         const val ROUTE_PLANNING = "/{sprintId}/planning"
+        const val ROUTE_KANBAN_BOARD = "/{sprintId}/kanban-board"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -62,7 +63,7 @@ class SprintController(
         @PathVariable projectId: UUID,
         @PathVariable sprintId: UUID,
     ): String {
-        log.debug("Serving sprint details")
+        log.debug("Serving sprint details for sprint with project id {} and sprint id {}", projectId, sprintId)
         val authenticatedTeamMember = teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
 
@@ -85,5 +86,14 @@ class SprintController(
 
         model.addAttribute("sprint", sprint)
         return "pages/plan-sprint"
+    }
+
+    @GetMapping(value = [ROUTE_KANBAN_BOARD])
+    fun getSprintKanbanBoard(
+        @PathVariable projectId: UUID,
+        @PathVariable sprintId: UUID,
+    ): String {
+        log.debug("Serving sprint kanban board for sprint with project id {} and sprint id {}", projectId, sprintId)
+        return "pages/sprint-kanban-board-page"
     }
 }

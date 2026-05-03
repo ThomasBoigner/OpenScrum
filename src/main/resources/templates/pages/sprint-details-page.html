@@ -26,10 +26,10 @@
             Back
         </a>
         <nav>
-            <a class="btn selected">
+            <a class="btn selected" th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">
                 Details
             </a>
-            <a class="btn">
+            <a class="btn" th:href="@{/projects/{projectId}/sprints/{sprintId}/kanban-board(projectId=*{projectId}, sprintId=*{sprintId})}">
                 Kanban Board
             </a>
         </nav>
