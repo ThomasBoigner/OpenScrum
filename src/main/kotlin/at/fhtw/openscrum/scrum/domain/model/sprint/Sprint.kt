@@ -1,5 +1,7 @@
 package at.fhtw.openscrum.scrum.domain.model.sprint
 
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
@@ -12,8 +14,14 @@ class Sprint(
     endDate: LocalDate,
     status: SprintStatus = SprintStatus.NOT_PLANNED,
     sprintGoal: String? = null,
+    val sprintBacklogItems: MutableSet<SprintBacklogItem> = mutableSetOf(),
 ) {
-    constructor(sprintId: SprintId, sprintNumber: Int, startDate: LocalDate = LocalDate.now(), sprintLength: Long) : this(
+    constructor(
+        sprintId: SprintId,
+        sprintNumber: Int,
+        startDate: LocalDate = LocalDate.now(),
+        sprintLength: Long,
+    ) : this(
         sprintId = sprintId,
         sprintName = "Sprint $sprintNumber",
         startDate = startDate,
@@ -28,6 +36,35 @@ class Sprint(
 
     var sprintGoal: String? = sprintGoal
         private set
+
+    fun planSprint(
+        scrumMaster: ScrumMaster?,
+        sprintGoal: String,
+        productBacklogItems: MutableSet<ProductBacklogItem>,
+    ) {
+        require(sprintGoal.isNotBlank()) { "Sprint goal cannot be blank" }
+        require(productBacklogItems.isNotEmpty()) { "Sprint backlog cannot be empty" }
+        require(scrumMaster?.teamMemberId?.projectId == this.sprintId.projectId) {
+            "You are not the scrum master of this project"
+        }
+        require(status == SprintStatus.NOT_PLANNED) { "The sprint cannot be planned" }
+        require(productBacklogItems.all { it.productBacklogItemId.projectId == sprintId.projectId }) {
+            "Cannot commit product backlog items of another project to this sprint"
+        }
+
+        this.sprintGoal = sprintGoal
+        this.status = SprintStatus.IN_PROGRESS
+
+        productBacklogItems.forEach { pbi ->
+            sprintBacklogItems.add(
+                SprintBacklogItem(
+                    productBacklogItemId = pbi.productBacklogItemId,
+                    title = pbi.title,
+                    description = pbi.description,
+                ),
+            )
+        }
+    }
 
     override fun toString(): String = "Sprint(sprintId=$sprintId, startDate=$startDate, endDate=$endDate, status=$status)"
 
