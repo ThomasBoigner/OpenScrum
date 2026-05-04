@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.productbacklogitem
 
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import org.springframework.stereotype.Repository
 import java.util.UUID
@@ -13,6 +14,10 @@ class JpaProductBacklogItemRepository(
         val entity = ProductBacklogItemEntity(productBacklogItem)
         productBacklogItemEntityRepository.save(entity)
         return productBacklogItem
+    }
+
+    override fun findProductBacklogItemByProductBacklogItemId(productBacklogItemId: ProductBacklogItemId): ProductBacklogItem? {
+        TODO("Not yet implemented")
     }
 
     override fun findProductBacklogItemsByProjectId(projectId: UUID): List<ProductBacklogItem> =

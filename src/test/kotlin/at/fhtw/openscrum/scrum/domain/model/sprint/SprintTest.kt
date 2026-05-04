@@ -88,7 +88,7 @@ class SprintTest {
                 title = "Implement registration",
                 description = "As a user I want to register",
             )
-        val productBacklogItems = mutableSetOf(pbi1, pbi2)
+        val productBacklogItems = setOf(pbi1, pbi2)
 
         // When
         sprint.planSprint(scrumMaster, sprintGoal, productBacklogItems)
@@ -125,7 +125,7 @@ class SprintTest {
             )
         val sprintGoal = "Deliver user authentication feature"
         val productBacklogItems =
-            mutableSetOf(
+            setOf(
                 ProductBacklogItem(
                     productBacklogItemId = ProductBacklogItemId(projectId = projectId),
                     title = "Implement login",
@@ -157,7 +157,7 @@ class SprintTest {
             )
         val sprintGoal = "Deliver user authentication feature"
         val productBacklogItems =
-            mutableSetOf(
+            setOf(
                 ProductBacklogItem(
                     productBacklogItemId = ProductBacklogItemId(projectId = projectId),
                     title = "Implement login",
@@ -191,7 +191,7 @@ class SprintTest {
             )
         val sprintGoal = "Deliver user authentication feature"
         val productBacklogItems =
-            mutableSetOf(
+            setOf(
                 ProductBacklogItem(
                     productBacklogItemId = ProductBacklogItemId(projectId = projectId),
                     title = "Implement login",
@@ -225,7 +225,7 @@ class SprintTest {
             )
         val sprintGoal = "Deliver user authentication feature"
         val productBacklogItems =
-            mutableSetOf(
+            setOf(
                 ProductBacklogItem(
                     productBacklogItemId = ProductBacklogItemId(projectId = otherProjectId),
                     title = "Implement login",
@@ -258,7 +258,7 @@ class SprintTest {
             )
         val blankSprintGoal = "   "
         val productBacklogItems =
-            mutableSetOf(
+            setOf(
                 ProductBacklogItem(
                     productBacklogItemId = ProductBacklogItemId(projectId = projectId),
                     title = "Implement login",
@@ -293,7 +293,7 @@ class SprintTest {
 
         // When / Then
         assertThrows<IllegalArgumentException> {
-            sprint.planSprint(scrumMaster, sprintGoal, mutableSetOf())
+            sprint.planSprint(scrumMaster, sprintGoal, setOf())
         }
     }
 }

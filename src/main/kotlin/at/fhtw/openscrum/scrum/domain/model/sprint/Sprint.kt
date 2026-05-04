@@ -40,7 +40,7 @@ class Sprint(
     fun planSprint(
         scrumMaster: ScrumMaster?,
         sprintGoal: String,
-        productBacklogItems: MutableSet<ProductBacklogItem>,
+        productBacklogItems: Set<ProductBacklogItem>,
     ) {
         require(sprintGoal.isNotBlank()) { "Sprint goal cannot be blank" }
         require(productBacklogItems.isNotEmpty()) { "Sprint backlog cannot be empty" }
