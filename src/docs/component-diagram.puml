@@ -1,0 +1,39 @@
+@startuml
+left to right direction
+
+actor Browser
+database PostgreSQL
+
+package "Management" {
+  component "Presentation" as MgmtPresentation
+  component "Application" as MgmtApplication
+  component "Domain" as MgmtDomain
+  component "Infrastructure" as MgmtInfrastructure
+}
+
+package "Scrum" {
+  component "Presentation" as ScrumPresentation
+  component "Application" as ScrumApplication
+  component "Domain" as ScrumDomain
+  component "Infrastructure" as ScrumInfrastructure
+}
+
+' Internal dependencies — Management
+MgmtPresentation --> MgmtApplication
+MgmtApplication --> MgmtDomain
+MgmtInfrastructure ..|> MgmtDomain
+
+' Internal dependencies — Scrum
+ScrumPresentation --> ScrumApplication
+ScrumApplication --> ScrumDomain
+ScrumInfrastructure ..|> ScrumDomain
+
+' External systems
+Browser --> MgmtPresentation : HTMX / Thymeleaf
+Browser --> ScrumPresentation : HTMX / Thymeleaf
+MgmtInfrastructure --> PostgreSQL : JPA
+ScrumInfrastructure --> PostgreSQL : JPA
+
+' Inter-BC communication
+MgmtInfrastructure --> ScrumInfrastructure : domain events
+@enduml

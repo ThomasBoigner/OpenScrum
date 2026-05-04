@@ -1,0 +1,41 @@
+@startuml
+left to right direction
+
+actor "Product Owner" as ProductOwner
+actor "Scrum Master" as ScrumMaster
+actor Developer
+
+rectangle "Scrum" {
+  usecase "Set product goal" as UC_SetProductGoal
+  usecase "Configure sprint length" as UC_ConfigSprintLength
+  usecase "Configure definition of done" as UC_ConfigDoD
+
+  usecase "Create product backlog item" as UC_CreatePBI
+  usecase "Update product backlog item" as UC_UpdatePBI
+  usecase "Remove product backlog item" as UC_RemovePBI
+
+  usecase "Hold sprint planning" as UC_SprintPlanning
+  usecase "Define sprint goal" as UC_DefineSprintGoal
+  usecase "Commit backlog items to sprint" as UC_CommitItems
+  usecase "Cancel sprint" as UC_CancelSprint
+
+  usecase "Assign sprint backlog item" as UC_AssignItem
+  usecase "Mark sprint backlog item as done" as UC_MarkDone
+}
+
+ProductOwner --> UC_SetProductGoal
+ScrumMaster --> UC_ConfigSprintLength
+ScrumMaster --> UC_ConfigDoD
+
+ProductOwner --> UC_CreatePBI
+ProductOwner --> UC_UpdatePBI
+ProductOwner --> UC_RemovePBI
+
+ScrumMaster --> UC_SprintPlanning
+ScrumMaster --> UC_DefineSprintGoal
+ScrumMaster --> UC_CommitItems
+ProductOwner --> UC_CancelSprint
+
+Developer --> UC_AssignItem
+Developer --> UC_MarkDone
+@enduml

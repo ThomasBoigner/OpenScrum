@@ -1,0 +1,30 @@
+@startuml
+left to right direction
+
+actor User
+actor Manager
+
+User <|-- Manager
+
+rectangle "Management" {
+  usecase "Log in" as UC_Login
+  usecase "Update user data" as UC_UpdateUser
+  usecase "Register user" as UC_RegisterUser
+  usecase "Remove user" as UC_RemoveUser
+  usecase "Promote user to manager" as UC_PromoteUser
+  usecase "Create project" as UC_CreateProject
+  usecase "Update project" as UC_UpdateProject
+  usecase "Cancel project" as UC_CancelProject
+}
+
+User --> UC_Login
+User --> UC_UpdateUser
+
+Manager --> UC_RegisterUser
+Manager --> UC_RemoveUser
+Manager --> UC_PromoteUser
+Manager --> UC_CreateProject
+Manager --> UC_UpdateProject
+Manager --> UC_CancelProject
+
+@enduml
