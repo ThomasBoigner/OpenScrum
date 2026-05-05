@@ -6,6 +6,7 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemService
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
@@ -64,6 +65,43 @@ class ProductBacklogItemApplicationServiceTest {
 
         // When
         val result = productBacklogItemApplicationService.getProductBacklogOfProject(projectId)
+
+        // Then
+        assertThat(result).hasSize(2)
+        assertThat(result[0].title).isEqualTo(item1.title)
+        assertThat(result[0].description).isEqualTo(item1.description)
+        assertThat(result[0].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+        assertThat(result[1].title).isEqualTo(item2.title)
+        assertThat(result[1].description).isEqualTo(item2.description)
+        assertThat(result[1].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+    }
+
+    @Test
+    fun ensureGetProductBacklogOfProjectWithStatusInBacklogWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val item1 =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+        val item2 =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            )
+
+        whenever(
+            productBacklogItemRepository.findProductBacklogItemsByProjectIdAndStatus(
+                projectId,
+                ProductBacklogItemStatus.IN_BACKLOG,
+            ),
+        ).thenReturn(listOf(item1, item2))
+
+        // When
+        val result = productBacklogItemApplicationService.getProductBacklogOfProjectWithStatusInBacklog(projectId)
 
         // Then
         assertThat(result).hasSize(2)

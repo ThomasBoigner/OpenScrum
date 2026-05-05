@@ -8,4 +8,9 @@ interface ProductBacklogItemRepository {
     fun findProductBacklogItemByProductBacklogItemId(productBacklogItemId: ProductBacklogItemId): ProductBacklogItem?
 
     fun findProductBacklogItemsByProjectId(projectId: UUID): List<ProductBacklogItem>
+
+    fun findProductBacklogItemsByProjectIdAndStatus(
+        projectId: UUID,
+        status: ProductBacklogItemStatus,
+    ): List<ProductBacklogItem>
 }
