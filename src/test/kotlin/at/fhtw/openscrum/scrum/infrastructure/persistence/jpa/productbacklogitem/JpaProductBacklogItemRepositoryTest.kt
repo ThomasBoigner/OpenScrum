@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.productbacklogite
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,6 +47,26 @@ class JpaProductBacklogItemRepositoryTest {
     }
 
     @Test
+    fun ensureFindProductBacklogItemByProductBacklogItemIdWorksProperly() {
+        // Given
+        val productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID())
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = productBacklogItemId,
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+        productBacklogItemRepository.save(productBacklogItem)
+
+        // When
+        val result = productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(productBacklogItemId)
+
+        // Then
+        assertThat(result).isNotNull()
+        assertThat(result).isEqualTo(productBacklogItem)
+    }
+
+    @Test
     fun ensureFindProductBacklogItemsByProjectIdWorksProperly() {
         // Given
         val projectId = UUID.randomUUID()
@@ -70,5 +91,38 @@ class JpaProductBacklogItemRepositoryTest {
         // Then
         assertThat(result).hasSize(2)
         assertThat(result).isEqualTo(listOf(productBacklogItem, productBacklogItem2))
+    }
+
+    @Test
+    fun ensureFindProductBacklogItemsByProjectIdAndStatusWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val inBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+                status = ProductBacklogItemStatus.IN_BACKLOG,
+            )
+        val committedItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+                status = ProductBacklogItemStatus.COMMITED_TO_SPRINT,
+            )
+        productBacklogItemRepository.save(inBacklogItem)
+        productBacklogItemRepository.save(committedItem)
+
+        // When
+        val result =
+            productBacklogItemRepository.findProductBacklogItemsByProjectIdAndStatus(
+                projectId,
+                ProductBacklogItemStatus.IN_BACKLOG,
+            )
+
+        // Then
+        assertThat(result).hasSize(1)
+        assertThat(result).isEqualTo(listOf(inBacklogItem))
     }
 }

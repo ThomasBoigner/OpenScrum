@@ -17,9 +17,10 @@ class JpaProductBacklogItemRepository(
         return productBacklogItem
     }
 
-    override fun findProductBacklogItemByProductBacklogItemId(productBacklogItemId: ProductBacklogItemId): ProductBacklogItem? {
-        TODO("Not yet implemented")
-    }
+    override fun findProductBacklogItemByProductBacklogItemId(productBacklogItemId: ProductBacklogItemId): ProductBacklogItem? =
+        productBacklogItemEntityRepository
+            .findProductBacklogItemEntityByProductBacklogItemId(productBacklogItemId.productBacklogItemId)
+            ?.toProductBacklogItem()
 
     override fun findProductBacklogItemsByProjectId(projectId: UUID): List<ProductBacklogItem> =
         productBacklogItemEntityRepository
@@ -28,8 +29,9 @@ class JpaProductBacklogItemRepository(
 
     override fun findProductBacklogItemsByProjectIdAndStatus(
         projectId: UUID,
-        status: ProductBacklogItemStatus
-    ): List<ProductBacklogItem> {
-        TODO("Not yet implemented")
-    }
+        status: ProductBacklogItemStatus,
+    ): List<ProductBacklogItem> =
+        productBacklogItemEntityRepository
+            .findProductBacklogItemEntitiesByProjectIdAndStatus(projectId, status)
+            .map { it.toProductBacklogItem() }
 }

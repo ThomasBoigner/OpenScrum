@@ -7,6 +7,8 @@ import java.util.UUID
 
 @Repository
 interface ProductBacklogItemEntityRepository : JpaRepository<ProductBacklogItemEntity, Long> {
+    fun findProductBacklogItemEntityByProductBacklogItemId(productBacklogItemId: UUID): ProductBacklogItemEntity?
+
     fun findProductBacklogItemEntitiesByProjectId(projectId: UUID): List<ProductBacklogItemEntity>
 
     fun findProductBacklogItemEntitiesByProjectIdAndStatus(
