@@ -99,51 +99,6 @@ div#sprint-backlog-items {
     gap: 32px;
 }
 
-div.product-backlog-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 32px;
-    background-color: var(--white);
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
-    width: 1024px;
-}
-
-div.product-backlog-item input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 24px;
-    height: 24px;
-    border: 3px solid var(--black);
-    border-radius: 8px;
-    flex-shrink: 0;
-    cursor: pointer;
-}
-
-div.product-backlog-item input[type="checkbox"]:checked {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-div.backlog-item-info {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    flex: 1;
-}
-
-div.info-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-div.info-group label {
-    font-weight: 700;
-}
-
 /* Submit & go back */
 div.submit-go-back {
     display: flex;
@@ -233,15 +188,6 @@ section#plan-sprint-form div.submit-go-back > p a {
         gap: 24px;
     }
 
-    div.product-backlog-item {
-        gap: 24px;
-        width: 512px;
-    }
-
-    div.backlog-item-info {
-        gap: 24px;
-    }
-
     div.submit-go-back {
         width: 256px;
     }
@@ -290,15 +236,6 @@ section#plan-sprint-form div.submit-go-back > p a {
     div#sprint-backlog-items {
         padding: 32px 16px;
         gap: 24px;
-    }
-
-    div.product-backlog-item {
-        gap: 16px;
-        width: 100%;
-    }
-
-    div.backlog-item-info {
-        gap: 16px;
     }
 
     div.submit-go-back {

@@ -1,0 +1,63 @@
+div.product-backlog-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+    width: 1024px;
+}
+
+div.product-backlog-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--black);
+    border-radius: 8px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+div.product-backlog-item input[type="checkbox"]:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+div.backlog-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    flex: 1;
+}
+
+div.info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    div.product-backlog-item {
+        gap: 24px;
+        width: 512px;
+    }
+
+    div.backlog-item-info {
+        gap: 24px;
+    }
+}
+/* < 600px */
+@media screen and (max-width: 600px) {
+    div.product-backlog-item {
+        gap: 16px;
+        width: 100%;
+    }
+
+    div.backlog-item-info {
+        gap: 16px;
+    }
+}
