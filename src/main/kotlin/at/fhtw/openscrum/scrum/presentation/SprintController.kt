@@ -4,13 +4,18 @@ import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
+import at.fhtw.openscrum.scrum.presentation.forms.PlanSprintForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
+import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import java.security.Principal
 import java.util.UUID
@@ -64,7 +69,8 @@ class SprintController(
         @PathVariable sprintId: UUID,
     ): String {
         log.debug("Serving sprint details for sprint with project id {} and sprint id {}", projectId, sprintId)
-        val authenticatedTeamMember = teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
 
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
@@ -80,12 +86,29 @@ class SprintController(
         @PathVariable sprintId: UUID,
     ): String {
         log.debug("Serving plan sprint page for sprint with project id {} and sprint id {}", projectId, sprintId)
-        val authenticatedTeamMember = teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         if (!authenticatedTeamMember.isScrumMaster) return "error/403"
         val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
+        val planSprintForm = PlanSprintForm()
 
         model.addAttribute("sprint", sprint)
+        model.addAttribute("planSprintForm", planSprintForm)
         return "pages/plan-sprint"
+    }
+
+    @PostMapping(value = [ROUTE_PLANNING])
+    fun handlePlanSprintForm(
+        model: Model,
+        principal: Principal,
+        @PathVariable projectId: UUID,
+        @PathVariable sprintId: UUID,
+        @Valid @ModelAttribute(name = "planSprintForm") form: PlanSprintForm,
+        brPlanSprintForm: BindingResult,
+    ): String {
+        log.debug("Received http POST request to plan sprint with form {}", form)
+        sprintApplicationService.planSprint(principal.name, form.toDefinePlanSprintCommand(projectId, sprintId))
+        return "redirect:/projects/$projectId/sprints/$sprintId"
     }
 
     @GetMapping(value = [ROUTE_KANBAN_BOARD])
@@ -96,7 +119,8 @@ class SprintController(
         @PathVariable sprintId: UUID,
     ): String {
         log.debug("Serving sprint kanban board for sprint with project id {} and sprint id {}", projectId, sprintId)
-        val authenticatedTeamMember = teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
 
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
