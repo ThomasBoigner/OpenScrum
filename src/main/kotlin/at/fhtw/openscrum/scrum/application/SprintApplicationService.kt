@@ -77,6 +77,8 @@ class SprintApplicationService(
             productBacklogItems = productBacklogItems,
         )
 
-        return SprintDto(sprint)
+        log.info("Planned sprint {}", sprint)
+
+        return SprintDto(sprintRepository.save(sprint))
     }
 }

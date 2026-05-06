@@ -31,7 +31,7 @@
         <h3>Plan the next sprint, decide what should be done!</h3>
     </section>
     <section id="plan-sprint-form">
-        <form method="post">
+        <form th:action="@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=${sprint.projectId}, sprintId=${sprint.sprintId})}" th:object="${planSprintForm}" method="post">
             <div class="error-message">
                 <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
                 <p>Error while defining product backlog item!</p>
@@ -43,11 +43,11 @@
             <div id="input-fields">
                 <div id="sprint-goal">
                     <label for="sprint-goal-input">Sprint Goal</label>
-                    <textarea id="sprint-goal-input" name="sprintGoal"
+                    <textarea id="sprint-goal-input" th:field="*{sprintGoal}"
                               placeholder="Describe the goal of this sprint!"></textarea>
                 </div>
                 <div id="sprint-backlog-items">
-                    <p hx:get="@{/projects/{projectId}/backlog/sprint-planning-list(projectId=${sprint.projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load projects!</p>
+                    <p hx:get="@{/projects/{projectId}/backlog/sprint-planning-list(projectId=${sprint.projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog items!</p>
                 </div>
             </div>
             <div class="submit-go-back">
