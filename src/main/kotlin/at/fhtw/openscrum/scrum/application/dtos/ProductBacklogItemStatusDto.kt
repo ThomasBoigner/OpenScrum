@@ -13,9 +13,9 @@ enum class ProductBacklogItemStatusDto(
     companion object {
         fun fromProductBacklogItemStatus(productBacklogItemStatus: ProductBacklogItemStatus): ProductBacklogItemStatusDto =
             when (productBacklogItemStatus) {
-                ProductBacklogItemStatus.IN_BACKLOG -> ProductBacklogItemStatusDto.IN_BACKLOG
-                ProductBacklogItemStatus.COMMITED_TO_SPRINT -> ProductBacklogItemStatusDto.COMMITED_TO_SPRINT
-                ProductBacklogItemStatus.DONE -> ProductBacklogItemStatusDto.DONE
+                ProductBacklogItemStatus.IN_BACKLOG -> IN_BACKLOG
+                ProductBacklogItemStatus.COMMITED_TO_SPRINT -> COMMITED_TO_SPRINT
+                ProductBacklogItemStatus.DONE -> DONE
             }
     }
 }

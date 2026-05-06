@@ -15,10 +15,10 @@ enum class SprintStatusDto(
     companion object {
         fun fromSprintStatus(sprintStatus: SprintStatus): SprintStatusDto =
             when (sprintStatus) {
-                SprintStatus.NOT_PLANNED -> SprintStatusDto.NOT_PLANNED
-                SprintStatus.IN_PROGRESS -> SprintStatusDto.IN_PROGRESS
-                SprintStatus.COMPLETED -> SprintStatusDto.COMPLETED
-                SprintStatus.CANCELLED -> SprintStatusDto.CANCELLED
+                SprintStatus.NOT_PLANNED -> NOT_PLANNED
+                SprintStatus.IN_PROGRESS -> IN_PROGRESS
+                SprintStatus.COMPLETED -> COMPLETED
+                SprintStatus.CANCELLED -> CANCELLED
             }
     }
 }

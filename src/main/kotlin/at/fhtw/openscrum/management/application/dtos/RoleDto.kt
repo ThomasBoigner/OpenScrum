@@ -13,8 +13,8 @@ enum class RoleDto(
     companion object {
         fun fromRole(role: Role): RoleDto =
             when (role) {
-                Role.USER -> RoleDto.USER
-                Role.MANAGER -> RoleDto.MANAGER
+                Role.USER -> USER
+                Role.MANAGER -> MANAGER
             }
     }
 }

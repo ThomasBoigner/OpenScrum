@@ -66,6 +66,8 @@ class Sprint(
         }
     }
 
+    fun getSprintBacklogItems(status: SprintBacklogItemStatus): List<SprintBacklogItem> = sprintBacklogItems.filter { it.status == status }
+
     override fun toString(): String = "Sprint(sprintId=$sprintId, startDate=$startDate, endDate=$endDate, status=$status)"
 
     override fun equals(other: Any?): Boolean {

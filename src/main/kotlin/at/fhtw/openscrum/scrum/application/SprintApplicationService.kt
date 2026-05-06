@@ -2,12 +2,15 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
+import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintService
+import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -21,6 +24,7 @@ class SprintApplicationService(
     private val sprintService: SprintService,
     private val sprintRepository: SprintRepository,
     private val scrumMasterRepository: ScrumMasterRepository,
+    private val developerRepository: DeveloperRepository,
     private val productBacklogItemRepository: ProductBacklogItemRepository,
     private val log: Logger = LoggerFactory.getLogger(SprintApplicationService::class.java),
 ) {
@@ -39,6 +43,31 @@ class SprintApplicationService(
         val sprint = sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))
         log.info(sprint?.let { "Found sprint $it" } ?: "Sprint with sprint id $projectId could not be found")
         return sprint?.let { SprintDto(it) }
+    }
+
+    fun getSprintBacklogItems(
+        projectId: UUID,
+        sprintId: UUID,
+        sprintBacklogItemStatus: SprintBacklogItemStatus,
+    ): List<SprintBacklogItemDto> {
+        log.debug(
+            "Trying to get sprint backlog items for sprint with project id {}, sprint id {} and sprint backlog item status {}",
+            projectId,
+            sprintId,
+            sprintBacklogItemStatus,
+        )
+        val sprint =
+            sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId)) ?: throw IllegalArgumentException(
+                "Could not find sprint with projectId $projectId and sprintId $sprintId",
+            )
+        val sprintBacklogItems =
+            sprint.getSprintBacklogItems(sprintBacklogItemStatus).map {
+                SprintBacklogItemDto(
+                    it,
+                    it.assignedDeveloper?.let { teamMemberId -> developerRepository.findByTeamMemberId(teamMemberId) },
+                )
+            }
+        return sprintBacklogItems
     }
 
     @Transactional(readOnly = false)

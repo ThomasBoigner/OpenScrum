@@ -2,15 +2,20 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
+import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemStatusDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintStatusDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.Sprint
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintService
+import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
+import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
@@ -22,6 +27,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import java.time.LocalDate
 import java.util.UUID
@@ -40,6 +46,9 @@ class SprintApplicationServiceTest {
     lateinit var scrumMasterRepository: ScrumMasterRepository
 
     @Mock
+    lateinit var developerRepository: DeveloperRepository
+
+    @Mock
     lateinit var productBacklogItemRepository: ProductBacklogItemRepository
 
     @BeforeEach
@@ -49,6 +58,7 @@ class SprintApplicationServiceTest {
                 sprintService,
                 sprintRepository,
                 scrumMasterRepository,
+                developerRepository,
                 productBacklogItemRepository,
             )
     }
@@ -133,6 +143,98 @@ class SprintApplicationServiceTest {
     }
 
     @Test
+    fun ensureGetSprintBacklogItemsWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val toDoItem =
+            SprintBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val doneItem =
+            SprintBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement logout",
+                description = "As a user I want to log out",
+                status = SprintBacklogItemStatus.DONE,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2025, 1, 6),
+                endDate = LocalDate.of(2025, 1, 19),
+                sprintBacklogItems = mutableSetOf(toDoItem, doneItem),
+            )
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(sprint)
+
+        // When
+        val result = sprintApplicationService.getSprintBacklogItems(projectId, sprintId, SprintBacklogItemStatus.TO_DO)
+
+        // Then
+        assertThat(result).hasSize(1)
+        assertThat(result[0].productBacklogItemId).isEqualTo(toDoItem.productBacklogItemId.productBacklogItemId)
+        assertThat(result[0].title).isEqualTo(toDoItem.title)
+        assertThat(result[0].status).isEqualTo(SprintBacklogItemStatusDto.TO_DO)
+    }
+
+    @Test
+    fun ensureGetSprintBacklogItemsPopulatesAssignedDeveloper() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val developerTeamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId)
+        val inProgressItem =
+            SprintBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement registration",
+                description = "As a user I want to register",
+                assignedDeveloper = developerTeamMemberId,
+                status = SprintBacklogItemStatus.IN_PROGRESS,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2025, 1, 6),
+                endDate = LocalDate.of(2025, 1, 19),
+                sprintBacklogItems = mutableSetOf(inProgressItem),
+            )
+        val developer =
+            Developer(
+                teamMemberId = developerTeamMemberId,
+                username = "jane.doe",
+                fullName = FullName(firstName = "Jane", lastName = "Doe"),
+            )
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(sprint)
+        whenever(developerRepository.findByTeamMemberId(developerTeamMemberId)).thenReturn(developer)
+
+        // When
+        val result = sprintApplicationService.getSprintBacklogItems(projectId, sprintId, SprintBacklogItemStatus.IN_PROGRESS)
+
+        // Then
+        assertThat(result).hasSize(1)
+        assertThat(result[0].assignedDeveloperUserId).isEqualTo(developerTeamMemberId.userId)
+        assertThat(result[0].assignedDeveloperProjectId).isNotNull
+    }
+
+    @Test
+    fun ensureGetSprintBacklogItemsThrowsExceptionWhenSprintCanNotBeFound() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprintApplicationService.getSprintBacklogItems(projectId, sprintId, SprintBacklogItemStatus.TO_DO)
+        }
+    }
+
+    @Test
     fun ensureInitializeSprintWorksProperly() {
         // Given
         val command =
@@ -211,6 +313,7 @@ class SprintApplicationServiceTest {
                 ProductBacklogItemId(projectId = projectId, productBacklogItemId = pbi2Id),
             ),
         ).thenReturn(pbi2)
+        whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
 
         // When
         val result = sprintApplicationService.planSprint(username, command)
@@ -271,7 +374,7 @@ class SprintApplicationServiceTest {
             ),
         ).thenReturn(null)
 
-        // When / Then
+        // When
         assertThrows<IllegalArgumentException> {
             sprintApplicationService.planSprint(username, command)
         }

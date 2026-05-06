@@ -7,4 +7,6 @@ import java.util.UUID
 @Repository
 interface DeveloperEntityRepository : JpaRepository<DeveloperEntity, Long> {
     fun findAllByProjectId(projectId: UUID): List<DeveloperEntity>
+
+    fun findByUserIdAndProjectId(userId: UUID, projectId: UUID): DeveloperEntity?
 }

@@ -6,4 +6,6 @@ interface DeveloperRepository {
     fun save(developer: Developer): Developer
 
     fun findByProjectId(projectId: UUID): List<Developer>
+
+    fun findByTeamMemberId(teamMemberId: TeamMemberId): Developer?
 }

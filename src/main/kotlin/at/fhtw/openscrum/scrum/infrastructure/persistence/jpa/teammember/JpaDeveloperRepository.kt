@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember
 
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
@@ -17,4 +18,7 @@ class JpaDeveloperRepository(
 
     override fun findByProjectId(projectId: UUID): List<Developer> =
         developerEntityRepository.findAllByProjectId(projectId).map { it.toDeveloper() }
+
+    override fun findByTeamMemberId(teamMemberId: TeamMemberId): Developer? =
+        developerEntityRepository.findByUserIdAndProjectId(teamMemberId.userId, teamMemberId.projectId)?.toDeveloper()
 }
