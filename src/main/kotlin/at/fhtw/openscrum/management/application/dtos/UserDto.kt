@@ -1,6 +1,5 @@
 package at.fhtw.openscrum.management.application.dtos
 
-import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.User
 import java.util.UUID
 

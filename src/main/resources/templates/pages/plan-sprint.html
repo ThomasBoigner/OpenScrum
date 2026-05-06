@@ -47,7 +47,7 @@
                               placeholder="Describe the goal of this sprint!"></textarea>
                 </div>
                 <div id="sprint-backlog-items">
-                    <p hx:get="@{/projects/${sprint.projectId}/backlog/sprint-planning-list}" hx-trigger="load" hx-swap="outerHTML">Could not load projects!</p>
+                    <p hx:get="@{/projects/{projectId}/backlog/sprint-planning-list(projectId=${sprint.projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load projects!</p>
                 </div>
             </div>
             <div class="submit-go-back">

@@ -28,10 +28,11 @@ class ScrumEventListenerTest {
     @Test
     fun ensureReceiveSprintScheduledEventWorksProperly() {
         // Given
-        val event = SprintScheduled(
-            projectId = ProjectId(UUID.randomUUID()),
-            sprintLength = SprintLength(2),
-        )
+        val event =
+            SprintScheduled(
+                projectId = ProjectId(UUID.randomUUID()),
+                sprintLength = SprintLength(2),
+            )
 
         // When
         scrumEventListener.receiveSprintScheduledEvent(event)

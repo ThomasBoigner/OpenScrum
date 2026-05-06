@@ -1,7 +1,6 @@
 package at.fhtw.openscrum.scrum.presentation.forms
 
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
-import jakarta.annotation.Nonnull
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 import java.util.UUID

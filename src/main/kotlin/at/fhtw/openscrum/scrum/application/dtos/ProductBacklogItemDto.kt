@@ -1,7 +1,6 @@
 package at.fhtw.openscrum.scrum.application.dtos
 
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
-import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemStatus
 import java.util.UUID
 
 data class ProductBacklogItemDto(

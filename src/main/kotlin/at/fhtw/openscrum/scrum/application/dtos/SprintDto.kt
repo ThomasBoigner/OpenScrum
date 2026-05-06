@@ -1,7 +1,6 @@
 package at.fhtw.openscrum.scrum.application.dtos
 
 import at.fhtw.openscrum.scrum.domain.model.sprint.Sprint
-import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 import java.time.LocalDate
 import java.util.UUID
 
