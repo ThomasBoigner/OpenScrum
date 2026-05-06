@@ -3,12 +3,16 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.sprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.Sprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.OneToMany
 import java.time.LocalDate
 import java.util.UUID
 
@@ -25,6 +29,8 @@ class SprintEntity(
     @Enumerated(EnumType.STRING)
     var status: SprintStatus,
     var sprintGoal: String?,
+    @OneToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE], fetch = FetchType.EAGER)
+    var sprintBacklogItems: MutableSet<SprintBacklogItemEntity> = mutableSetOf(),
 ) {
     constructor(sprint: Sprint) : this(
         id = sprint.id,
@@ -35,6 +41,7 @@ class SprintEntity(
         endDate = sprint.endDate,
         status = sprint.status,
         sprintGoal = sprint.sprintGoal,
+        sprintBacklogItems = sprint.sprintBacklogItems.map { SprintBacklogItemEntity(it) }.toMutableSet(),
     )
 
     fun toSprint(): Sprint =
@@ -46,5 +53,6 @@ class SprintEntity(
             endDate = endDate,
             status = status,
             sprintGoal = sprintGoal,
+            sprintBacklogItems = this.sprintBacklogItems.map { it.toSprintBacklogItem() }.toMutableSet(),
         )
 }

@@ -217,8 +217,8 @@ class SprintApplicationServiceTest {
 
         // Then
         assertThat(result).hasSize(1)
-        assertThat(result[0].assignedDeveloperUserId).isEqualTo(developerTeamMemberId.userId)
-        assertThat(result[0].assignedDeveloperProjectId).isNotNull
+        assertThat(result[0].assignedDeveloper).isNotNull
+        assertThat(result[0].assignedDeveloper!!.userId).isEqualTo(developerTeamMemberId.userId)
     }
 
     @Test

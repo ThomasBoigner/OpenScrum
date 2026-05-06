@@ -4,6 +4,7 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 
 class SprintBacklogItem(
+    val id: Long? = null,
     val productBacklogItemId: ProductBacklogItemId,
     val title: String,
     val description: String,
