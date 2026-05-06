@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:hx="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -16,7 +16,7 @@
           rel="stylesheet">
 
     <link rel="stylesheet" th:href="@{/css/pages/plan-sprint.css}">
-    <link rel="stylesheet" th:href="@{/css/fragments/sprint-planning-product-backlog-item.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/sprint-planning-product-backlog-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 
     <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
@@ -47,6 +47,7 @@
                               placeholder="Describe the goal of this sprint!"></textarea>
                 </div>
                 <div id="sprint-backlog-items">
+                    <p hx:get="@{/projects/${sprint.projectId}/backlog/sprint-planning-list}" hx-trigger="load" hx-swap="outerHTML">Could not load projects!</p>
                 </div>
             </div>
             <div class="submit-go-back">

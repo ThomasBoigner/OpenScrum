@@ -1,0 +1,13 @@
+<p th:if="${#lists.isEmpty(productBacklog)}">No product backlog items found!</p>
+<div th:fragment="plan-sprint-product-backlog-item" class="product-backlog-item" th:each="productBacklogItem : ${productBacklog}" th:object="${productBacklogItem}">
+    <input id="select-backlog-item" type="checkbox">
+    <div class="backlog-item-info">
+        <h2 th:text="*{title}">
+            <label for="select-backlog-item">Item Title</label>
+        </h2>
+        <div class="info-group">
+            <label>Description</label>
+            <p th:text="*{description}">Item description goes here.</p>
+        </div>
+    </div>
+</div>

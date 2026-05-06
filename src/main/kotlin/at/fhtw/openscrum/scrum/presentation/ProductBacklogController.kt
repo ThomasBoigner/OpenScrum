@@ -32,6 +32,7 @@ class ProductBacklogController(
         const val PATH_INDEX = "/"
         const val FRAGMENT_PRODUCT_BACKLOG_LIST_ITEM = "/list"
         const val ROUTE_DEFINE = "/define"
+        const val FRAGMENT_SPRINT_PLANNING_PRODUCT_BACKLOG_LIST_ITEM = "/sprint-planning-list"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -109,5 +110,15 @@ class ProductBacklogController(
             return "pages/define-product-backlog-item"
         }
         return "redirect:/projects/$projectId/backlog"
+    }
+
+    @HxRequest
+    @GetMapping(value = [FRAGMENT_SPRINT_PLANNING_PRODUCT_BACKLOG_LIST_ITEM])
+    fun getSprintPlanningProductBacklogListItems(
+        model: Model,
+        @PathVariable projectId: UUID,
+    ): String {
+        model.addAttribute("productBacklog", productBacklogApplicationService.getProductBacklogOfProjectWithStatusInBacklog(projectId))
+        return "fragments/sprint-planning-product-backlog-list-item"
     }
 }
