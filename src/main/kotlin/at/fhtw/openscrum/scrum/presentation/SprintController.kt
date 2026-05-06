@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.presentation
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 import at.fhtw.openscrum.scrum.presentation.forms.PlanSprintForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import jakarta.validation.Valid
@@ -106,7 +107,25 @@ class SprintController(
         brPlanSprintForm: BindingResult,
     ): String {
         log.debug("Received http POST request to plan sprint with form {}", form)
-        sprintApplicationService.planSprint(principal.name, form.toDefinePlanSprintCommand(projectId, sprintId))
+        if (brPlanSprintForm.hasErrors()) {
+            log.warn("Define plan sprint form {} has validation errors", form)
+            val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
+
+            model.addAttribute("sprint", sprint)
+            return "pages/plan-sprint"
+        }
+
+        try {
+            sprintApplicationService.planSprint(principal.name, form.toDefinePlanSprintCommand(projectId, sprintId))
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while planning sprint with message: {}", ex.message)
+            val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
+
+            model.addAttribute("sprint", sprint)
+            model.addAttribute("errorMessage", ex.message)
+
+            return "pages/plan-sprint"
+        }
         return "redirect:/projects/$projectId/sprints/$sprintId"
     }
 
