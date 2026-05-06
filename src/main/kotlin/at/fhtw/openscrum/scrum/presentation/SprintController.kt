@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.presentation
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 import at.fhtw.openscrum.scrum.presentation.forms.PlanSprintForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
@@ -35,6 +36,7 @@ class SprintController(
         const val ROUTE_DETAILS = "/{sprintId}"
         const val ROUTE_PLANNING = "/{sprintId}/planning"
         const val ROUTE_KANBAN_BOARD = "/{sprintId}/kanban-board"
+        const val FRAGMENT_SPRINT_BACKLOG_ITEMS = "/{sprintId}/backlog-items"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -145,5 +147,19 @@ class SprintController(
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("sprint", sprint)
         return "pages/sprint-kanban-board-page"
+    }
+
+    @HxRequest
+    @GetMapping(value = [FRAGMENT_SPRINT_BACKLOG_ITEMS])
+    fun getSprintBacklogItems(
+        model: Model,
+        @PathVariable projectId: UUID,
+        @PathVariable sprintId: UUID,
+    ): String {
+        model.addAttribute(
+            "sprintBacklogItems",
+            sprintApplicationService.getSprintBacklogItems(projectId, sprintId, SprintBacklogItemStatus.TO_DO),
+        )
+        return "fragments/sprint-backlog-item"
     }
 }

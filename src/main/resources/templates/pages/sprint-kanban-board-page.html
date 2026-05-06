@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:hx="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -17,6 +17,9 @@
 
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/pages/sprint-kanban-board-page.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/sprint-backlog-item.css}">
+
+    <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
 </head>
 <body>
 <div class="container" th:object="${sprint}">
@@ -44,18 +47,7 @@
     <div id="kanban-board">
         <div class="kanban-column" id="todo-column">
             <h3>To-Do</h3>
-            <div class="sprint-backlog-item">
-                <h4>Item Title</h4>
-                <div class="info-group">
-                    <label>Description</label>
-                    <p>Item description goes here.</p>
-                </div>
-                <div class="move-buttons">
-                    <button class="move-right-button">
-                        <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move right" class="arrow-right">
-                    </button>
-                </div>
-            </div>
+            <p hx:get="@{/projects/{projectId}/sprints/{sprintId}/backlog-items(projectId=${sprint.projectId}, sprintId=${sprint.sprintId})}" hx-trigger="load" hx-swap="outerHTML">Could not load sprint backlog items!</p>
         </div>
 
         <div class="kanban-column" id="in-progress-column">

@@ -9,8 +9,7 @@ data class SprintBacklogItemDto(
     val productBacklogItemId: UUID,
     val title: String,
     val description: String,
-    val assignedDeveloperUserId: UUID?,
-    val assignedDeveloperProjectId: TeamMemberDto?,
+    val assignedDeveloper: TeamMemberDto?,
     val status: SprintBacklogItemStatusDto,
 ) {
     constructor(sprintBacklogItem: SprintBacklogItem, teamMember: TeamMember?) : this(
@@ -18,8 +17,7 @@ data class SprintBacklogItemDto(
         productBacklogItemId = sprintBacklogItem.productBacklogItemId.productBacklogItemId,
         title = sprintBacklogItem.title,
         description = sprintBacklogItem.description,
-        assignedDeveloperUserId = sprintBacklogItem.assignedDeveloper?.userId,
-        assignedDeveloperProjectId = teamMember?.let { TeamMemberDto(it) },
+        assignedDeveloper = teamMember?.let { TeamMemberDto(it) },
         status = SprintBacklogItemStatusDto.fromSprintBacklogItemStatus(sprintBacklogItem.status),
     )
 }

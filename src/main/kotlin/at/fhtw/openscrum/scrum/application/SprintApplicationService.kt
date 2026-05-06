@@ -67,6 +67,12 @@ class SprintApplicationService(
                     it.assignedDeveloper?.let { teamMemberId -> developerRepository.findByTeamMemberId(teamMemberId) },
                 )
             }
+        log.info(
+            "Found {} sprint backlog items of sprint with id {} that have status {}",
+            sprintBacklogItems.size,
+            sprintId,
+            sprintBacklogItemStatus,
+        )
         return sprintBacklogItems
     }
 

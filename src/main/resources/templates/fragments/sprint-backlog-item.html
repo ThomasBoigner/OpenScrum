@@ -1,0 +1,19 @@
+<div th:fragment="sprint-backlog-item" class="sprint-backlog-item" th:each="sprintBacklogItem : ${sprintBacklogItems}" th:object="${sprintBacklogItem}">
+    <h4>Item Title</h4>
+    <div class="info-group" th:if="*{assignedDeveloper != null}">
+        <label>Assigned to</label>
+        <p th:text="*{assignedDeveloper.fullName}">Team member</p>
+    </div>
+    <div class="info-group">
+        <label>Description</label>
+        <p th:text="*{description}">Item description goes here.</p>
+    </div>
+    <div class="move-buttons">
+        <button class="move-left-button">
+            <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move left" class="arrow-left">
+        </button>
+        <button class="move-right-button">
+            <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move right" class="arrow-right">
+        </button>
+    </div>
+</div>
