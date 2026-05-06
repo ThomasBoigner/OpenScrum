@@ -90,6 +90,7 @@ class SprintController(
             teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         if (!authenticatedTeamMember.isScrumMaster) return "error/403"
         val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
+        if (sprint.status.isPlanned) return "error/400"
         val planSprintForm = PlanSprintForm()
 
         model.addAttribute("sprint", sprint)

@@ -47,7 +47,7 @@ class Sprint(
         require(scrumMaster?.teamMemberId?.projectId == this.sprintId.projectId) {
             "You are not the scrum master of this project"
         }
-        require(status == SprintStatus.NOT_PLANNED) { "The sprint cannot be planned" }
+        require(!status.isPlanned) { "The sprint cannot be planned" }
         require(productBacklogItems.all { it.productBacklogItemId.projectId == sprintId.projectId }) {
             "Cannot commit product backlog items of another project to this sprint"
         }
