@@ -1,7 +1,9 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
+import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemDto
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemService
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemStatus
@@ -64,5 +66,26 @@ class ProductBacklogItemApplicationService(
                 command.description,
             ),
         )
+    }
+
+    @Transactional(readOnly = false)
+    fun markAsCommitedToSprint(command: MarkAsCommitedToSprintCommand): ProductBacklogItemDto? {
+        log.debug("Trying to mark product backlog item as commited to sprint with command: {}", command)
+        val productBacklogItem =
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(projectId = command.projectId, productBacklogItemId = command.productBacklogItemId),
+            )
+
+        if (productBacklogItem == null) {
+            log.error(
+                "Product backlog with projectId {} and productBacklogItemId {} does not exits",
+                command.projectId,
+                command.productBacklogItemId,
+            )
+            return null
+        }
+
+        productBacklogItem.setStatusToCommitedToSprint()
+        return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
     }
 }

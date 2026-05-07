@@ -103,6 +103,7 @@ class SprintTest {
             .contains(pbi1.title, pbi2.title)
         assertThat(sprint.sprintBacklogItems.map { it.description })
             .contains(pbi1.description, pbi2.description)
+        assertThat(sprint.productBacklogItemCommitedEvents).hasSize(2)
     }
 
     @Test
@@ -233,7 +234,7 @@ class SprintTest {
                 ),
             )
 
-        // When / Then
+        // When
         assertThrows<IllegalArgumentException> {
             sprint.planSprint(scrumMaster, sprintGoal, productBacklogItems)
         }
@@ -266,7 +267,7 @@ class SprintTest {
                 ),
             )
 
-        // When / Then
+        // When
         assertThrows<IllegalArgumentException> {
             sprint.planSprint(scrumMaster, blankSprintGoal, productBacklogItems)
         }
@@ -291,7 +292,7 @@ class SprintTest {
             )
         val sprintGoal = "Deliver user authentication feature"
 
-        // When / Then
+        // When
         assertThrows<IllegalArgumentException> {
             sprint.planSprint(scrumMaster, sprintGoal, setOf())
         }

@@ -11,8 +11,8 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToMany
+import org.springframework.data.domain.AbstractAggregateRoot
 import java.time.LocalDate
 import java.util.UUID
 
@@ -31,7 +31,7 @@ class SprintEntity(
     var sprintGoal: String?,
     @OneToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE], fetch = FetchType.EAGER)
     var sprintBacklogItems: MutableSet<SprintBacklogItemEntity> = mutableSetOf(),
-) {
+) : AbstractAggregateRoot<SprintEntity>() {
     constructor(sprint: Sprint) : this(
         id = sprint.id,
         projectId = sprint.sprintId.projectId,
@@ -42,7 +42,9 @@ class SprintEntity(
         status = sprint.status,
         sprintGoal = sprint.sprintGoal,
         sprintBacklogItems = sprint.sprintBacklogItems.map { SprintBacklogItemEntity(it) }.toMutableSet(),
-    )
+    ) {
+        sprint.productBacklogItemCommitedEvents.forEach { this.registerEvent(it) }
+    }
 
     fun toSprint(): Sprint =
         Sprint(
