@@ -25,7 +25,7 @@
             <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
             Back
         </a>
-        <nav>
+        <nav th:if="${sprint.status.isPlanned()}">
             <a class="btn selected"
                th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">
                 Details

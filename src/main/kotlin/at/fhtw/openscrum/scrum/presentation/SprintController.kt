@@ -143,6 +143,7 @@ class SprintController(
         val authenticatedTeamMember =
             teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
+        if (!sprint.status.isPlanned) return "error/404"
 
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("sprint", sprint)
