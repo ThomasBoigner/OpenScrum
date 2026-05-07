@@ -9,12 +9,11 @@ enum class SprintBacklogItemStatusDto {
     ;
 
     companion object {
-        fun fromSprintBacklogItemStatus(sprintBacklogItemStatus: SprintBacklogItemStatus): SprintBacklogItemStatusDto {
-            return when (sprintBacklogItemStatus) {
+        fun fromSprintBacklogItemStatus(sprintBacklogItemStatus: SprintBacklogItemStatus): SprintBacklogItemStatusDto =
+            when (sprintBacklogItemStatus) {
                 SprintBacklogItemStatus.TO_DO -> TO_DO
                 SprintBacklogItemStatus.IN_PROGRESS -> IN_PROGRESS
                 SprintBacklogItemStatus.DONE -> DONE
             }
-        }
     }
 }

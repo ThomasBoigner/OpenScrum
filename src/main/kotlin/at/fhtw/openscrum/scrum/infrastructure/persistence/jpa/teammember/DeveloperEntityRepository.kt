@@ -8,5 +8,8 @@ import java.util.UUID
 interface DeveloperEntityRepository : JpaRepository<DeveloperEntity, Long> {
     fun findAllByProjectId(projectId: UUID): List<DeveloperEntity>
 
-    fun findByUserIdAndProjectId(userId: UUID, projectId: UUID): DeveloperEntity?
+    fun findByUserIdAndProjectId(
+        userId: UUID,
+        projectId: UUID,
+    ): DeveloperEntity?
 }
