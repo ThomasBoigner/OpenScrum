@@ -4,5 +4,5 @@ import java.util.UUID
 
 data class DefineSprintLengthCommand(
     val projectId: UUID,
-    val sprintLength: Int,
+    val sprintLength: Long,
 )

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:hx="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Plan the sprint</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/pages/plan-sprint.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/sprint-planning-product-backlog-list-item.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
+</head>
+<body>
+<div class="container">
+    <section id="hero">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
+        <h1>Sprint Planning</h1>
+        <h3>Plan the next sprint, decide what should be done!</h3>
+    </section>
+    <section id="plan-sprint-form">
+        <form th:action="@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=${sprint.projectId}, sprintId=${sprint.sprintId})}" th:object="${planSprintForm}" method="post">
+            <div class="error-message" th:if="${#fields.hasErrors() || errorMessage != null}">
+                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+                <p th:text="${errorMessage}">Error while defining product backlog item!</p>
+                <div>
+                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}">Validation error while defining product backlog item!</p>
+                </div>
+            </div>
+
+            <div id="input-fields">
+                <div id="sprint-goal">
+                    <label for="sprint-goal-input">Sprint Goal</label>
+                    <textarea id="sprint-goal-input" th:field="*{sprintGoal}"
+                              placeholder="Describe the goal of this sprint!"></textarea>
+                </div>
+                <div id="sprint-backlog-items">
+                    <p hx:get="@{/projects/{projectId}/backlog/sprint-planning-list(projectId=${sprint.projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog items!</p>
+                </div>
+            </div>
+            <div class="submit-go-back">
+                <button type="submit">
+                    Commit
+                    <img th:src="@{/assets/svg/check-white.svg}" alt="check">
+                </button>
+                <p>Changed your mind? Go <a th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=${sprint.projectId}, sprintId=${sprint.sprintId})}">back</a>!</p>
+            </div>
+        </form>
+    </section>
+</div>
+</body>
+</html>

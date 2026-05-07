@@ -1,0 +1,56 @@
+package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.sprint
+
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import java.util.UUID
+
+@Entity
+class SprintBacklogItemEntity(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null,
+    var projectId: UUID,
+    var productBacklogItemId: UUID,
+    var title: String,
+    var description: String,
+    var assignedDeveloperUserId: UUID?,
+    var assignedDeveloperProjectId: UUID?,
+    var status: SprintBacklogItemStatus,
+) {
+    constructor(sprintBacklogItem: SprintBacklogItem) : this(
+        id = sprintBacklogItem.id,
+        projectId = sprintBacklogItem.productBacklogItemId.projectId,
+        productBacklogItemId = sprintBacklogItem.productBacklogItemId.productBacklogItemId,
+        title = sprintBacklogItem.title,
+        description = sprintBacklogItem.description,
+        assignedDeveloperUserId = sprintBacklogItem.assignedDeveloper?.userId,
+        assignedDeveloperProjectId = sprintBacklogItem.assignedDeveloper?.projectId,
+        status = sprintBacklogItem.status,
+    )
+
+    fun toSprintBacklogItem(): SprintBacklogItem =
+        SprintBacklogItem(
+            id = this.id,
+            productBacklogItemId =
+                ProductBacklogItemId(
+                    projectId = this.projectId,
+                    productBacklogItemId = this.productBacklogItemId,
+                ),
+            title = title,
+            description = description,
+            assignedDeveloper =
+                assignedDeveloperUserId?.let {
+                    TeamMemberId(
+                        userId = this.assignedDeveloperUserId!!,
+                        projectId = this.assignedDeveloperProjectId!!,
+                    )
+                },
+            status = status,
+        )
+}

@@ -25,18 +25,18 @@
 <div class="container">
     <header id="scrum-header">
         <a th:href="@{/projects}">
-            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+            <img th:src="@{/assets/svg/logo-secondary.svg}" alt="Logo">
         </a>
         <nav>
-            <a class="btn" th:href="@{/projects/{id}(id=*{projectId})}">
+            <a class="btn" th:href="@{/projects/{projectId}(projectId=*{projectId})}">
                 <img th:src="@{/assets/svg/sticky.svg}" alt="Sticky">
                 Details
             </a>
-            <a class="btn selected" th:href="@{/projects/{id}/backlog(id=*{projectId})}">
+            <a class="btn selected" th:href="@{/projects/{projectId}/backlog(projectId=*{projectId})}">
                 <img th:src="@{/assets/svg/list-white.svg}" alt="List">
                 Backlog
             </a>
-            <a class="btn">
+            <a class="btn" th:href="@{/projects/{projectId}/sprints(projectId=*{projectId})}">
                 <img th:src="@{/assets/svg/rotate.svg}" alt="Rotate">
                 Sprints
             </a>
@@ -48,8 +48,8 @@
             <label for="search"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
             <input type="text" id="search" placeholder="Search">
         </div>
-        <p hx:get="@{/projects/{id}/backlog/list(id=*{projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog!</p>
-        <a th:if="${authenticatedTeamMember.isProductOwner()}" class="add-button" th:href="@{/projects/{id}/backlog/define(id=*{projectId})}">
+        <p hx:get="@{/projects/{projectId}/backlog/list(projectId=*{projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog!</p>
+        <a th:if="${authenticatedTeamMember.isProductOwner()}" class="add-button" th:href="@{/projects/{projectId}/backlog/define(projectId=*{projectId})}">
             <img th:src="@{/assets/svg/plus.svg}" alt="Add">
         </a>
     </section>

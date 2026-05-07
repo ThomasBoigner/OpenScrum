@@ -26,6 +26,10 @@ class ProductBacklogItem(
         this.description = description
     }
 
+    fun setStatusToCommittedToSprint() {
+        this.status = ProductBacklogItemStatus.COMMITTED_TO_SPRINT
+    }
+
     override fun toString(): String =
         "ProductBacklogItem(productBacklogItemId=$productBacklogItemId, status=$status, title='$title', description='$description')"
 

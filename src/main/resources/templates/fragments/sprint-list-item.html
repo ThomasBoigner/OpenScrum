@@ -1,0 +1,13 @@
+<p th:if="${#lists.isEmpty(sprints)}">No sprints found!</p>
+<div th:fragment="sprint-list-item" class="sprint-list-item" th:each="sprint : ${sprints}" th:object="${sprint}">
+    <div class="sprint-information">
+        <h2 th:text="*{sprintName}">Sprint 1</h2>
+        <div class="sprint-status">
+            <label>Status</label>
+            <p th:text="*{status.displayName}">In progress</p>
+        </div>
+    </div>
+    <a class="sprint-details-button" th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">
+        <img th:src="@{/assets/svg/arrow-primary.svg}" alt="arrow">
+    </a>
+</div>

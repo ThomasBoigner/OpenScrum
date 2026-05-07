@@ -1,6 +1,5 @@
 package at.fhtw.openscrum.management.application.dtos
 
-import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.User
 import java.util.UUID
 
@@ -20,9 +19,6 @@ data class UserDto(
         user.fullName.firstName,
         user.fullName.lastName,
         user.fullName.fullName,
-        when (user.role) {
-            Role.USER -> RoleDto.USER
-            Role.MANAGER -> RoleDto.MANAGER
-        },
+        RoleDto.Companion.fromRole(user.role),
     )
 }

@@ -103,12 +103,10 @@ section#users-list a.create-button {
 /* 1200px - 600px */
 @media screen and (max-width: 1200px) {
     /* Container */
-    body {
-        height: auto;
-    }
-
     div.container {
         flex-direction: column;
+        height: auto;
+        min-height: 100%;
     }
 
     /* Header */

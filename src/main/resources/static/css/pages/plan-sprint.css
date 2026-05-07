@@ -1,0 +1,246 @@
+/* Container */
+div.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 128px;
+    padding: 64px 0;
+}
+
+/* Hero */
+section#hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+
+section#hero h1 {
+    text-align: center;
+    background: var(--brand-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    width: 1024px;
+}
+
+section#hero h3 {
+    text-align: center;
+    width: 640px;
+}
+
+/* Form */
+section#plan-sprint-form {
+    width: 100%;
+}
+
+section#plan-sprint-form form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    width: 100%;
+}
+
+div.error-message {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border: solid 3px var(--error);
+    border-radius: 8px;
+    gap: 16px;
+    padding: 16px 24px;
+}
+
+div.error-message p {
+    color: var(--error);
+}
+
+div.error-message div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Input fields */
+section#plan-sprint-form div#input-fields {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    width: 100%;
+}
+
+/* Sprint goal */
+section#plan-sprint-form div#sprint-goal {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 1024px;
+}
+
+section#plan-sprint-form div#sprint-goal textarea {
+    border-radius: 8px;
+    background-color: var(--black10);
+    width: 100%;
+    padding: 24px;
+    height: 256px;
+}
+
+/* Sprint backlog items */
+div#sprint-backlog-items {
+    background-color: var(--black5);
+    width: 100%;
+    padding: 64px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+
+/* Submit & go back */
+div.submit-go-back {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 512px;
+}
+
+section#plan-sprint-form button {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    padding: 16px 24px;
+    width: 100%;
+    color: var(--white);
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
+}
+
+section#plan-sprint-form button img {
+    width: 32px;
+    height: 32px;
+}
+
+section#plan-sprint-form button:hover {
+    gap: 8px;
+}
+
+section#plan-sprint-form div.submit-go-back > p {
+    text-align: center;
+}
+
+section#plan-sprint-form div.submit-go-back > p a {
+    color: var(--primary-color);
+}
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    div.container {
+        gap: 96px;
+        padding: 48px 0;
+    }
+
+    section#hero {
+        gap: 24px;
+    }
+
+    section#hero img {
+        width: 64px;
+        height: 64px;
+    }
+
+    section#hero h1 {
+        width: auto;
+    }
+
+    section#hero h3 {
+        width: 512px;
+    }
+
+    section#plan-sprint-form form {
+        gap: 48px;
+    }
+
+    div.error-message img {
+        height: 24px;
+    }
+
+    section#plan-sprint-form div#input-fields {
+        gap: 48px;
+    }
+
+    section#plan-sprint-form div#sprint-goal {
+        width: 512px;
+    }
+
+    section#plan-sprint-form div#sprint-goal textarea {
+        height: 192px;
+    }
+
+    div#sprint-backlog-items {
+        padding: 48px 0;
+        gap: 24px;
+    }
+
+    div.submit-go-back {
+        width: 256px;
+    }
+
+    section#plan-sprint-form button img {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    div.container {
+        gap: 64px;
+        padding: 32px 0;
+    }
+
+    section#hero {
+        gap: 16px;
+        padding: 0 16px;
+        width: 100%;
+    }
+
+    section#hero h1,
+    section#hero h3 {
+        width: 100%;
+    }
+
+    section#plan-sprint-form form {
+        gap: 32px;
+    }
+
+    section#plan-sprint-form div.error-message {
+        margin: 0 16px;
+    }
+
+    section#plan-sprint-form div#input-fields {
+        gap: 32px;
+    }
+
+    section#plan-sprint-form div#sprint-goal {
+        width: 100%;
+        padding: 0 16px;
+    }
+
+    div#sprint-backlog-items {
+        padding: 32px 16px;
+        gap: 24px;
+    }
+
+    div.submit-go-back {
+        width: 100%;
+        gap: 8px;
+        padding: 0 16px;
+    }
+}

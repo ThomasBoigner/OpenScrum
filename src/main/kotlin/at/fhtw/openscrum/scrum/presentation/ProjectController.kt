@@ -25,7 +25,7 @@ class ProjectController(
     private val log: Logger = LoggerFactory.getLogger(ProjectController::class.java),
 ) {
     companion object {
-        const val BASE_URL = "/projects/{id}"
+        const val BASE_URL = "/projects/{projectId}"
         const val PATH_INDEX = "/"
         const val ROUTE_CONFIGURE = "/configure"
         const val ROUTE_CONFIGURE_SPRINT_LENGTH = "$ROUTE_CONFIGURE/sprint-length"
@@ -37,15 +37,15 @@ class ProjectController(
     fun index(
         model: Model,
         principal: Principal,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
     ): String {
-        log.debug("Serving project details page for id {}", id)
+        log.debug("Serving project details page for id {}", projectId)
         val authenticatedTeamMember =
-            teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
-        val project = projectApplicationService.getProject(id) ?: return "error/404"
-        val developers = teamMemberApplicationService.getDevelopersOfProject(id)
-        val scrumMaster = teamMemberApplicationService.getScrumMasterOfProject(id) ?: return "error/404"
-        val productOwner = teamMemberApplicationService.getProductOwnerOfProject(id) ?: return "error/404"
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
+        val project = projectApplicationService.getProject(projectId) ?: return "error/404"
+        val developers = teamMemberApplicationService.getDevelopersOfProject(projectId)
+        val scrumMaster = teamMemberApplicationService.getScrumMasterOfProject(projectId) ?: return "error/404"
+        val productOwner = teamMemberApplicationService.getProductOwnerOfProject(projectId) ?: return "error/404"
 
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("project", project)
@@ -60,13 +60,13 @@ class ProjectController(
     fun showConfigurationForm(
         model: Model,
         principal: Principal,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
     ): String {
-        log.debug("Serving project configuration page for id {}", id)
+        log.debug("Serving project configuration page for id {}", projectId)
         val authenticatedTeamMember =
-            teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         if (!authenticatedTeamMember.isScrumMaster && !authenticatedTeamMember.isProductOwner) return "error/403"
-        val project = projectApplicationService.getProject(id) ?: return "error/404"
+        val project = projectApplicationService.getProject(projectId) ?: return "error/404"
 
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("project", project)
@@ -79,18 +79,18 @@ class ProjectController(
     fun configureSprintLength(
         model: Model,
         principal: Principal,
-        @PathVariable id: UUID,
-        sprintLength: Int,
+        @PathVariable projectId: UUID,
+        sprintLength: Long,
     ): String {
         log.debug(
             "Received http PUT request to update sprint length of project with id {} to sprint length {}",
-            id,
+            projectId,
             sprintLength,
         )
         try {
             projectApplicationService.defineSprintLength(
                 principal.name,
-                DefineSprintLengthCommand(id, sprintLength),
+                DefineSprintLengthCommand(projectId, sprintLength),
             )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while configuring sprint length with message: {}", ex.message)
@@ -106,18 +106,18 @@ class ProjectController(
     fun configureProductGoal(
         model: Model,
         principal: Principal,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
         productGoal: String,
     ): String {
         log.debug(
             "Received http PUT request to update product goal of project with id {} to product goal {}",
-            id,
+            projectId,
             productGoal,
         )
         try {
             projectApplicationService.defineProductGoal(
                 principal.name,
-                DefineProductGoalCommand(id, productGoal),
+                DefineProductGoalCommand(projectId, productGoal),
             )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while configuring product goal with message: {}", ex.message)
@@ -133,18 +133,18 @@ class ProjectController(
     fun configureDefinitionOfDone(
         model: Model,
         principal: Principal,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
         definitionOfDone: String,
     ): String {
         log.debug(
             "Received http PUT request to update definition of done of project with id {} to definition of done {}",
-            id,
+            projectId,
             definitionOfDone,
         )
         try {
             projectApplicationService.defineDefinitionOfDone(
                 principal.name,
-                DefineDefinitionOfDoneCommand(id, definitionOfDone),
+                DefineDefinitionOfDoneCommand(projectId, definitionOfDone),
             )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while configuring definition of done with message: {}", ex.message)

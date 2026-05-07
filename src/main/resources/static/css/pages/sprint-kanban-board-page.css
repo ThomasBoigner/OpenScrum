@@ -1,0 +1,185 @@
+/* Container */
+body {
+    height: 100vh;
+}
+
+div.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Header */
+header#sprint-header {
+    background-color: var(--white);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 32px;
+    position: relative;
+}
+
+/* Back button */
+a.back-button {
+    position: absolute;
+    left: 32px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-radius: 8px;
+    padding: 16px 24px;
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
+    width: 256px;
+}
+
+a.back-button img {
+    width: 32px;
+    height: auto;
+    transform: rotate(180deg);
+}
+
+a.back-button:hover {
+    gap: 8px;
+}
+
+/* Navigation pills */
+header#sprint-header nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: var(--black5);
+    border-radius: 32px;
+    padding: 8px;
+    box-shadow: 0 4px 6px rgb(196, 196, 196);
+}
+
+header#sprint-header nav a.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 24px;
+    border-radius: 32px;
+    background-color: var(--black5);
+    color: var(--black);
+}
+
+header#sprint-header nav a.selected {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+/* Cancel sprint button */
+a.cancel-sprint-button {
+    position: absolute;
+    right: 32px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background-color: var(--error);
+    color: var(--white);
+    border-radius: 8px;
+    padding: 16px 24px;
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
+    width: 256px;
+}
+
+a.cancel-sprint-button img {
+    width: 32px;
+    height: auto;
+}
+
+a.cancel-sprint-button:hover {
+    gap: 8px;
+}
+
+/* Kanban board */
+div#kanban-board {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    background-color: var(--black5);
+    flex: 1;
+}
+
+/* Kanban columns */
+div.kanban-column {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    align-items: center;
+    padding: 64px 32px;
+    flex: 1;
+}
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    /* Header */
+    header#sprint-header {
+        flex-direction: column;
+        padding: 48px 32px;
+        gap: 32px;
+    }
+
+    a.back-button,
+    a.cancel-sprint-button {
+        position: static;
+    }
+
+    /* Kanban board */
+    div#kanban-board {
+        flex-direction: column;
+        flex: none;
+    }
+
+    /* Kanban columns */
+    div.kanban-column {
+        flex: none;
+        width: 100%;
+        padding: 48px 32px;
+        gap: 24px;
+        align-items: flex-start;
+    }
+
+    img.arrow-left {
+        transform: rotate(0deg);
+    }
+
+    img.arrow-right {
+        transform: rotate(180deg);
+    }
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    /* Header */
+    header#sprint-header {
+        padding: 32px 16px;
+    }
+
+    a.back-button,
+    a.cancel-sprint-button {
+        width: 100%;
+    }
+
+    header#sprint-header nav {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    header#sprint-header nav a.btn {
+        width: 100%;
+    }
+
+    /* Kanban columns */
+    div.kanban-column {
+        padding: 32px 16px;
+        gap: 16px;
+    }
+}

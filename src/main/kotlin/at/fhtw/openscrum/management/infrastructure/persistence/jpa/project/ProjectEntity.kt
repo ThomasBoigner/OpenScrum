@@ -43,5 +43,6 @@ class ProjectEntity(
             productOwnerId = UserId(productOwnerId),
             scrumMasterId = UserId(scrumMasterId),
             developerIds = developerIds.map { UserId(it) }.toSet(),
+            projectCreatedEvents = mutableListOf(),
         )
 }

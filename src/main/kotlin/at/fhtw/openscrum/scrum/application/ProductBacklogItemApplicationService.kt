@@ -1,15 +1,19 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
+import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemDto
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemService
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
+import kotlin.collections.map
 
 @Service
 @Transactional(readOnly = true)
@@ -23,6 +27,24 @@ class ProductBacklogItemApplicationService(
         log.debug("Trying to get all product backlog items of project with id {}", projectId)
         val productBacklogItems = productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId)
         log.info("Found all ({}) product backlog items of project with id {}", productBacklogItems.size, projectId)
+        return productBacklogItems.map { ProductBacklogItemDto(it) }
+    }
+
+    fun getProductBacklogOfProjectWithStatusInBacklog(projectId: UUID): List<ProductBacklogItemDto> {
+        log.debug(
+            "Trying to get all product backlog items of project with id {} that have status in backlog",
+            projectId,
+        )
+        val productBacklogItems =
+            productBacklogItemRepository.findProductBacklogItemsByProjectIdAndStatus(
+                projectId,
+                ProductBacklogItemStatus.IN_BACKLOG,
+            )
+        log.info(
+            "Found all ({}) product backlog items of project with id {} that have status in backlog",
+            productBacklogItems.size,
+            projectId,
+        )
         return productBacklogItems.map { ProductBacklogItemDto(it) }
     }
 
@@ -44,5 +66,26 @@ class ProductBacklogItemApplicationService(
                 command.description,
             ),
         )
+    }
+
+    @Transactional(readOnly = false)
+    fun markAsCommittedToSprint(command: MarkAsCommitedToSprintCommand): ProductBacklogItemDto? {
+        log.debug("Trying to mark product backlog item as commited to sprint with command: {}", command)
+        val productBacklogItem =
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(projectId = command.projectId, productBacklogItemId = command.productBacklogItemId),
+            )
+
+        if (productBacklogItem == null) {
+            log.error(
+                "Product backlog with projectId {} and productBacklogItemId {} does not exits",
+                command.projectId,
+                command.productBacklogItemId,
+            )
+            return null
+        }
+
+        productBacklogItem.setStatusToCommittedToSprint()
+        return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
     }
 }

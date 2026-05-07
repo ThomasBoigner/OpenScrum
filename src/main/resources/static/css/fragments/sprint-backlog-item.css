@@ -1,0 +1,59 @@
+/* Sprint backlog item card */
+div.sprint-backlog-item {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+    width: 100%;
+}
+
+/* Info group */
+div.info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Move buttons */
+div.move-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    width: 100%;
+}
+
+button.move-left-button,
+button.move-right-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 8px;
+    flex: 1;
+}
+
+button.move-left-button img,
+button.move-right-button img {
+    width: 32px;
+    height: auto;
+}
+
+img.arrow-left {
+    transform: rotate(270deg);
+}
+
+img.arrow-right {
+    transform: rotate(90deg);
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    /* Move buttons stack vertically */
+    div.move-buttons {
+        flex-direction: column;
+    }
+}

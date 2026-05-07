@@ -1,0 +1,16 @@
+<p class="no-product-backlog-item" th:if="${#lists.isEmpty(productBacklog)}">No product backlog items found!</p>
+<div class="product-backlog-item" th:each="productBacklogItem : ${productBacklog}" th:object="${productBacklogItem}">
+    <input th:id="|select-backlog-item-*{productBacklogItemId}|"
+           type="checkbox"
+           name="productBacklogIds"
+           th:value="*{productBacklogItemId}">
+    <div class="backlog-item-info">
+        <h2>
+            <label th:for="|select-backlog-item-*{productBacklogItemId}|" th:text="*{title}">Item Title</label>
+        </h2>
+        <div class="info-group">
+            <label>Description</label>
+            <p th:text="*{description}">Item description goes here.</p>
+        </div>
+    </div>
+</div>

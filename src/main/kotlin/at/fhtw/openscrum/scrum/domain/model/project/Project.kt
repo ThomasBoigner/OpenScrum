@@ -10,6 +10,7 @@ class Project(
     sprintLength: SprintLength = SprintLength(2),
     productGoal: String? = null,
     definitionOfDone: String? = null,
+    val sprintScheduledEvents: MutableList<SprintScheduled> = mutableListOf(SprintScheduled(projectId, sprintLength)),
 ) {
     var sprintLength: SprintLength = sprintLength
         private set
@@ -20,7 +21,7 @@ class Project(
 
     fun defineSprintLength(
         scrumMaster: ScrumMaster?,
-        sprintLength: Int,
+        sprintLength: Long,
     ) {
         require(scrumMaster?.teamMemberId?.projectId == this.projectId.token) { "You are not the scrum master of this project!" }
         this.sprintLength = SprintLength(sprintLength)

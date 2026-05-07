@@ -5,5 +5,12 @@ import java.util.UUID
 interface ProductBacklogItemRepository {
     fun save(productBacklogItem: ProductBacklogItem): ProductBacklogItem
 
+    fun findProductBacklogItemByProductBacklogItemId(productBacklogItemId: ProductBacklogItemId): ProductBacklogItem?
+
     fun findProductBacklogItemsByProjectId(projectId: UUID): List<ProductBacklogItem>
+
+    fun findProductBacklogItemsByProjectIdAndStatus(
+        projectId: UUID,
+        status: ProductBacklogItemStatus,
+    ): List<ProductBacklogItem>
 }

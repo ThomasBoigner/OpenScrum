@@ -28,22 +28,23 @@ class ProductBacklogController(
     private val log: Logger = LoggerFactory.getLogger(ProductBacklogController::class.java),
 ) {
     companion object {
-        const val BASE_URL = "/projects/{id}/backlog"
+        const val BASE_URL = "/projects/{projectId}/backlog"
         const val PATH_INDEX = "/"
         const val FRAGMENT_PRODUCT_BACKLOG_LIST_ITEM = "/list"
         const val ROUTE_DEFINE = "/define"
+        const val FRAGMENT_SPRINT_PLANNING_PRODUCT_BACKLOG_LIST_ITEM = "/sprint-planning-list"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
     fun index(
         model: Model,
         principal: Principal,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
     ): String {
-        log.debug("Serving list product backlog page for project with id {}", id)
+        log.debug("Serving list product backlog page for project with id {}", projectId)
         val authenticatedTeamMember =
-            teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
-        val project = projectApplicationService.getProject(id)
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
+        val project = projectApplicationService.getProject(projectId) ?: return "error/404"
 
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("project", project)
@@ -55,9 +56,9 @@ class ProductBacklogController(
     @GetMapping(value = [FRAGMENT_PRODUCT_BACKLOG_LIST_ITEM])
     fun getProductBacklogListItems(
         model: Model,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
     ): String {
-        model.addAttribute("productBacklog", productBacklogApplicationService.getProductBacklogOfProject(id))
+        model.addAttribute("productBacklog", productBacklogApplicationService.getProductBacklogOfProject(projectId))
         return "fragments/product-backlog-list-item"
     }
 
@@ -65,13 +66,13 @@ class ProductBacklogController(
     fun showDefineBacklogItemForm(
         model: Model,
         principal: Principal,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
     ): String {
-        log.debug("Serving list define product backlog item page for project with id {}", id)
+        log.debug("Serving list define product backlog item page for project with id {}", projectId)
         val authenticatedTeamMember =
-            teamMemberApplicationService.getTeamMemberOfProject(id, principal.name) ?: return "error/404"
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         if (!authenticatedTeamMember.isProductOwner) return "error/403"
-        val project = projectApplicationService.getProject(id) ?: return "error/404"
+        val project = projectApplicationService.getProject(projectId) ?: return "error/404"
         val defineProductBacklogItemForm = DefineProductBacklogItemForm()
 
         model.addAttribute("project", project)
@@ -83,31 +84,41 @@ class ProductBacklogController(
     fun handleDefineBacklogItemForm(
         model: Model,
         principal: Principal,
-        @PathVariable id: UUID,
+        @PathVariable projectId: UUID,
         @Valid @ModelAttribute(name = "defineProductBacklogItemForm") form: DefineProductBacklogItemForm,
         brDefineProductBacklogItemForm: BindingResult,
     ): String {
         log.debug("Received http POST request to define product backlog item with form {}", form)
         if (brDefineProductBacklogItemForm.hasErrors()) {
             log.warn("Define product backlog item form {} has validation errors", form)
-            val project = projectApplicationService.getProject(id) ?: return "error/404"
+            val project = projectApplicationService.getProject(projectId) ?: return "error/404"
             model.addAttribute("project", project)
             return "pages/define-product-backlog-item"
         }
         try {
             productBacklogApplicationService.defineProductBacklogItem(
                 principal.name,
-                form.toDefineProductBacklogItemCommand(id),
+                form.toDefineProductBacklogItemCommand(projectId),
             )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while defining product backlog item with message: {}", ex.message)
-            val project = projectApplicationService.getProject(id) ?: return "error/404"
+            val project = projectApplicationService.getProject(projectId) ?: return "error/404"
 
             model.addAttribute("project", project)
             model.addAttribute("errorMessage", ex.message)
 
             return "pages/define-product-backlog-item"
         }
-        return "redirect:/projects/$id/backlog"
+        return "redirect:/projects/$projectId/backlog"
+    }
+
+    @HxRequest
+    @GetMapping(value = [FRAGMENT_SPRINT_PLANNING_PRODUCT_BACKLOG_LIST_ITEM])
+    fun getSprintPlanningProductBacklogListItems(
+        model: Model,
+        @PathVariable projectId: UUID,
+    ): String {
+        model.addAttribute("productBacklog", productBacklogApplicationService.getProductBacklogOfProjectWithStatusInBacklog(projectId))
+        return "fragments/sprint-planning-product-backlog-list-item"
     }
 }

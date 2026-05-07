@@ -1,0 +1,29 @@
+@startuml
+|Scrum Master|
+start
+:Sprint Scheduled;
+
+|Product Owner|
+:Sprint Goal Defined;
+
+|Scrum Master|
+:Backlog Items Committed to Sprint;
+:Sprint Planning Held;
+
+|Product Owner|
+repeat
+  |Developer|
+  :Backlog Item Marked as Done;
+
+  |Product Owner|
+  if (Cancel Sprint?) then (yes)
+    :Sprint Cancelled;
+    stop
+  else (no)
+  endif
+
+repeat while (Sprint Duration Elapsed?) is (no)
+-> yes;
+
+end
+@enduml

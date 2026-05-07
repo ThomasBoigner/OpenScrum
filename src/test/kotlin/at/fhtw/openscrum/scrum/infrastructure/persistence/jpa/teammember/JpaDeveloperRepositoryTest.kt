@@ -27,6 +27,27 @@ class JpaDeveloperRepositoryTest {
     }
 
     @Test
+    fun ensureSaveWorksProperly() {
+        // Given
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = UUID.randomUUID()),
+                username = "jdoe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+
+        // When
+        developerRepository.save(developer)
+
+        // Then
+        val savedEntities = developerEntityRepository.findAll()
+        assertThat(savedEntities).hasSize(1)
+        val savedDeveloper = savedEntities.first().toDeveloper()
+        assertThat(savedDeveloper.id).isNotNull
+        assertThat(savedDeveloper).isEqualTo(developer)
+    }
+
+    @Test
     fun ensureFindByProjectIdWorksProperly() {
         // Given
         val projectId = UUID.randomUUID()
@@ -55,23 +76,23 @@ class JpaDeveloperRepositoryTest {
     }
 
     @Test
-    fun ensureSaveWorksProperly() {
+    fun ensureFindByTeamMemberIdReturnsDeveloper() {
         // Given
+        val teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = UUID.randomUUID())
         val developer =
             Developer(
-                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = UUID.randomUUID()),
+                teamMemberId = teamMemberId,
                 username = "jdoe",
                 fullName = FullName(firstName = "John", lastName = "Doe"),
             )
-
-        // When
         developerRepository.save(developer)
 
+        // When
+        val result = developerRepository.findByTeamMemberId(teamMemberId)
+
         // Then
-        val savedEntities = developerEntityRepository.findAll()
-        assertThat(savedEntities).hasSize(1)
-        val savedDeveloper = savedEntities.first().toDeveloper()
-        assertThat(savedDeveloper.id).isNotNull
-        assertThat(savedDeveloper).isEqualTo(developer)
+        assertThat(result).isNotNull
+        assertThat(result!!.teamMemberId).isEqualTo(teamMemberId)
+        assertThat(result.username).isEqualTo("jdoe")
     }
 }

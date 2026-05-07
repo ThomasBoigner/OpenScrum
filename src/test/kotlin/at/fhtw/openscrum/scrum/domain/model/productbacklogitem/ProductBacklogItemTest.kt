@@ -60,4 +60,21 @@ class ProductBacklogItemTest {
             )
         }
     }
+
+    @Test
+    fun ensureProductBacklogSetStatusToCommittedToSprintWorksProperly() {
+        // Given
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                title = "Define Backlog",
+                description = "Description",
+            )
+
+        // When
+        productBacklogItem.setStatusToCommittedToSprint()
+
+        // Then
+        assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.COMMITTED_TO_SPRINT)
+    }
 }
