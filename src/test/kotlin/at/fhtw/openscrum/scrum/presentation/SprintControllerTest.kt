@@ -594,4 +594,281 @@ class SprintControllerTest {
 
         webDriver.close()
     }
+
+    /*
+    Given a scrum master, a sprint, a sprint goal and product backlog items that do not have status "in backlog"
+    When the scrum master enters the information into the plan sprint form
+    Then he receives an error that he can not commit already finished backlog items to a sprint
+     */
+    @Test
+    fun ensurePlanSprintDoesNotWorkWhenNoProductBacklogItemsAreInBacklog() {
+        // Given
+        val productBacklogItemTitle = "Implement Login"
+
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMasterPassword = "abc123"
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = scrumMasterPassword,
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null
+            }
+
+        val productBacklogItem =
+            productBacklogItemApplicationService.defineProductBacklogItem(
+                productOwner.username,
+                DefineProductBacklogItemCommand(
+                    projectId = project.projectId.token,
+                    title = productBacklogItemTitle,
+                    description = "As a user, I want to log in to the application.",
+                ),
+            )
+
+        productBacklogItemApplicationService.markAsCommittedToSprint(
+            at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand(
+                projectId = project.projectId.token,
+                productBacklogItemId = productBacklogItem.productBacklogItemId,
+            ),
+        )
+
+        val sprint =
+            sprintApplicationService.initializeSprint(
+                InitializeSprintCommand(
+                    projectId = project.projectId.token,
+                    sprintLength = 2,
+                ),
+            )
+
+        val webDriver = ChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        wait.until(ExpectedConditions.visibilityOfElementLocated((By.cssSelector("p.no-product-backlog-item"))))
+
+        // Then
+        assertThat(webDriver.pageSource).doesNotContain(productBacklogItemTitle)
+
+        webDriver.close()
+    }
+
+    /*
+    Given a scrum master, a sprint, a blank sprint goal and product backlog items
+    When the scrum master enters the information into the plan sprint form
+    Then he receives an error that the sprint goal can not be blank
+     */
+    @Test
+    fun ensurePlanSprintDoesNotWorkWhenSprintGoalIsBlank() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMasterPassword = "abc123"
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = scrumMasterPassword,
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null &&
+                    teamMemberApplicationService.getScrumMasterOfProject(project.projectId.token) != null
+            }
+
+        val productBacklogItem =
+            productBacklogItemApplicationService.defineProductBacklogItem(
+                productOwner.username,
+                DefineProductBacklogItemCommand(
+                    projectId = project.projectId.token,
+                    title = "Implement Login",
+                    description = "As a user, I want to log in to the application.",
+                ),
+            )
+
+        val sprint =
+            sprintApplicationService.initializeSprint(
+                InitializeSprintCommand(
+                    projectId = project.projectId.token,
+                    sprintLength = 2,
+                ),
+            )
+
+        val webDriver = createHeadlessChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+
+        val checkbox =
+            wait.until(
+                ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("input[name='productBacklogIds'][value='${productBacklogItem.productBacklogItemId}']"),
+                ),
+            )
+        checkbox.click()
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#plan-sprint-form button"))).click()
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+
+        // Then
+        assertThat(webDriver.pageSource).contains("Sprint goal must not be blank!")
+
+        webDriver.close()
+    }
+
+    /*
+    Given a scrum master, a sprint and a sprint goal and no product backlog items
+    When the scrum master enters the information into the plan sprint form
+    Then the scrum master should receive an error that the sprint backlog can not be empty
+     */
+    @Test
+    fun ensurePlanSprintDoesNotWorkWhenNoProductBacklogItemsAreSelected() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMasterPassword = "abc123"
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = scrumMasterPassword,
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null &&
+                    teamMemberApplicationService.getScrumMasterOfProject(project.projectId.token) != null
+            }
+
+        productBacklogItemApplicationService.defineProductBacklogItem(
+            productOwner.username,
+            DefineProductBacklogItemCommand(
+                projectId = project.projectId.token,
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            ),
+        )
+
+        val sprint =
+            sprintApplicationService.initializeSprint(
+                InitializeSprintCommand(
+                    projectId = project.projectId.token,
+                    sprintLength = 2,
+                ),
+            )
+
+        val webDriver = createHeadlessChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("input[name='productBacklogIds']")))
+
+        webDriver.findElement(By.cssSelector("textarea#sprint-goal-input")).sendKeys("Deliver the login feature")
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#plan-sprint-form button"))).click()
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+
+        // Then
+        assertThat(webDriver.pageSource).contains("At least one product backlog item must be selected!")
+
+        webDriver.close()
+    }
 }

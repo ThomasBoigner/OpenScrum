@@ -1,4 +1,4 @@
-<p th:if="${#lists.isEmpty(productBacklog)}">No product backlog items found!</p>
+<p class="no-product-backlog-item" th:if="${#lists.isEmpty(productBacklog)}">No product backlog items found!</p>
 <div class="product-backlog-item" th:each="productBacklogItem : ${productBacklog}" th:object="${productBacklogItem}">
     <input th:id="|select-backlog-item-*{productBacklogItemId}|"
            type="checkbox"
