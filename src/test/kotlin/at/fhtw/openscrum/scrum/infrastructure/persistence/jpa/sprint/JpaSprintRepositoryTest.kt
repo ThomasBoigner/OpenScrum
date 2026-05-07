@@ -69,7 +69,9 @@ class JpaSprintRepositoryTest {
         val savedItem = savedSprint.sprintBacklogItems.first()
         assertThat(savedItem.title).isEqualTo(productBacklogItem.title)
         assertThat(savedItem.description).isEqualTo(productBacklogItem.description)
-        assertThat(savedItem.productBacklogItemId).isEqualTo(productBacklogItem.productBacklogItemId)
+        assertThat(
+            savedItem.sprintBacklogItemId.productBacklogItemId,
+        ).isEqualTo(productBacklogItem.productBacklogItemId.productBacklogItemId)
     }
 
     @Test

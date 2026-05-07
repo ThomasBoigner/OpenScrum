@@ -288,36 +288,36 @@ Then the scrum master should receive an error that the sprint backlog can not be
 
 ### Test 1
 
-Given a developer and a sprint backlog item with status "To-Do"  
+Given a developer, a sprint and a sprint backlog item with status "To-Do"  
 When the sprint backlog item gets moved right  
 Then the status should be "In progress" and the developer should be assigned  
 
 ### Test 2
 
-Given a developer and a sprint backlog item with status "In progress"  
+Given a developer, a sprint and a sprint backlog item with status "In progress"  
 When the sprint backlog item gets moved right  
 Then the status should be "Done" and the developer should be assigned  
 
 ### Test 3
 
-Given a developer and a sprint backlog item with status "Done"  
+Given a developer, a sprint and a sprint backlog item with status "Done"  
 When the sprint backlog item gets moved right  
 Then the status should be "Done"  
 
 ### Test 4
 
-Given a developer and a sprint backlog item with status "Done"  
+Given a developer, a sprint and a sprint backlog item with status "Done"  
 When the sprint backlog item gets moved left  
 Then the status should be "In progress" and the developer should be assigned  
 
 ### Test 5
 
-Given a developer and a sprint backlog item with status "In progress"  
+Given a developer, a sprint and a sprint backlog item with status "In progress"  
 When the sprint backlog item gets moved left  
 Then the status should be "To-Do" and no developer should be assigned  
 
 ### Test 6
 
-Given a developer and a sprint backlog item with status "To-Do"  
+Given a developer, a sprint and a sprint backlog item with status "To-Do"  
 When the sprint backlog item gets moved left  
 Then the status should be "To-Do"

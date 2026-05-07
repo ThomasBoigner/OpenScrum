@@ -10,6 +10,7 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.Sprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
@@ -149,14 +150,14 @@ class SprintApplicationServiceTest {
         val sprintId = UUID.randomUUID()
         val toDoItem =
             SprintBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID()),
                 title = "Implement login",
                 description = "As a user I want to log in",
                 status = SprintBacklogItemStatus.TO_DO,
             )
         val doneItem =
             SprintBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID()),
                 title = "Implement logout",
                 description = "As a user I want to log out",
                 status = SprintBacklogItemStatus.DONE,
@@ -176,7 +177,7 @@ class SprintApplicationServiceTest {
 
         // Then
         assertThat(result).hasSize(1)
-        assertThat(result[0].productBacklogItemId).isEqualTo(toDoItem.productBacklogItemId.productBacklogItemId)
+        assertThat(result[0].productBacklogItemId).isEqualTo(toDoItem.sprintBacklogItemId.productBacklogItemId)
         assertThat(result[0].title).isEqualTo(toDoItem.title)
         assertThat(result[0].status).isEqualTo(SprintBacklogItemStatusDto.TO_DO)
     }
@@ -189,7 +190,7 @@ class SprintApplicationServiceTest {
         val developerTeamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId)
         val inProgressItem =
             SprintBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID()),
                 title = "Implement registration",
                 description = "As a user I want to register",
                 assignedDeveloper = developerTeamMemberId,

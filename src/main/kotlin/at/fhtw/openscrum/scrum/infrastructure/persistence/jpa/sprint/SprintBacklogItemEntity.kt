@@ -1,7 +1,7 @@
 package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.sprint
 
-import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import jakarta.persistence.Entity
@@ -25,8 +25,8 @@ class SprintBacklogItemEntity(
 ) {
     constructor(sprintBacklogItem: SprintBacklogItem) : this(
         id = sprintBacklogItem.id,
-        projectId = sprintBacklogItem.productBacklogItemId.projectId,
-        productBacklogItemId = sprintBacklogItem.productBacklogItemId.productBacklogItemId,
+        projectId = sprintBacklogItem.sprintBacklogItemId.projectId,
+        productBacklogItemId = sprintBacklogItem.sprintBacklogItemId.productBacklogItemId,
         title = sprintBacklogItem.title,
         description = sprintBacklogItem.description,
         assignedDeveloperUserId = sprintBacklogItem.assignedDeveloper?.userId,
@@ -37,8 +37,8 @@ class SprintBacklogItemEntity(
     fun toSprintBacklogItem(): SprintBacklogItem =
         SprintBacklogItem(
             id = this.id,
-            productBacklogItemId =
-                ProductBacklogItemId(
+            sprintBacklogItemId =
+                SprintBacklogItemId(
                     projectId = this.projectId,
                     productBacklogItemId = this.productBacklogItemId,
                 ),

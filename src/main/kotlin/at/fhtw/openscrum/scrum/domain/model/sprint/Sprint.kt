@@ -1,6 +1,8 @@
 package at.fhtw.openscrum.scrum.domain.model.sprint
 
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
+import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -59,7 +61,11 @@ class Sprint(
         productBacklogItems.forEach { pbi ->
             sprintBacklogItems.add(
                 SprintBacklogItem(
-                    productBacklogItemId = pbi.productBacklogItemId,
+                    sprintBacklogItemId =
+                        SprintBacklogItemId(
+                            pbi.productBacklogItemId.projectId,
+                            pbi.productBacklogItemId.productBacklogItemId,
+                        ),
                     title = pbi.title,
                     description = pbi.description,
                 ),
@@ -70,6 +76,22 @@ class Sprint(
                 ),
             )
         }
+    }
+
+    fun moveSprintBacklogItemRight(
+        sprintBacklogItemId: SprintBacklogItemId,
+        developer: Developer,
+    ) {
+        val item = sprintBacklogItems.find { it.sprintBacklogItemId == sprintBacklogItemId }
+        item?.moveRight(developer.teamMemberId)
+    }
+
+    fun moveSprintBacklogItemLeft(
+        sprintBacklogItemId: SprintBacklogItemId,
+        developer: Developer,
+    ) {
+        val item = sprintBacklogItems.find { it.sprintBacklogItemId == sprintBacklogItemId }
+        item?.moveLeft(developer.teamMemberId)
     }
 
     fun getSprintBacklogItems(status: SprintBacklogItemStatus): List<SprintBacklogItem> = sprintBacklogItems.filter { it.status == status }

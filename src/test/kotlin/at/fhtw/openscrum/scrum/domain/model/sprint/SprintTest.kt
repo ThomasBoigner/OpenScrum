@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.domain.model.sprint
 
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
+import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
@@ -97,8 +98,8 @@ class SprintTest {
         assertThat(sprint.sprintGoal).isEqualTo(sprintGoal)
         assertThat(sprint.sprintBacklogItems).hasSize(2)
         assertThat(sprint.status).isEqualTo(SprintStatus.IN_PROGRESS)
-        assertThat(sprint.sprintBacklogItems.map { it.productBacklogItemId })
-            .contains(pbi1.productBacklogItemId, pbi2.productBacklogItemId)
+        assertThat(sprint.sprintBacklogItems.map { it.sprintBacklogItemId.productBacklogItemId })
+            .contains(pbi1.productBacklogItemId.productBacklogItemId, pbi2.productBacklogItemId.productBacklogItemId)
         assertThat(sprint.sprintBacklogItems.map { it.title })
             .contains(pbi1.title, pbi2.title)
         assertThat(sprint.sprintBacklogItems.map { it.description })
@@ -304,21 +305,33 @@ class SprintTest {
         val projectId = UUID.randomUUID()
         val toDoItem =
             SprintBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
                 title = "Implement login",
                 description = "As a user I want to log in",
                 status = SprintBacklogItemStatus.TO_DO,
             )
         val inProgressItem =
             SprintBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
                 title = "Implement registration",
                 description = "As a user I want to register",
                 status = SprintBacklogItemStatus.IN_PROGRESS,
             )
         val doneItem =
             SprintBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
                 title = "Implement logout",
                 description = "As a user I want to log out",
                 status = SprintBacklogItemStatus.DONE,
@@ -361,5 +374,216 @@ class SprintTest {
 
         // Then
         assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemRightMovesItemFromTodoToInProgress() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "john.doe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId = sprintBacklogItemId,
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        sprint.moveSprintBacklogItemRight(sprintBacklogItemId, developer)
+
+        // Then
+        assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.IN_PROGRESS)
+        assertThat(sprintBacklogItem.assignedDeveloper).isEqualTo(developer.teamMemberId)
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemRightMovesItemFromInProgressToDone() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "john.doe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId = sprintBacklogItemId,
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.IN_PROGRESS,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        sprint.moveSprintBacklogItemRight(sprintBacklogItemId, developer)
+
+        // Then
+        assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.DONE)
+        assertThat(sprintBacklogItem.assignedDeveloper).isEqualTo(developer.teamMemberId)
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemRightDoesNotMoveItemWhenAlreadyDone() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "john.doe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId = sprintBacklogItemId,
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.DONE,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        sprint.moveSprintBacklogItemRight(sprintBacklogItemId, developer)
+
+        // Then
+        assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.DONE)
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemLeftMovesItemFromDoneToInProgress() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "john.doe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId = sprintBacklogItemId,
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.DONE,
+                assignedDeveloper = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        sprint.moveSprintBacklogItemLeft(sprintBacklogItemId, developer)
+
+        // Then
+        assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.IN_PROGRESS)
+        assertThat(sprintBacklogItem.assignedDeveloper).isEqualTo(developer.teamMemberId)
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemLeftMovesItemFromInProgressToTodo() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "john.doe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId = sprintBacklogItemId,
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.IN_PROGRESS,
+                assignedDeveloper = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        sprint.moveSprintBacklogItemLeft(sprintBacklogItemId, developer)
+
+        // Then
+        assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.TO_DO)
+        assertThat(sprintBacklogItem.assignedDeveloper).isNull()
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemLeftDoesNotMoveItemWhenAlreadyTodo() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "john.doe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId = sprintBacklogItemId,
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        sprint.moveSprintBacklogItemLeft(sprintBacklogItemId, developer)
+
+        // Then
+        assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.TO_DO)
+        assertThat(sprintBacklogItem.assignedDeveloper).isNull()
     }
 }
