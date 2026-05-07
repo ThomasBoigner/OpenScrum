@@ -72,9 +72,9 @@ class ProductBacklogItemTest {
             )
 
         // When
-        productBacklogItem.setStatusToCommitedToSprint()
+        productBacklogItem.setStatusToCommittedToSprint()
 
         // Then
-        assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.COMMITED_TO_SPRINT)
+        assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.COMMITTED_TO_SPRINT)
     }
 }

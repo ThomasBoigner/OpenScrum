@@ -103,7 +103,7 @@ class SprintTest {
             .contains(pbi1.title, pbi2.title)
         assertThat(sprint.sprintBacklogItems.map { it.description })
             .contains(pbi1.description, pbi2.description)
-        assertThat(sprint.productBacklogItemCommitedEvents).hasSize(2)
+        assertThat(sprint.productBacklogItemCommittedEvents).hasSize(2)
     }
 
     @Test

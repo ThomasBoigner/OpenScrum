@@ -69,7 +69,7 @@ class ProductBacklogItemApplicationService(
     }
 
     @Transactional(readOnly = false)
-    fun markAsCommitedToSprint(command: MarkAsCommitedToSprintCommand): ProductBacklogItemDto? {
+    fun markAsCommittedToSprint(command: MarkAsCommitedToSprintCommand): ProductBacklogItemDto? {
         log.debug("Trying to mark product backlog item as commited to sprint with command: {}", command)
         val productBacklogItem =
             productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
@@ -85,7 +85,7 @@ class ProductBacklogItemApplicationService(
             return null
         }
 
-        productBacklogItem.setStatusToCommitedToSprint()
+        productBacklogItem.setStatusToCommittedToSprint()
         return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
     }
 }

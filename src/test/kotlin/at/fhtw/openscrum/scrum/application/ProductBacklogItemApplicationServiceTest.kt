@@ -158,7 +158,7 @@ class ProductBacklogItemApplicationServiceTest {
     }
 
     @Test
-    fun ensureMarkAsCommitedToSprintWorksProperly() {
+    fun ensureMarkAsCommittedToSprintWorksProperly() {
         // Given
         val projectId = UUID.randomUUID()
         val productBacklogItemId = UUID.randomUUID()
@@ -178,7 +178,7 @@ class ProductBacklogItemApplicationServiceTest {
         whenever(productBacklogItemRepository.save(productBacklogItem)).thenReturn(productBacklogItem)
 
         // When
-        val result = productBacklogItemApplicationService.markAsCommitedToSprint(command)
+        val result = productBacklogItemApplicationService.markAsCommittedToSprint(command)
 
         // Then
         assertThat(result).isNotNull()
@@ -188,7 +188,7 @@ class ProductBacklogItemApplicationServiceTest {
     }
 
     @Test
-    fun ensureMarkAsCommitedToSprintReturnsNullWhenItemNotFound() {
+    fun ensureMarkAsCommittedToSprintReturnsNullWhenItemNotFound() {
         // Given
         val projectId = UUID.randomUUID()
         val productBacklogItemId = UUID.randomUUID()
@@ -201,7 +201,7 @@ class ProductBacklogItemApplicationServiceTest {
         ).thenReturn(null)
 
         // When
-        val result = productBacklogItemApplicationService.markAsCommitedToSprint(command)
+        val result = productBacklogItemApplicationService.markAsCommittedToSprint(command)
 
         // Then
         assertThat(result).isNull()

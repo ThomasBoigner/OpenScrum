@@ -15,7 +15,7 @@ class Sprint(
     status: SprintStatus = SprintStatus.NOT_PLANNED,
     sprintGoal: String? = null,
     val sprintBacklogItems: MutableSet<SprintBacklogItem> = mutableSetOf(),
-    val productBacklogItemCommitedEvents: MutableList<ProductBacklogItemCommited> = mutableListOf(),
+    val productBacklogItemCommittedEvents: MutableList<ProductBacklogItemCommitted> = mutableListOf(),
 ) {
     constructor(
         sprintId: SprintId,
@@ -64,8 +64,8 @@ class Sprint(
                     description = pbi.description,
                 ),
             )
-            productBacklogItemCommitedEvents.add(
-                ProductBacklogItemCommited(
+            productBacklogItemCommittedEvents.add(
+                ProductBacklogItemCommitted(
                     productBacklogItemId = pbi.productBacklogItemId,
                 ),
             )

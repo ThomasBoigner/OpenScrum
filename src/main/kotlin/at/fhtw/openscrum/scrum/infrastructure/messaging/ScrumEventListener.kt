@@ -5,7 +5,7 @@ import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.domain.model.project.SprintScheduled
-import at.fhtw.openscrum.scrum.domain.model.sprint.ProductBacklogItemCommited
+import at.fhtw.openscrum.scrum.domain.model.sprint.ProductBacklogItemCommitted
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.modulith.events.ApplicationModuleListener
@@ -29,9 +29,9 @@ class ScrumEventListener(
     }
 
     @ApplicationModuleListener
-    fun receiveProductBacklogItemCommitedEvent(event: ProductBacklogItemCommited) {
+    fun receiveProductBacklogItemCommitedEvent(event: ProductBacklogItemCommitted) {
         log.trace("Received productBacklogItemCommitedEvent event: {}", event)
-        productBacklogItemApplicationService.markAsCommitedToSprint(
+        productBacklogItemApplicationService.markAsCommittedToSprint(
             MarkAsCommitedToSprintCommand(
                 projectId = event.productBacklogItemId.projectId,
                 productBacklogItemId = event.productBacklogItemId.productBacklogItemId,

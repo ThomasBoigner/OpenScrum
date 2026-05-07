@@ -14,7 +14,7 @@ enum class ProductBacklogItemStatusDto(
         fun fromProductBacklogItemStatus(productBacklogItemStatus: ProductBacklogItemStatus): ProductBacklogItemStatusDto =
             when (productBacklogItemStatus) {
                 ProductBacklogItemStatus.IN_BACKLOG -> IN_BACKLOG
-                ProductBacklogItemStatus.COMMITED_TO_SPRINT -> COMMITED_TO_SPRINT
+                ProductBacklogItemStatus.COMMITTED_TO_SPRINT -> COMMITED_TO_SPRINT
                 ProductBacklogItemStatus.DONE -> DONE
             }
     }

@@ -43,7 +43,7 @@ class SprintEntity(
         sprintGoal = sprint.sprintGoal,
         sprintBacklogItems = sprint.sprintBacklogItems.map { SprintBacklogItemEntity(it) }.toMutableSet(),
     ) {
-        sprint.productBacklogItemCommitedEvents.forEach { this.registerEvent(it) }
+        sprint.productBacklogItemCommittedEvents.forEach { this.registerEvent(it) }
     }
 
     fun toSprint(): Sprint =

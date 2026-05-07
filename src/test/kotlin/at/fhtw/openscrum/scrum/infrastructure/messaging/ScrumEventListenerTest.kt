@@ -8,7 +8,7 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.SprintLength
 import at.fhtw.openscrum.scrum.domain.model.project.SprintScheduled
-import at.fhtw.openscrum.scrum.domain.model.sprint.ProductBacklogItemCommited
+import at.fhtw.openscrum.scrum.domain.model.sprint.ProductBacklogItemCommitted
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -57,13 +57,13 @@ class ScrumEventListenerTest {
     fun ensureReceiveProductBacklogItemCommitedEventWorksProperly() {
         // Given
         val productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
-        val event = ProductBacklogItemCommited(productBacklogItemId = productBacklogItemId)
+        val event = ProductBacklogItemCommitted(productBacklogItemId = productBacklogItemId)
 
         // When
         scrumEventListener.receiveProductBacklogItemCommitedEvent(event)
 
         // Then
-        verify(productBacklogItemApplicationService).markAsCommitedToSprint(
+        verify(productBacklogItemApplicationService).markAsCommittedToSprint(
             MarkAsCommitedToSprintCommand(
                 projectId = productBacklogItemId.projectId,
                 productBacklogItemId = productBacklogItemId.productBacklogItemId,

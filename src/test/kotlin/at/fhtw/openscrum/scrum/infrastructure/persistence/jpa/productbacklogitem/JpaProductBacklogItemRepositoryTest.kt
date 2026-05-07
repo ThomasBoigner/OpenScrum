@@ -109,7 +109,7 @@ class JpaProductBacklogItemRepositoryTest {
                 productBacklogItemId = ProductBacklogItemId(projectId = projectId),
                 title = "Implement Login",
                 description = "As a user, I want to log in to the application.",
-                status = ProductBacklogItemStatus.COMMITED_TO_SPRINT,
+                status = ProductBacklogItemStatus.COMMITTED_TO_SPRINT,
             )
         productBacklogItemRepository.save(inBacklogItem)
         productBacklogItemRepository.save(committedItem)
