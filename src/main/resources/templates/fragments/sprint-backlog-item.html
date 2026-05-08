@@ -1,5 +1,10 @@
-<div th:fragment="sprint-backlog-item" class="sprint-backlog-item" th:each="sprintBacklogItem : ${sprintBacklogItems}"
-     th:object="${sprintBacklogItem}" th:id="|item-*{productBacklogItemId}|" xmlns:hx="http://www.w3.org/1999/xhtml">
+<div th:fragment="sprint-backlog-item"
+     class="sprint-backlog-item"
+     th:each="sprintBacklogItem : ${sprintBacklogItems}"
+     th:object="${sprintBacklogItem}"
+     th:id="|item-*{productBacklogItemId}|"
+     xmlns:hx="http://www.w3.org/1999/xhtml"
+     xmlns:hx-on="http://www.w3.org/1999/xhtml">
     <h4 th:text="*{title}">Item Title</h4>
     <div class="info-group" th:if="*{assignedDeveloper != null}">
         <label>Assigned to</label>
@@ -12,18 +17,20 @@
     <div class="move-buttons">
         <button class="move-left-button"
                 th:if="*{status.canMoveLeft}"
-                hx:target="|#item-*{productBacklogItemId}|"
-                hx-swap="delete"
+                hx:target="|#*{status.columnLeft}|"
+                hx-swap="beforeend"
                 hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId}, moveDirection='LEFT')}"
-                hx-trigger="click">
+                hx-trigger="click"
+                hx-on::after-request="this.closest('.sprint-backlog-item').remove()">
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move left" class="arrow-left">
         </button>
         <button class="move-right-button"
                 th:if="*{status.canMoveRight}"
-                hx:target="|#item-*{productBacklogItemId}|"
-                hx-swap="delete"
+                hx:target="|#*{status.columnRight}|"
+                hx-swap="beforeend"
                 hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId}, moveDirection='RIGHT')}"
-                hx-trigger="click">
+                hx-trigger="click"
+                hx-on::after-request="this.closest('.sprint-backlog-item').remove()">
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move right" class="arrow-right">
         </button>
     </div>

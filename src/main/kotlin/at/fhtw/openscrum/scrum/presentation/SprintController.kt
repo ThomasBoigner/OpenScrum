@@ -184,7 +184,7 @@ class SprintController(
                 principal.name,
                 MoveSprintBacklogItemCommand(projectId, sprintId, productBacklogItemId, moveDirection),
             )
-        model.addAttribute("sprintBacklogItem", sprintBacklogItem)
+        model.addAttribute("sprintBacklogItems", listOf(sprintBacklogItem))
         return "fragments/sprint-backlog-item"
     }
 }

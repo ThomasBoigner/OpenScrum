@@ -145,6 +145,8 @@ class SprintApplicationService(
 
         sprintRepository.save(sprint)
 
+        log.info("Moved sprint backlog item {}", sprintBacklogItem)
+
         return SprintBacklogItemDto(
             sprintBacklogItem,
             sprintBacklogItem.assignedDeveloper?.let {
