@@ -531,6 +531,7 @@ class SprintTest {
         // Then
         assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.IN_PROGRESS)
         assertThat(sprintBacklogItem.assignedDeveloper).isEqualTo(developer.teamMemberId)
+        assertThat(sprintBacklogItem.sprintBacklogItemUnmarkedAsDoneEvents).hasSize(1)
     }
 
     @Test
