@@ -25,7 +25,5 @@ class JpaDeveloperRepository(
     override fun findByProjectIdAndUsername(
         projectId: UUID,
         username: String,
-    ): Developer? {
-        TODO("Not yet implemented")
-    }
+    ): Developer? = developerEntityRepository.findByProjectIdAndUsername(projectId, username)?.toDeveloper()
 }

@@ -95,4 +95,25 @@ class JpaDeveloperRepositoryTest {
         assertThat(result!!.teamMemberId).isEqualTo(teamMemberId)
         assertThat(result.username).isEqualTo("jdoe")
     }
+
+    @Test
+    fun ensureFindByProjectIdAndUsernameReturnsDeveloper() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jdoe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        developerRepository.save(developer)
+
+        // When
+        val result = developerRepository.findByProjectIdAndUsername(projectId, "jdoe")
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result!!.teamMemberId.projectId).isEqualTo(projectId)
+        assertThat(result.username).isEqualTo("jdoe")
+    }
 }

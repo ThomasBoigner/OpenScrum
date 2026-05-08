@@ -12,4 +12,9 @@ interface DeveloperEntityRepository : JpaRepository<DeveloperEntity, Long> {
         userId: UUID,
         projectId: UUID,
     ): DeveloperEntity?
+
+    fun findByProjectIdAndUsername(
+        projectId: UUID,
+        username: String,
+    ): DeveloperEntity?
 }
