@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemLeftCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemRightCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemStatusDto
@@ -463,6 +464,77 @@ class SprintApplicationServiceTest {
         // When
         assertThrows<IllegalArgumentException> {
             sprintApplicationService.moveSprintBacklogItemRight("john.doe", command)
+        }
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemLeftWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val username = "john.doe"
+        val command =
+            MoveSprintBacklogItemLeftCommand(
+                projectId = projectId,
+                sprintId = sprintId,
+                productBacklogItemId = productBacklogItemId,
+            )
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = productBacklogItemId,
+                    ),
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.IN_PROGRESS,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2025, 1, 6),
+                endDate = LocalDate.of(2025, 1, 19),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = username,
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(sprint)
+        whenever(developerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(developer)
+        whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = sprintApplicationService.moveSprintBacklogItemLeft(username, command)
+
+        // Then
+        assertThat(result.projectId).isEqualTo(projectId)
+        assertThat(result.sprintId).isEqualTo(sprintId)
+        assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.TO_DO)
+        assertThat(sprintBacklogItem.assignedDeveloper).isNull()
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemLeftThrowsExceptionWhenSprintCanNotBeFound() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val command =
+            MoveSprintBacklogItemLeftCommand(
+                projectId = projectId,
+                sprintId = sprintId,
+                productBacklogItemId = UUID.randomUUID(),
+            )
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprintApplicationService.moveSprintBacklogItemLeft("john.doe", command)
         }
     }
 }

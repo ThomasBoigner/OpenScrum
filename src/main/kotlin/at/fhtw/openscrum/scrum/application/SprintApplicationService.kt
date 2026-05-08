@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemLeftCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemRightCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
@@ -135,6 +136,26 @@ class SprintApplicationService(
         val developer = developerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
         sprint.moveSprintBacklogItemRight(SprintBacklogItemId(command.projectId, command.productBacklogItemId), developer)
+
+        return SprintDto(sprintRepository.save(sprint))
+    }
+
+    @Transactional(readOnly = false)
+    fun moveSprintBacklogItemLeft(
+        authenticatedUserUsername: String,
+        command: MoveSprintBacklogItemLeftCommand,
+    ): SprintDto {
+        log.debug("Trying to move sprint backlog item left with command {}", command)
+
+        val sprint =
+            sprintRepository.findSprintBySprintId(SprintId(command.projectId, command.sprintId))
+                ?: throw IllegalArgumentException(
+                    "Could not find sprint with projectId ${command.projectId} and sprintId ${command.sprintId}",
+                )
+
+        val developer = developerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
+
+        sprint.moveSprintBacklogItemLeft(SprintBacklogItemId(command.projectId, command.productBacklogItemId), developer)
 
         return SprintDto(sprintRepository.save(sprint))
     }
