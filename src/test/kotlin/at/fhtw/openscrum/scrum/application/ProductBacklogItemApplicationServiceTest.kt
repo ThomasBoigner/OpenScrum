@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
+import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemStatusDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
@@ -202,6 +203,56 @@ class ProductBacklogItemApplicationServiceTest {
 
         // When
         val result = productBacklogItemApplicationService.markAsCommittedToSprint(command)
+
+        // Then
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun ensureMarkAsDoneWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val command = MarkAsDoneCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+
+        whenever(
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
+            ),
+        ).thenReturn(productBacklogItem)
+        whenever(productBacklogItemRepository.save(productBacklogItem)).thenReturn(productBacklogItem)
+
+        // When
+        val result = productBacklogItemApplicationService.markAsDone(command)
+
+        // Then
+        assertThat(result).isNotNull()
+        assertThat(result!!.status).isEqualTo(ProductBacklogItemStatusDto.DONE)
+        assertThat(result.title).isEqualTo(productBacklogItem.title)
+        assertThat(result.description).isEqualTo(productBacklogItem.description)
+    }
+
+    @Test
+    fun ensureMarkAsDoneReturnsNullWhenItemNotFound() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val command = MarkAsDoneCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
+
+        whenever(
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
+            ),
+        ).thenReturn(null)
+
+        // When
+        val result = productBacklogItemApplicationService.markAsDone(command)
 
         // Then
         assertThat(result).isNull()

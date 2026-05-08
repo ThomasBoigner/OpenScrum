@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
+import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
@@ -73,12 +74,15 @@ class ProductBacklogItemApplicationService(
         log.debug("Trying to mark product backlog item as commited to sprint with command: {}", command)
         val productBacklogItem =
             productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
-                ProductBacklogItemId(projectId = command.projectId, productBacklogItemId = command.productBacklogItemId),
+                ProductBacklogItemId(
+                    projectId = command.projectId,
+                    productBacklogItemId = command.productBacklogItemId,
+                ),
             )
 
         if (productBacklogItem == null) {
             log.error(
-                "Product backlog with projectId {} and productBacklogItemId {} does not exits",
+                "Cannot mark as commited to sprint, product backlog with projectId {} and productBacklogItemId {} does not exits",
                 command.projectId,
                 command.productBacklogItemId,
             )
@@ -86,6 +90,30 @@ class ProductBacklogItemApplicationService(
         }
 
         productBacklogItem.setStatusToCommittedToSprint()
+        return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
+    }
+
+    @Transactional(readOnly = false)
+    fun markAsDone(command: MarkAsDoneCommand): ProductBacklogItemDto? {
+        log.debug("Trying to mark product backlog item as done with command: {}", command)
+        val productBacklogItem =
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(
+                    projectId = command.projectId,
+                    productBacklogItemId = command.productBacklogItemId,
+                ),
+            )
+
+        if (productBacklogItem == null) {
+            log.error(
+                "Cannot mark as done, product backlog with projectId {} and productBacklogItemId {} does not exits",
+                command.projectId,
+                command.productBacklogItemId,
+            )
+            return null
+        }
+
+        productBacklogItem.setStatusToDone()
         return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
     }
 }

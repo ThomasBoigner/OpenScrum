@@ -30,6 +30,10 @@ class ProductBacklogItem(
         this.status = ProductBacklogItemStatus.COMMITTED_TO_SPRINT
     }
 
+    fun setStatusToDone() {
+        this.status = ProductBacklogItemStatus.DONE
+    }
+
     override fun toString(): String =
         "ProductBacklogItem(productBacklogItemId=$productBacklogItemId, status=$status, title='$title', description='$description')"
 
