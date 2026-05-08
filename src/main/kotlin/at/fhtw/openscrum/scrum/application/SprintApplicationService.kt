@@ -2,7 +2,7 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemLeftCommand
-import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemRightCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
@@ -122,11 +122,11 @@ class SprintApplicationService(
     }
 
     @Transactional(readOnly = false)
-    fun moveSprintBacklogItemRight(
+    fun moveSprintBacklogItem(
         authenticatedUserUsername: String,
-        command: MoveSprintBacklogItemRightCommand,
+        command: MoveSprintBacklogItemCommand,
     ): SprintDto {
-        log.debug("Trying to move sprint backlog item right with command {}", command)
+        log.debug("Trying to move sprint backlog item with command {}", command)
 
         val sprint =
             sprintRepository.findSprintBySprintId(SprintId(command.projectId, command.sprintId))
@@ -138,31 +138,7 @@ class SprintApplicationService(
 
         sprint.moveSprintBacklogItem(
             SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId),
-            MoveDirection.RIGHT,
-            developer,
-        )
-
-        return SprintDto(sprintRepository.save(sprint))
-    }
-
-    @Transactional(readOnly = false)
-    fun moveSprintBacklogItemLeft(
-        authenticatedUserUsername: String,
-        command: MoveSprintBacklogItemLeftCommand,
-    ): SprintDto {
-        log.debug("Trying to move sprint backlog item left with command {}", command)
-
-        val sprint =
-            sprintRepository.findSprintBySprintId(SprintId(command.projectId, command.sprintId))
-                ?: throw IllegalArgumentException(
-                    "Could not find sprint with projectId ${command.projectId} and sprintId ${command.sprintId}",
-                )
-
-        val developer = developerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
-
-        sprint.moveSprintBacklogItem(
-            SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId),
-            MoveDirection.LEFT,
+            command.moveDirection,
             developer,
         )
 

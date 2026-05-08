@@ -4,7 +4,8 @@ import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemLeftCommand
-import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemRightCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
+import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.presentation.forms.PlanSprintForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
@@ -172,35 +173,18 @@ class SprintController(
 
     @HxRequest
     @PutMapping(value = [ROUTE_MOVE_SPRINT_BACKLOG_ITEM_RIGHT])
-    fun moveSprintBacklogItemRight(
+    fun moveSprintBacklogItem(
         model: Model,
         principal: Principal,
         @PathVariable projectId: UUID,
         @PathVariable sprintId: UUID,
         @PathVariable productBacklogItemId: UUID,
+        @RequestParam moveDirection: MoveDirection,
     ): String {
         val sprintBacklogItem =
-            sprintApplicationService.moveSprintBacklogItemRight(
+            sprintApplicationService.moveSprintBacklogItem(
                 principal.name,
-                MoveSprintBacklogItemRightCommand(projectId, sprintId, productBacklogItemId),
-            )
-        model.addAttribute("sprintBacklogItem", sprintBacklogItem)
-        return "fragments/sprint-backlog-item"
-    }
-
-    @HxRequest
-    @PutMapping(value = [ROUTE_MOVE_SPRINT_BACKLOG_ITEM_LEFT])
-    fun moveSprintBacklogItemLeft(
-        model: Model,
-        principal: Principal,
-        @PathVariable projectId: UUID,
-        @PathVariable sprintId: UUID,
-        @PathVariable productBacklogItemId: UUID,
-    ): String {
-        val sprintBacklogItem =
-            sprintApplicationService.moveSprintBacklogItemLeft(
-                principal.name,
-                MoveSprintBacklogItemLeftCommand(projectId, sprintId, productBacklogItemId),
+                MoveSprintBacklogItemCommand(projectId, sprintId, productBacklogItemId, moveDirection),
             )
         model.addAttribute("sprintBacklogItem", sprintBacklogItem)
         return "fragments/sprint-backlog-item"

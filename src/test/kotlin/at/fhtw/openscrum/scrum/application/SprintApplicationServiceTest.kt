@@ -1,8 +1,8 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemLeftCommand
-import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemRightCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemStatusDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
@@ -10,6 +10,7 @@ import at.fhtw.openscrum.scrum.application.dtos.SprintStatusDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
+import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
 import at.fhtw.openscrum.scrum.domain.model.sprint.Sprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemId
@@ -17,6 +18,7 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintService
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
@@ -400,17 +402,18 @@ class SprintApplicationServiceTest {
     }
 
     @Test
-    fun ensureMoveSprintBacklogItemRightWorksProperly() {
+    fun ensureMoveSprintBacklogItemWorksProperly() {
         // Given
         val projectId = UUID.randomUUID()
         val sprintId = UUID.randomUUID()
         val productBacklogItemId = UUID.randomUUID()
         val username = "john.doe"
         val command =
-            MoveSprintBacklogItemRightCommand(
+            MoveSprintBacklogItemCommand(
                 projectId = projectId,
                 sprintId = sprintId,
                 productBacklogItemId = productBacklogItemId,
+                moveDirection = MoveDirection.RIGHT,
             )
         val sprintBacklogItem =
             SprintBacklogItem(
@@ -431,6 +434,7 @@ class SprintApplicationServiceTest {
                 startDate = LocalDate.of(2025, 1, 6),
                 endDate = LocalDate.of(2025, 1, 19),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+                status = SprintStatus.IN_PROGRESS
             )
         val developer =
             Developer(
@@ -443,7 +447,7 @@ class SprintApplicationServiceTest {
         whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
 
         // When
-        val result = sprintApplicationService.moveSprintBacklogItemRight(username, command)
+        val result = sprintApplicationService.moveSprintBacklogItem(username, command)
 
         // Then
         assertThat(result.projectId).isEqualTo(projectId)
@@ -458,88 +462,17 @@ class SprintApplicationServiceTest {
         val projectId = UUID.randomUUID()
         val sprintId = UUID.randomUUID()
         val command =
-            MoveSprintBacklogItemRightCommand(
+            MoveSprintBacklogItemCommand(
                 projectId = projectId,
                 sprintId = sprintId,
                 productBacklogItemId = UUID.randomUUID(),
+                moveDirection = MoveDirection.RIGHT,
             )
         whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(null)
 
         // When
         assertThrows<IllegalArgumentException> {
-            sprintApplicationService.moveSprintBacklogItemRight("john.doe", command)
-        }
-    }
-
-    @Test
-    fun ensureMoveSprintBacklogItemLeftWorksProperly() {
-        // Given
-        val projectId = UUID.randomUUID()
-        val sprintId = UUID.randomUUID()
-        val productBacklogItemId = UUID.randomUUID()
-        val username = "john.doe"
-        val command =
-            MoveSprintBacklogItemLeftCommand(
-                projectId = projectId,
-                sprintId = sprintId,
-                productBacklogItemId = productBacklogItemId,
-            )
-        val sprintBacklogItem =
-            SprintBacklogItem(
-                sprintBacklogItemId =
-                    SprintBacklogItemId(
-                        projectId = projectId,
-                        sprintId = sprintId,
-                        productBacklogItemId = productBacklogItemId,
-                    ),
-                title = "Implement login",
-                description = "As a user I want to log in",
-                status = SprintBacklogItemStatus.IN_PROGRESS,
-            )
-        val sprint =
-            Sprint(
-                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
-                sprintName = "Sprint 1",
-                startDate = LocalDate.of(2025, 1, 6),
-                endDate = LocalDate.of(2025, 1, 19),
-                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
-            )
-        val developer =
-            Developer(
-                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
-                username = username,
-                fullName = FullName(firstName = "John", lastName = "Doe"),
-            )
-        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(sprint)
-        whenever(developerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(developer)
-        whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
-
-        // When
-        val result = sprintApplicationService.moveSprintBacklogItemLeft(username, command)
-
-        // Then
-        assertThat(result.projectId).isEqualTo(projectId)
-        assertThat(result.sprintId).isEqualTo(sprintId)
-        assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.TO_DO)
-        assertThat(sprintBacklogItem.assignedDeveloper).isNull()
-    }
-
-    @Test
-    fun ensureMoveSprintBacklogItemLeftThrowsExceptionWhenSprintCanNotBeFound() {
-        // Given
-        val projectId = UUID.randomUUID()
-        val sprintId = UUID.randomUUID()
-        val command =
-            MoveSprintBacklogItemLeftCommand(
-                projectId = projectId,
-                sprintId = sprintId,
-                productBacklogItemId = UUID.randomUUID(),
-            )
-        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(null)
-
-        // When
-        assertThrows<IllegalArgumentException> {
-            sprintApplicationService.moveSprintBacklogItemLeft("john.doe", command)
+            sprintApplicationService.moveSprintBacklogItem("john.doe", command)
         }
     }
 }
