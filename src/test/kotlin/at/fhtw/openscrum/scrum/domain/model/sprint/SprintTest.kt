@@ -586,4 +586,72 @@ class SprintTest {
         assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.TO_DO)
         assertThat(sprintBacklogItem.assignedDeveloper).isNull()
     }
+
+    @Test
+    fun ensureMoveSprintBacklogItemRightFailsWhenDeveloperBelongsToDifferentProject() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val otherProjectId = UUID.randomUUID()
+        val developerOfAnotherProject =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = otherProjectId),
+                username = "jane.doe",
+                fullName = FullName(firstName = "Jane", lastName = "Doe"),
+            )
+        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId = sprintBacklogItemId,
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprint.moveSprintBacklogItemRight(sprintBacklogItemId, developerOfAnotherProject)
+        }
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemLeftFailsWhenDeveloperBelongsToDifferentProject() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val otherProjectId = UUID.randomUUID()
+        val developerOfAnotherProject =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = otherProjectId),
+                username = "jane.doe",
+                fullName = FullName(firstName = "Jane", lastName = "Doe"),
+            )
+        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId = sprintBacklogItemId,
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.DONE,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprint.moveSprintBacklogItemLeft(sprintBacklogItemId, developerOfAnotherProject)
+        }
+    }
 }

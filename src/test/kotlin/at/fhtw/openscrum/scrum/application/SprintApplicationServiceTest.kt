@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemRightCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemStatusDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
@@ -150,14 +151,22 @@ class SprintApplicationServiceTest {
         val sprintId = UUID.randomUUID()
         val toDoItem =
             SprintBacklogItem(
-                sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID()),
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
                 title = "Implement login",
                 description = "As a user I want to log in",
                 status = SprintBacklogItemStatus.TO_DO,
             )
         val doneItem =
             SprintBacklogItem(
-                sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID()),
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
                 title = "Implement logout",
                 description = "As a user I want to log out",
                 status = SprintBacklogItemStatus.DONE,
@@ -190,7 +199,11 @@ class SprintApplicationServiceTest {
         val developerTeamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId)
         val inProgressItem =
             SprintBacklogItem(
-                sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID()),
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
                 title = "Implement registration",
                 description = "As a user I want to register",
                 assignedDeveloper = developerTeamMemberId,
@@ -214,7 +227,8 @@ class SprintApplicationServiceTest {
         whenever(developerRepository.findByTeamMemberId(developerTeamMemberId)).thenReturn(developer)
 
         // When
-        val result = sprintApplicationService.getSprintBacklogItems(projectId, sprintId, SprintBacklogItemStatus.IN_PROGRESS)
+        val result =
+            sprintApplicationService.getSprintBacklogItems(projectId, sprintId, SprintBacklogItemStatus.IN_PROGRESS)
 
         // Then
         assertThat(result).hasSize(1)
@@ -378,6 +392,77 @@ class SprintApplicationServiceTest {
         // When
         assertThrows<IllegalArgumentException> {
             sprintApplicationService.planSprint(username, command)
+        }
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemRightWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val username = "john.doe"
+        val command =
+            MoveSprintBacklogItemRightCommand(
+                projectId = projectId,
+                sprintId = sprintId,
+                productBacklogItemId = productBacklogItemId,
+            )
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = productBacklogItemId,
+                    ),
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2025, 1, 6),
+                endDate = LocalDate.of(2025, 1, 19),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = username,
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(sprint)
+        whenever(developerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(developer)
+        whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = sprintApplicationService.moveSprintBacklogItemRight(username, command)
+
+        // Then
+        assertThat(result.projectId).isEqualTo(projectId)
+        assertThat(result.sprintId).isEqualTo(sprintId)
+        assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.IN_PROGRESS)
+        assertThat(sprintBacklogItem.assignedDeveloper).isEqualTo(developer.teamMemberId)
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemRightThrowsExceptionWhenSprintCanNotBeFound() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val command =
+            MoveSprintBacklogItemRightCommand(
+                projectId = projectId,
+                sprintId = sprintId,
+                productBacklogItemId = UUID.randomUUID(),
+            )
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprintApplicationService.moveSprintBacklogItemRight("john.doe", command)
         }
     }
 }

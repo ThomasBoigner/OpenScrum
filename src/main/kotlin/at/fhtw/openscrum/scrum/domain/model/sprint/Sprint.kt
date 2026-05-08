@@ -1,7 +1,6 @@
 package at.fhtw.openscrum.scrum.domain.model.sprint
 
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
-import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import java.time.DayOfWeek
@@ -80,16 +79,22 @@ class Sprint(
 
     fun moveSprintBacklogItemRight(
         sprintBacklogItemId: SprintBacklogItemId,
-        developer: Developer,
+        developer: Developer?,
     ) {
+        require(developer?.teamMemberId?.projectId == this.sprintId.projectId) {
+            "You are not a developer of this project"
+        }
         val item = sprintBacklogItems.find { it.sprintBacklogItemId == sprintBacklogItemId }
         item?.moveRight(developer.teamMemberId)
     }
 
     fun moveSprintBacklogItemLeft(
         sprintBacklogItemId: SprintBacklogItemId,
-        developer: Developer,
+        developer: Developer?,
     ) {
+        require(developer?.teamMemberId?.projectId == this.sprintId.projectId) {
+            "You are not a developer of this project"
+        }
         val item = sprintBacklogItems.find { it.sprintBacklogItemId == sprintBacklogItemId }
         item?.moveLeft(developer.teamMemberId)
     }

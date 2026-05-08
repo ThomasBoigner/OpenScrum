@@ -321,3 +321,15 @@ Then the status should be "To-Do" and no developer should be assigned
 Given a developer, a sprint and a sprint backlog item with status "To-Do"  
 When the sprint backlog item gets moved left  
 Then the status should be "To-Do"
+
+### Test 7
+
+Given a developer of another project, a sprint and a sprint backlog item with status "To-Do"  
+When the sprint backlog item gets moved right 
+Then he receives an error that he is not a developer of this project
+
+### Test 8
+
+Given a developer of another project, a sprint and a sprint backlog item with status "Done"  
+When the sprint backlog item gets moved left 
+Then he receives an error that he is not a developer of this project
