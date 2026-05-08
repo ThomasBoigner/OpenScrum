@@ -78,26 +78,19 @@ class Sprint(
         }
     }
 
-    fun moveSprintBacklogItemRight(
+    fun moveSprintBacklogItem(
         sprintBacklogItemId: SprintBacklogItemId,
+        moveDirection: MoveDirection,
         developer: Developer?,
     ) {
+        require(status == SprintStatus.IN_PROGRESS) {
+            "Sprint backlog items can only be moved if sprint is in progress"
+        }
         require(developer?.teamMemberId?.projectId == this.sprintId.projectId) {
             "You are not a developer of this project"
         }
         val item = sprintBacklogItems.find { it.sprintBacklogItemId == sprintBacklogItemId }
-        item?.moveRight(developer.teamMemberId)
-    }
-
-    fun moveSprintBacklogItemLeft(
-        sprintBacklogItemId: SprintBacklogItemId,
-        developer: Developer?,
-    ) {
-        require(developer?.teamMemberId?.projectId == this.sprintId.projectId) {
-            "You are not a developer of this project"
-        }
-        val item = sprintBacklogItems.find { it.sprintBacklogItemId == sprintBacklogItemId }
-        item?.moveLeft(developer.teamMemberId)
+        item?.move(moveDirection, developer.teamMemberId)
     }
 
     fun getSprintBacklogItems(status: SprintBacklogItemStatus): List<SprintBacklogItem> = sprintBacklogItems.filter { it.status == status }

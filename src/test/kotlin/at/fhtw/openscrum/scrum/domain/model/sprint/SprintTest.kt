@@ -303,11 +303,13 @@ class SprintTest {
     fun ensureGetSprintBacklogItemsReturnsOnlyItemsWithMatchingStatus() {
         // Given
         val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
         val toDoItem =
             SprintBacklogItem(
                 sprintBacklogItemId =
                     SprintBacklogItemId(
                         projectId = projectId,
+                        sprintId = sprintId,
                         productBacklogItemId = UUID.randomUUID(),
                     ),
                 title = "Implement login",
@@ -319,6 +321,7 @@ class SprintTest {
                 sprintBacklogItemId =
                     SprintBacklogItemId(
                         projectId = projectId,
+                        sprintId = sprintId,
                         productBacklogItemId = UUID.randomUUID(),
                     ),
                 title = "Implement registration",
@@ -330,6 +333,7 @@ class SprintTest {
                 sprintBacklogItemId =
                     SprintBacklogItemId(
                         projectId = projectId,
+                        sprintId = sprintId,
                         productBacklogItemId = UUID.randomUUID(),
                     ),
                 title = "Implement logout",
@@ -338,7 +342,7 @@ class SprintTest {
             )
         val sprint =
             Sprint(
-                sprintId = SprintId(projectId = projectId),
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
                 sprintName = "Sprint 1",
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
@@ -380,13 +384,15 @@ class SprintTest {
     fun ensureMoveSprintBacklogItemRightMovesItemFromTodoToInProgress() {
         // Given
         val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
         val developer =
             Developer(
                 teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "john.doe",
                 fullName = FullName(firstName = "John", lastName = "Doe"),
             )
-        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItemId =
+            SprintBacklogItemId(projectId = projectId, sprintId = sprintId, productBacklogItemId = UUID.randomUUID())
         val sprintBacklogItem =
             SprintBacklogItem(
                 sprintBacklogItemId = sprintBacklogItemId,
@@ -396,15 +402,16 @@ class SprintTest {
             )
         val sprint =
             Sprint(
-                sprintId = SprintId(projectId = projectId),
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
                 sprintName = "Sprint 1",
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+                status = SprintStatus.IN_PROGRESS,
             )
 
         // When
-        sprint.moveSprintBacklogItemRight(sprintBacklogItemId, developer)
+        sprint.moveSprintBacklogItem(sprintBacklogItemId, moveDirection = MoveDirection.RIGHT, developer)
 
         // Then
         assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.IN_PROGRESS)
@@ -415,13 +422,15 @@ class SprintTest {
     fun ensureMoveSprintBacklogItemRightMovesItemFromInProgressToDone() {
         // Given
         val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
         val developer =
             Developer(
                 teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "john.doe",
                 fullName = FullName(firstName = "John", lastName = "Doe"),
             )
-        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItemId =
+            SprintBacklogItemId(projectId = projectId, sprintId = sprintId, productBacklogItemId = UUID.randomUUID())
         val sprintBacklogItem =
             SprintBacklogItem(
                 sprintBacklogItemId = sprintBacklogItemId,
@@ -431,15 +440,16 @@ class SprintTest {
             )
         val sprint =
             Sprint(
-                sprintId = SprintId(projectId = projectId),
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
                 sprintName = "Sprint 1",
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+                status = SprintStatus.IN_PROGRESS,
             )
 
         // When
-        sprint.moveSprintBacklogItemRight(sprintBacklogItemId, developer)
+        sprint.moveSprintBacklogItem(sprintBacklogItemId, moveDirection = MoveDirection.RIGHT, developer)
 
         // Then
         assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.DONE)
@@ -450,13 +460,15 @@ class SprintTest {
     fun ensureMoveSprintBacklogItemRightDoesNotMoveItemWhenAlreadyDone() {
         // Given
         val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
         val developer =
             Developer(
                 teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "john.doe",
                 fullName = FullName(firstName = "John", lastName = "Doe"),
             )
-        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItemId =
+            SprintBacklogItemId(projectId = projectId, sprintId = sprintId, productBacklogItemId = UUID.randomUUID())
         val sprintBacklogItem =
             SprintBacklogItem(
                 sprintBacklogItemId = sprintBacklogItemId,
@@ -466,15 +478,16 @@ class SprintTest {
             )
         val sprint =
             Sprint(
-                sprintId = SprintId(projectId = projectId),
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
                 sprintName = "Sprint 1",
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+                status = SprintStatus.IN_PROGRESS,
             )
 
         // When
-        sprint.moveSprintBacklogItemRight(sprintBacklogItemId, developer)
+        sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.RIGHT, developer)
 
         // Then
         assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.DONE)
@@ -484,13 +497,15 @@ class SprintTest {
     fun ensureMoveSprintBacklogItemLeftMovesItemFromDoneToInProgress() {
         // Given
         val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
         val developer =
             Developer(
                 teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "john.doe",
                 fullName = FullName(firstName = "John", lastName = "Doe"),
             )
-        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItemId =
+            SprintBacklogItemId(projectId = projectId, sprintId = sprintId, productBacklogItemId = UUID.randomUUID())
         val sprintBacklogItem =
             SprintBacklogItem(
                 sprintBacklogItemId = sprintBacklogItemId,
@@ -501,15 +516,16 @@ class SprintTest {
             )
         val sprint =
             Sprint(
-                sprintId = SprintId(projectId = projectId),
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
                 sprintName = "Sprint 1",
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+                status = SprintStatus.IN_PROGRESS,
             )
 
         // When
-        sprint.moveSprintBacklogItemLeft(sprintBacklogItemId, developer)
+        sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.LEFT, developer)
 
         // Then
         assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.IN_PROGRESS)
@@ -520,13 +536,15 @@ class SprintTest {
     fun ensureMoveSprintBacklogItemLeftMovesItemFromInProgressToTodo() {
         // Given
         val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
         val developer =
             Developer(
                 teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "john.doe",
                 fullName = FullName(firstName = "John", lastName = "Doe"),
             )
-        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItemId =
+            SprintBacklogItemId(projectId = projectId, sprintId = sprintId, productBacklogItemId = UUID.randomUUID())
         val sprintBacklogItem =
             SprintBacklogItem(
                 sprintBacklogItemId = sprintBacklogItemId,
@@ -537,15 +555,16 @@ class SprintTest {
             )
         val sprint =
             Sprint(
-                sprintId = SprintId(projectId = projectId),
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
                 sprintName = "Sprint 1",
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+                status = SprintStatus.IN_PROGRESS,
             )
 
         // When
-        sprint.moveSprintBacklogItemLeft(sprintBacklogItemId, developer)
+        sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.LEFT, developer)
 
         // Then
         assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.TO_DO)
@@ -556,13 +575,15 @@ class SprintTest {
     fun ensureMoveSprintBacklogItemLeftDoesNotMoveItemWhenAlreadyTodo() {
         // Given
         val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
         val developer =
             Developer(
                 teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "john.doe",
                 fullName = FullName(firstName = "John", lastName = "Doe"),
             )
-        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItemId =
+            SprintBacklogItemId(projectId = projectId, sprintId = sprintId, productBacklogItemId = UUID.randomUUID())
         val sprintBacklogItem =
             SprintBacklogItem(
                 sprintBacklogItemId = sprintBacklogItemId,
@@ -572,15 +593,16 @@ class SprintTest {
             )
         val sprint =
             Sprint(
-                sprintId = SprintId(projectId = projectId),
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
                 sprintName = "Sprint 1",
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+                status = SprintStatus.IN_PROGRESS,
             )
 
         // When
-        sprint.moveSprintBacklogItemLeft(sprintBacklogItemId, developer)
+        sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.LEFT, developer)
 
         // Then
         assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.TO_DO)
@@ -588,17 +610,19 @@ class SprintTest {
     }
 
     @Test
-    fun ensureMoveSprintBacklogItemRightFailsWhenDeveloperBelongsToDifferentProject() {
+    fun ensureMoveSprintBacklogItemFailsWhenDeveloperBelongsToDifferentProject() {
         // Given
         val projectId = UUID.randomUUID()
         val otherProjectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
         val developerOfAnotherProject =
             Developer(
                 teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = otherProjectId),
                 username = "jane.doe",
                 fullName = FullName(firstName = "Jane", lastName = "Doe"),
             )
-        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItemId =
+            SprintBacklogItemId(projectId = projectId, sprintId = sprintId, productBacklogItemId = UUID.randomUUID())
         val sprintBacklogItem =
             SprintBacklogItem(
                 sprintBacklogItemId = sprintBacklogItemId,
@@ -608,7 +632,7 @@ class SprintTest {
             )
         val sprint =
             Sprint(
-                sprintId = SprintId(projectId = projectId),
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
                 sprintName = "Sprint 1",
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
@@ -617,32 +641,33 @@ class SprintTest {
 
         // When
         assertThrows<IllegalArgumentException> {
-            sprint.moveSprintBacklogItemRight(sprintBacklogItemId, developerOfAnotherProject)
+            sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.RIGHT, developerOfAnotherProject)
         }
     }
 
     @Test
-    fun ensureMoveSprintBacklogItemLeftFailsWhenDeveloperBelongsToDifferentProject() {
+    fun ensureMoveSprintBacklogItemFailsWhenSprintStatusIsNotInProgress() {
         // Given
         val projectId = UUID.randomUUID()
-        val otherProjectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
         val developerOfAnotherProject =
             Developer(
-                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = otherProjectId),
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "jane.doe",
                 fullName = FullName(firstName = "Jane", lastName = "Doe"),
             )
-        val sprintBacklogItemId = SprintBacklogItemId(projectId = projectId, productBacklogItemId = UUID.randomUUID())
+        val sprintBacklogItemId =
+            SprintBacklogItemId(projectId = projectId, sprintId = sprintId, productBacklogItemId = UUID.randomUUID())
         val sprintBacklogItem =
             SprintBacklogItem(
                 sprintBacklogItemId = sprintBacklogItemId,
                 title = "Implement login",
                 description = "As a user I want to log in",
-                status = SprintBacklogItemStatus.DONE,
+                status = SprintBacklogItemStatus.TO_DO,
             )
         val sprint =
             Sprint(
-                sprintId = SprintId(projectId = projectId),
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
                 sprintName = "Sprint 1",
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
@@ -651,7 +676,7 @@ class SprintTest {
 
         // When
         assertThrows<IllegalArgumentException> {
-            sprint.moveSprintBacklogItemLeft(sprintBacklogItemId, developerOfAnotherProject)
+            sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.RIGHT, developerOfAnotherProject)
         }
     }
 }

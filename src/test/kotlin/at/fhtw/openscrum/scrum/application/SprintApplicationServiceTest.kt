@@ -155,6 +155,7 @@ class SprintApplicationServiceTest {
                 sprintBacklogItemId =
                     SprintBacklogItemId(
                         projectId = projectId,
+                        sprintId = sprintId,
                         productBacklogItemId = UUID.randomUUID(),
                     ),
                 title = "Implement login",
@@ -166,6 +167,7 @@ class SprintApplicationServiceTest {
                 sprintBacklogItemId =
                     SprintBacklogItemId(
                         projectId = projectId,
+                        sprintId = sprintId,
                         productBacklogItemId = UUID.randomUUID(),
                     ),
                 title = "Implement logout",
@@ -203,6 +205,7 @@ class SprintApplicationServiceTest {
                 sprintBacklogItemId =
                     SprintBacklogItemId(
                         projectId = projectId,
+                        sprintId = sprintId,
                         productBacklogItemId = UUID.randomUUID(),
                     ),
                 title = "Implement registration",
@@ -414,6 +417,7 @@ class SprintApplicationServiceTest {
                 sprintBacklogItemId =
                     SprintBacklogItemId(
                         projectId = projectId,
+                        sprintId = sprintId,
                         productBacklogItemId = productBacklogItemId,
                     ),
                 title = "Implement login",
@@ -485,6 +489,7 @@ class SprintApplicationServiceTest {
                 sprintBacklogItemId =
                     SprintBacklogItemId(
                         projectId = projectId,
+                        sprintId = sprintId,
                         productBacklogItemId = productBacklogItemId,
                     ),
                 title = "Implement login",

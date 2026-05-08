@@ -8,6 +8,7 @@ import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
+import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
@@ -135,7 +136,11 @@ class SprintApplicationService(
 
         val developer = developerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
-        sprint.moveSprintBacklogItemRight(SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId), developer)
+        sprint.moveSprintBacklogItem(
+            SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId),
+            MoveDirection.RIGHT,
+            developer,
+        )
 
         return SprintDto(sprintRepository.save(sprint))
     }
@@ -155,7 +160,11 @@ class SprintApplicationService(
 
         val developer = developerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
-        sprint.moveSprintBacklogItemLeft(SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId), developer)
+        sprint.moveSprintBacklogItem(
+            SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId),
+            MoveDirection.LEFT,
+            developer,
+        )
 
         return SprintDto(sprintRepository.save(sprint))
     }

@@ -21,38 +21,45 @@ class SprintBacklogItem(
         require(description.isNotBlank()) { "Description cannot be blank" }
     }
 
-    fun moveRight(developerId: TeamMemberId) {
-        when (status) {
-            SprintBacklogItemStatus.TO_DO -> {
-                status = SprintBacklogItemStatus.IN_PROGRESS
-                assignedDeveloper = developerId
+    fun move(
+        moveDirection: MoveDirection,
+        developerId: TeamMemberId,
+    ) {
+        when (moveDirection) {
+            MoveDirection.RIGHT -> {
+                when (status) {
+                    SprintBacklogItemStatus.TO_DO -> {
+                        status = SprintBacklogItemStatus.IN_PROGRESS
+                        assignedDeveloper = developerId
+                    }
+
+                    SprintBacklogItemStatus.IN_PROGRESS -> {
+                        status = SprintBacklogItemStatus.DONE
+                        assignedDeveloper = developerId
+                    }
+
+                    else -> {
+                        return
+                    }
+                }
             }
 
-            SprintBacklogItemStatus.IN_PROGRESS -> {
-                status = SprintBacklogItemStatus.DONE
-                assignedDeveloper = developerId
-            }
+            MoveDirection.LEFT -> {
+                when (status) {
+                    SprintBacklogItemStatus.IN_PROGRESS -> {
+                        status = SprintBacklogItemStatus.TO_DO
+                        assignedDeveloper = null
+                    }
 
-            else -> {
-                return
-            }
-        }
-    }
+                    SprintBacklogItemStatus.DONE -> {
+                        status = SprintBacklogItemStatus.IN_PROGRESS
+                        assignedDeveloper = developerId
+                    }
 
-    fun moveLeft(developerId: TeamMemberId) {
-        when (status) {
-            SprintBacklogItemStatus.IN_PROGRESS -> {
-                status = SprintBacklogItemStatus.TO_DO
-                assignedDeveloper = null
-            }
-
-            SprintBacklogItemStatus.DONE -> {
-                status = SprintBacklogItemStatus.IN_PROGRESS
-                assignedDeveloper = developerId
-            }
-
-            else -> {
-                return
+                    else -> {
+                        return
+                    }
+                }
             }
         }
     }
