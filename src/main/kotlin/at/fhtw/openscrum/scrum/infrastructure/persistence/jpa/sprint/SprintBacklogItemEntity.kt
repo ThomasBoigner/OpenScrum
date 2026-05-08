@@ -58,5 +58,6 @@ class SprintBacklogItemEntity(
                     )
                 },
             status = status,
+            productBacklogItemCommittedEvents = mutableListOf(),
         )
 }

@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.scrum.domain.model.sprint
 
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 
 class SprintBacklogItem(
@@ -9,6 +10,16 @@ class SprintBacklogItem(
     val description: String,
     assignedDeveloper: TeamMemberId? = null,
     status: SprintBacklogItemStatus = SprintBacklogItemStatus.TO_DO,
+    val productBacklogItemCommittedEvents: MutableList<ProductBacklogItemCommitted> =
+        mutableListOf(
+            ProductBacklogItemCommitted(
+                ProductBacklogItemId(
+                    sprintBacklogItemId.projectId,
+                    sprintBacklogItemId.productBacklogItemId,
+                ),
+            ),
+        ),
+    val sprintBacklogItemMarkedAsDoneEvents: MutableList<SprintBacklogItemMarkedAsDone> = mutableListOf(),
 ) {
     var assignedDeveloper: TeamMemberId? = assignedDeveloper
         private set
@@ -36,6 +47,14 @@ class SprintBacklogItem(
                     SprintBacklogItemStatus.IN_PROGRESS -> {
                         status = SprintBacklogItemStatus.DONE
                         assignedDeveloper = developerId
+                        sprintBacklogItemMarkedAsDoneEvents.add(
+                            SprintBacklogItemMarkedAsDone(
+                                ProductBacklogItemId(
+                                    sprintBacklogItemId.projectId,
+                                    sprintBacklogItemId.productBacklogItemId,
+                                ),
+                            ),
+                        )
                     }
 
                     else -> {

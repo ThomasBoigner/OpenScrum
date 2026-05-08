@@ -104,7 +104,7 @@ class SprintTest {
             .contains(pbi1.title, pbi2.title)
         assertThat(sprint.sprintBacklogItems.map { it.description })
             .contains(pbi1.description, pbi2.description)
-        assertThat(sprint.productBacklogItemCommittedEvents).hasSize(2)
+        assertThat(sprint.sprintBacklogItems.map { it.productBacklogItemCommittedEvents }).hasSize(2)
     }
 
     @Test
@@ -454,6 +454,7 @@ class SprintTest {
         // Then
         assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.DONE)
         assertThat(sprintBacklogItem.assignedDeveloper).isEqualTo(developer.teamMemberId)
+        assertThat(sprintBacklogItem.sprintBacklogItemMarkedAsDoneEvents).hasSize(1)
     }
 
     @Test
