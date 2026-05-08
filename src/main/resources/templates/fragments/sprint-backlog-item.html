@@ -16,7 +16,7 @@
     </div>
     <div class="move-buttons">
         <button class="move-left-button"
-                th:if="*{status.canMoveLeft}"
+                th:if="${sprintBacklogItem.status.canMoveLeft && authenticatedTeamMember != null && authenticatedTeamMember.isDeveloper()}"
                 hx:target="|#*{status.columnLeft}|"
                 hx-swap="beforeend"
                 hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId}, moveDirection='LEFT')}"
@@ -25,7 +25,7 @@
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move left" class="arrow-left">
         </button>
         <button class="move-right-button"
-                th:if="*{status.canMoveRight}"
+                th:if="${sprintBacklogItem.status.canMoveRight && authenticatedTeamMember != null && authenticatedTeamMember.isDeveloper()}"
                 hx:target="|#*{status.columnRight}|"
                 hx-swap="beforeend"
                 hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId}, moveDirection='RIGHT')}"
