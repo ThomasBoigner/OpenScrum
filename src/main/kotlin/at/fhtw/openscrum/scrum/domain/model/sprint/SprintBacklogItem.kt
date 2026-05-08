@@ -20,6 +20,7 @@ class SprintBacklogItem(
             ),
         ),
     val sprintBacklogItemMarkedAsDoneEvents: MutableList<SprintBacklogItemMarkedAsDone> = mutableListOf(),
+    val sprintBacklogItemUnmarkedAsDoneEvents: MutableList<SprintBacklogItemUnmarkedAsDone> = mutableListOf(),
 ) {
     var assignedDeveloper: TeamMemberId? = assignedDeveloper
         private set
@@ -73,6 +74,14 @@ class SprintBacklogItem(
                     SprintBacklogItemStatus.DONE -> {
                         status = SprintBacklogItemStatus.IN_PROGRESS
                         assignedDeveloper = developerId
+                        sprintBacklogItemUnmarkedAsDoneEvents.add(
+                            SprintBacklogItemUnmarkedAsDone(
+                                ProductBacklogItemId(
+                                    sprintBacklogItemId.projectId,
+                                    sprintBacklogItemId.productBacklogItemId,
+                                ),
+                            ),
+                        )
                     }
 
                     else -> {

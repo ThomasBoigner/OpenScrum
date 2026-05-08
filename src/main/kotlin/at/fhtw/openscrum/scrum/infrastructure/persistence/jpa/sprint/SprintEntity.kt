@@ -50,6 +50,9 @@ class SprintEntity(
             it.sprintBacklogItemMarkedAsDoneEvents.forEach { event ->
                 this.registerEvent(event)
             }
+            it.sprintBacklogItemUnmarkedAsDoneEvents.forEach { event ->
+                this.registerEvent(event)
+            }
         }
     }
 
