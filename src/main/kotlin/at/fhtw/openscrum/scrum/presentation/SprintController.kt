@@ -41,8 +41,7 @@ class SprintController(
         const val ROUTE_PLANNING = "/{sprintId}/planning"
         const val ROUTE_KANBAN_BOARD = "/{sprintId}/kanban-board"
         const val FRAGMENT_SPRINT_BACKLOG_ITEMS = "/{sprintId}/backlog-items"
-        const val ROUTE_MOVE_SPRINT_BACKLOG_ITEM_RIGHT = "/{sprintId}/move-backlog-item-right/{productBacklogItemId}"
-        const val ROUTE_MOVE_SPRINT_BACKLOG_ITEM_LEFT = "/{sprintId}/move-backlog-item-left/{productBacklogItemId}"
+        const val ROUTE_MOVE_SPRINT_BACKLOG_ITEM = "/{sprintId}/move-backlog-item/{productBacklogItemId}"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -172,7 +171,7 @@ class SprintController(
     }
 
     @HxRequest
-    @PutMapping(value = [ROUTE_MOVE_SPRINT_BACKLOG_ITEM_RIGHT])
+    @PutMapping(value = [ROUTE_MOVE_SPRINT_BACKLOG_ITEM])
     fun moveSprintBacklogItem(
         model: Model,
         principal: Principal,

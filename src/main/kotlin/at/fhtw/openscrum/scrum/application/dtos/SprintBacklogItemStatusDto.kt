@@ -2,10 +2,13 @@ package at.fhtw.openscrum.scrum.application.dtos
 
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 
-enum class SprintBacklogItemStatusDto {
-    TO_DO,
-    IN_PROGRESS,
-    DONE,
+enum class SprintBacklogItemStatusDto(
+    val canMoveLeft: Boolean,
+    val canMoveRight: Boolean,
+) {
+    TO_DO(false, true),
+    IN_PROGRESS(true, true),
+    DONE(true, false),
     ;
 
     companion object {

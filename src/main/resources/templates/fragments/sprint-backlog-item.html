@@ -11,12 +11,14 @@
     </div>
     <div class="move-buttons">
         <button class="move-left-button"
-                hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item-left/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId})}"
+                th:if="*{status.canMoveLeft}"
+                hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId}, moveDirection='LEFT')}"
                 hx-trigger="click">
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move left" class="arrow-left">
         </button>
         <button class="move-right-button"
-                hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item-right/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId})}"
+                th:if="*{status.canMoveRight}"
+                hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId}, moveDirection='RIGHT')}"
                 hx-trigger="click">
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move right" class="arrow-right">
         </button>
