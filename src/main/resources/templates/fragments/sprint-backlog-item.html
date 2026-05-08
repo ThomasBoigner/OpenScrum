@@ -1,6 +1,6 @@
 <div th:fragment="sprint-backlog-item" class="sprint-backlog-item" th:each="sprintBacklogItem : ${sprintBacklogItems}"
-     th:object="${sprintBacklogItem}" xmlns:hx="http://www.w3.org/1999/xhtml">
-    <h4>Item Title</h4>
+     th:object="${sprintBacklogItem}" th:id="|item-*{productBacklogItemId}|" xmlns:hx="http://www.w3.org/1999/xhtml">
+    <h4 th:text="*{title}">Item Title</h4>
     <div class="info-group" th:if="*{assignedDeveloper != null}">
         <label>Assigned to</label>
         <p th:text="*{assignedDeveloper.fullName}">Team member</p>
@@ -12,12 +12,16 @@
     <div class="move-buttons">
         <button class="move-left-button"
                 th:if="*{status.canMoveLeft}"
+                th:attr="hx-target='#item-' + *{productBacklogItemId}"
+                hx-swap="delete"
                 hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId}, moveDirection='LEFT')}"
                 hx-trigger="click">
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move left" class="arrow-left">
         </button>
         <button class="move-right-button"
                 th:if="*{status.canMoveRight}"
+                th:attr="hx-target='#item-' + *{productBacklogItemId}"
+                hx-swap="delete"
                 hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId}, moveDirection='RIGHT')}"
                 hx-trigger="click">
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move right" class="arrow-right">

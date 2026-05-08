@@ -324,12 +324,18 @@ Then the status should be "To-Do"
 
 ### Test 7
 
-Given a developer of another project, a sprint with status "in progress" and a sprint backlog item with status "To-Do"  
-When the sprint backlog item gets moved 
+Given a developer of another project, a sprint with status "in progress" and a sprint backlog item  
+When the sprint backlog item gets moved  
 Then he receives an error that he is not a developer of this project
 
 ### Test 8
 
-Given a developer of another project, a sprint with status other than "in progress" and a sprint backlog item with status "To-Do"  
-When the sprint backlog item gets moved
-Then he receives an error that he is not a developer of this project
+Given a developer of another project, a sprint with status other than "in progress" and a sprint backlog item  
+When the sprint backlog item gets moved  
+Then he receives an error that sprint backlog items can only be moved when the sprint status is "In progress"
+
+### Test 9
+
+Given a developer of another project, a sprint with status other than "in progress" and no sprint backlog item  
+When the sprint backlog item gets moved  
+Then he receives an error that the sprint backlog item can not be found

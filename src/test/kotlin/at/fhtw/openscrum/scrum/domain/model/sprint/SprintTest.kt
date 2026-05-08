@@ -637,6 +637,7 @@ class SprintTest {
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+                status = SprintStatus.IN_PROGRESS,
             )
 
         // When
@@ -672,6 +673,35 @@ class SprintTest {
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.RIGHT, developerOfAnotherProject)
+        }
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemFailsWhenSprintBacklogItemCanNotBeFound() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val developerOfAnotherProject =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jane.doe",
+                fullName = FullName(firstName = "Jane", lastName = "Doe"),
+            )
+        val sprintBacklogItemId =
+            SprintBacklogItemId(projectId = projectId, sprintId = sprintId, productBacklogItemId = UUID.randomUUID())
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(),
+                status = SprintStatus.IN_PROGRESS,
             )
 
         // When

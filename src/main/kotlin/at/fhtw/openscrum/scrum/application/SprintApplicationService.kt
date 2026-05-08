@@ -1,8 +1,8 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
-import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemLeftCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemLeftCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
@@ -125,7 +125,7 @@ class SprintApplicationService(
     fun moveSprintBacklogItem(
         authenticatedUserUsername: String,
         command: MoveSprintBacklogItemCommand,
-    ): SprintDto {
+    ): SprintBacklogItemDto {
         log.debug("Trying to move sprint backlog item with command {}", command)
 
         val sprint =
@@ -136,12 +136,20 @@ class SprintApplicationService(
 
         val developer = developerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
-        sprint.moveSprintBacklogItem(
-            SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId),
-            command.moveDirection,
-            developer,
-        )
+        val sprintBacklogItem =
+            sprint.moveSprintBacklogItem(
+                SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId),
+                command.moveDirection,
+                developer,
+            )
 
-        return SprintDto(sprintRepository.save(sprint))
+        sprintRepository.save(sprint)
+
+        return SprintBacklogItemDto(
+            sprintBacklogItem,
+            sprintBacklogItem.assignedDeveloper?.let {
+                developerRepository.findByTeamMemberId(it)
+            },
+        )
     }
 }

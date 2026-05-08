@@ -3,7 +3,6 @@ package at.fhtw.openscrum.scrum.presentation
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
-import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemLeftCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus

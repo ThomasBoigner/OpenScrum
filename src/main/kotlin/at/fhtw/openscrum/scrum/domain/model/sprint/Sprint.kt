@@ -82,15 +82,19 @@ class Sprint(
         sprintBacklogItemId: SprintBacklogItemId,
         moveDirection: MoveDirection,
         developer: Developer?,
-    ) {
+    ): SprintBacklogItem {
         require(status == SprintStatus.IN_PROGRESS) {
             "Sprint backlog items can only be moved if sprint is in progress"
         }
         require(developer?.teamMemberId?.projectId == this.sprintId.projectId) {
             "You are not a developer of this project"
         }
-        val item = sprintBacklogItems.find { it.sprintBacklogItemId == sprintBacklogItemId }
-        item?.move(moveDirection, developer.teamMemberId)
+        val item =
+            sprintBacklogItems.find { it.sprintBacklogItemId == sprintBacklogItemId } ?: throw IllegalArgumentException(
+                "Could not find backlog item with sprintBacklogItemId=$sprintBacklogItemId",
+            )
+        item.move(moveDirection, developer.teamMemberId)
+        return item
     }
 
     fun getSprintBacklogItems(status: SprintBacklogItemStatus): List<SprintBacklogItem> = sprintBacklogItems.filter { it.status == status }
