@@ -3,6 +3,8 @@ package at.fhtw.openscrum.scrum.presentation
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemLeftCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemRightCommand
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.presentation.forms.PlanSprintForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import java.security.Principal
 import java.util.UUID
 
@@ -36,6 +40,8 @@ class SprintController(
         const val ROUTE_PLANNING = "/{sprintId}/planning"
         const val ROUTE_KANBAN_BOARD = "/{sprintId}/kanban-board"
         const val FRAGMENT_SPRINT_BACKLOG_ITEMS = "/{sprintId}/backlog-items"
+        const val ROUTE_MOVE_SPRINT_BACKLOG_ITEM_RIGHT = "/{sprintId}/move-backlog-item-right/{productBacklogItemId}"
+        const val ROUTE_MOVE_SPRINT_BACKLOG_ITEM_LEFT = "/{sprintId}/move-backlog-item-left/{productBacklogItemId}"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -155,11 +161,48 @@ class SprintController(
         model: Model,
         @PathVariable projectId: UUID,
         @PathVariable sprintId: UUID,
+        @RequestParam status: SprintBacklogItemStatus,
     ): String {
         model.addAttribute(
             "sprintBacklogItems",
-            sprintApplicationService.getSprintBacklogItems(projectId, sprintId, SprintBacklogItemStatus.TO_DO),
+            sprintApplicationService.getSprintBacklogItems(projectId, sprintId, status),
         )
+        return "fragments/sprint-backlog-item"
+    }
+
+    @HxRequest
+    @PutMapping(value = [ROUTE_MOVE_SPRINT_BACKLOG_ITEM_RIGHT])
+    fun moveSprintBacklogItemRight(
+        model: Model,
+        principal: Principal,
+        @PathVariable projectId: UUID,
+        @PathVariable sprintId: UUID,
+        @PathVariable productBacklogItemId: UUID,
+    ): String {
+        val sprintBacklogItem =
+            sprintApplicationService.moveSprintBacklogItemRight(
+                principal.name,
+                MoveSprintBacklogItemRightCommand(projectId, sprintId, productBacklogItemId),
+            )
+        model.addAttribute("sprintBacklogItem", sprintBacklogItem)
+        return "fragments/sprint-backlog-item"
+    }
+
+    @HxRequest
+    @PutMapping(value = [ROUTE_MOVE_SPRINT_BACKLOG_ITEM_LEFT])
+    fun moveSprintBacklogItemLeft(
+        model: Model,
+        principal: Principal,
+        @PathVariable projectId: UUID,
+        @PathVariable sprintId: UUID,
+        @PathVariable productBacklogItemId: UUID,
+    ): String {
+        val sprintBacklogItem =
+            sprintApplicationService.moveSprintBacklogItemLeft(
+                principal.name,
+                MoveSprintBacklogItemLeftCommand(projectId, sprintId, productBacklogItemId),
+            )
+        model.addAttribute("sprintBacklogItem", sprintBacklogItem)
         return "fragments/sprint-backlog-item"
     }
 }

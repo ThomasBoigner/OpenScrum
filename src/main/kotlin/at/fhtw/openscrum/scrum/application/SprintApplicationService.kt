@@ -135,7 +135,7 @@ class SprintApplicationService(
 
         val developer = developerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
-        sprint.moveSprintBacklogItemRight(SprintBacklogItemId(command.projectId, command.productBacklogItemId), developer)
+        sprint.moveSprintBacklogItemRight(SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId), developer)
 
         return SprintDto(sprintRepository.save(sprint))
     }
@@ -155,7 +155,7 @@ class SprintApplicationService(
 
         val developer = developerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
-        sprint.moveSprintBacklogItemLeft(SprintBacklogItemId(command.projectId, command.productBacklogItemId), developer)
+        sprint.moveSprintBacklogItemLeft(SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId), developer)
 
         return SprintDto(sprintRepository.save(sprint))
     }

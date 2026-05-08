@@ -63,6 +63,7 @@ class Sprint(
                     sprintBacklogItemId =
                         SprintBacklogItemId(
                             pbi.productBacklogItemId.projectId,
+                            sprintId.sprintId,
                             pbi.productBacklogItemId.productBacklogItemId,
                         ),
                     title = pbi.title,
