@@ -10,7 +10,9 @@ import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
+import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
 import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.productbacklogitem.ProductBacklogItemEntityRepository
 import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.sprint.SprintEntityRepository
 import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember.TeamMemberEntityRepository
@@ -18,8 +20,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
-import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
@@ -137,7 +137,10 @@ class SprintControllerKanbanBoardTest {
             .until {
                 teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null &&
                     teamMemberApplicationService.getScrumMasterOfProject(project.projectId.token) != null &&
-                    teamMemberApplicationService.getTeamMemberOfProject(project.projectId.token, developer.username) != null
+                    teamMemberApplicationService.getTeamMemberOfProject(
+                        project.projectId.token,
+                        developer.username,
+                    ) != null
             }
 
         val productBacklogItem =
@@ -258,7 +261,10 @@ class SprintControllerKanbanBoardTest {
             .until {
                 teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null &&
                     teamMemberApplicationService.getScrumMasterOfProject(project.projectId.token) != null &&
-                    teamMemberApplicationService.getTeamMemberOfProject(project.projectId.token, developer.username) != null
+                    teamMemberApplicationService.getTeamMemberOfProject(
+                        project.projectId.token,
+                        developer.username,
+                    ) != null
             }
 
         val productBacklogItem =
@@ -395,7 +401,10 @@ class SprintControllerKanbanBoardTest {
             .until {
                 teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null &&
                     teamMemberApplicationService.getScrumMasterOfProject(project.projectId.token) != null &&
-                    teamMemberApplicationService.getTeamMemberOfProject(project.projectId.token, developer.username) != null
+                    teamMemberApplicationService.getTeamMemberOfProject(
+                        project.projectId.token,
+                        developer.username,
+                    ) != null
             }
 
         val productBacklogItem =
@@ -532,7 +541,10 @@ class SprintControllerKanbanBoardTest {
             .until {
                 teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null &&
                     teamMemberApplicationService.getScrumMasterOfProject(project.projectId.token) != null &&
-                    teamMemberApplicationService.getTeamMemberOfProject(project.projectId.token, developer.username) != null
+                    teamMemberApplicationService.getTeamMemberOfProject(
+                        project.projectId.token,
+                        developer.username,
+                    ) != null
             }
 
         val productBacklogItem =

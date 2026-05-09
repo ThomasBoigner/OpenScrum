@@ -2,7 +2,6 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
-import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemLeftCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemStatusDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
@@ -434,7 +433,7 @@ class SprintApplicationServiceTest {
                 startDate = LocalDate.of(2025, 1, 6),
                 endDate = LocalDate.of(2025, 1, 19),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
-                status = SprintStatus.IN_PROGRESS
+                status = SprintStatus.IN_PROGRESS,
             )
         val developer =
             Developer(

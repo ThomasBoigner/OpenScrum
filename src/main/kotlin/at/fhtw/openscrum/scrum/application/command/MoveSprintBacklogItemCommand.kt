@@ -7,5 +7,5 @@ data class MoveSprintBacklogItemCommand(
     val projectId: UUID,
     val sprintId: UUID,
     val productBacklogItemId: UUID,
-    val moveDirection: MoveDirection
+    val moveDirection: MoveDirection,
 )
