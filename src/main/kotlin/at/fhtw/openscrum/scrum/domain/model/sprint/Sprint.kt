@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.domain.model.sprint
 
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -16,6 +17,7 @@ class Sprint(
     status: SprintStatus = SprintStatus.NOT_PLANNED,
     sprintGoal: String? = null,
     val sprintBacklogItems: MutableSet<SprintBacklogItem> = mutableSetOf(),
+    val sprintCanceledEvents: MutableList<SprintCanceled> = mutableListOf(),
 ) {
     constructor(
         sprintId: SprintId,
@@ -89,6 +91,22 @@ class Sprint(
             )
         item.move(moveDirection, developer.teamMemberId)
         return item
+    }
+
+    fun cancelSprint(productOwner: ProductOwner?) {
+        require(status == SprintStatus.IN_PROGRESS || status == SprintStatus.NOT_PLANNED) {
+            "Sprint can only be cancelled when its in progress or not planned"
+        }
+        require(productOwner?.teamMemberId?.projectId == this.sprintId.projectId) {
+            "You are not the product owner of this project"
+        }
+        this.status = SprintStatus.CANCELLED
+
+        sprintBacklogItems
+            .filter { it.status != SprintBacklogItemStatus.DONE }
+            .forEach { it.uncommitFromSprint() }
+
+        sprintCanceledEvents.add(SprintCanceled(sprintId = sprintId))
     }
 
     fun getSprintBacklogItems(status: SprintBacklogItemStatus): List<SprintBacklogItem> = sprintBacklogItems.filter { it.status == status }

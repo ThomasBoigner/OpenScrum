@@ -304,7 +304,7 @@ When the scrum master clicks the cancel sprint button
 Then he receives an error that he has no permission to cancel the sprint
 
 ### Test 4
-
+    
 Given a developer and a sprint with status "in progress" or "not planned"    
 When the developer clicks the cancel sprint button
 Then he receives an error that he has no permission to cancel the sprint

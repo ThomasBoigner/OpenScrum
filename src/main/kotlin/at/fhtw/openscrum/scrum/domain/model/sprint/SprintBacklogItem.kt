@@ -21,6 +21,7 @@ class SprintBacklogItem(
         ),
     val sprintBacklogItemMarkedAsDoneEvents: MutableList<SprintBacklogItemMarkedAsDone> = mutableListOf(),
     val sprintBacklogItemUnmarkedAsDoneEvents: MutableList<SprintBacklogItemUnmarkedAsDone> = mutableListOf(),
+    val sprintBacklogItemUncommitedFromSprintEvents: MutableList<SprintBacklogItemUncommitedFromSprint> = mutableListOf(),
 ) {
     var assignedDeveloper: TeamMemberId? = assignedDeveloper
         private set
@@ -90,6 +91,18 @@ class SprintBacklogItem(
                 }
             }
         }
+    }
+
+    fun uncommitFromSprint() {
+        sprintBacklogItemUncommitedFromSprintEvents.add(
+            SprintBacklogItemUncommitedFromSprint(
+                productBacklogItemId =
+                    ProductBacklogItemId(
+                        projectId = sprintBacklogItemId.productBacklogItemId,
+                        productBacklogItemId = sprintBacklogItemId.productBacklogItemId,
+                    ),
+            ),
+        )
     }
 
     override fun toString(): String =

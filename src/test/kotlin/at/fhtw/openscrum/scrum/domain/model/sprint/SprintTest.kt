@@ -4,6 +4,7 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.assertj.core.api.Assertions.assertThat
@@ -709,6 +710,208 @@ class SprintTest {
         // When
         assertThrows<IllegalArgumentException> {
             sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.RIGHT, developer)
+        }
+    }
+
+    @Test
+    fun ensureSprintIsCancelledByProductOwnerWhenInProgress() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jane.doe",
+                fullName = FullName(firstName = "Jane", lastName = "Doe"),
+            )
+        val toDoItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val inProgressItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement registration",
+                description = "As a user I want to register",
+                status = SprintBacklogItemStatus.IN_PROGRESS,
+            )
+        val doneItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement logout",
+                description = "As a user I want to log out",
+                status = SprintBacklogItemStatus.DONE,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                status = SprintStatus.IN_PROGRESS,
+                sprintBacklogItems = mutableSetOf(toDoItem, inProgressItem, doneItem),
+            )
+
+        // When
+        sprint.cancelSprint(productOwner)
+
+        // Then
+        assertThat(sprint.status).isEqualTo(SprintStatus.CANCELLED)
+        assertThat(sprint.sprintCanceledEvents).hasSize(1)
+        assertThat(sprint.sprintCanceledEvents[0].sprintId).isEqualTo(sprint.sprintId)
+    }
+
+    @Test
+    fun ensureSprintIsCancelledByProductOwnerWhenNotPlanned() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jane.doe",
+                fullName = FullName(firstName = "Jane", lastName = "Doe"),
+            )
+        val toDoItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val inProgressItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement registration",
+                description = "As a user I want to register",
+                status = SprintBacklogItemStatus.IN_PROGRESS,
+            )
+        val doneItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement logout",
+                description = "As a user I want to log out",
+                status = SprintBacklogItemStatus.DONE,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 2",
+                startDate = LocalDate.of(2000, 1, 15),
+                endDate = LocalDate.of(2000, 1, 28),
+                status = SprintStatus.NOT_PLANNED,
+                sprintBacklogItems = mutableSetOf(toDoItem, inProgressItem, doneItem),
+            )
+
+        // When
+        sprint.cancelSprint(productOwner)
+
+        // Then
+        assertThat(sprint.status).isEqualTo(SprintStatus.CANCELLED)
+        assertThat(sprint.sprintCanceledEvents).hasSize(1)
+        assertThat(sprint.sprintCanceledEvents[0].sprintId).isEqualTo(sprint.sprintId)
+    }
+
+    @Test
+    fun ensureSprintCancellationFailsWhenProductOwnerBelongsToDifferentProject() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val otherProjectId = UUID.randomUUID()
+        val productOwnerOfAnotherProject =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = otherProjectId),
+                username = "jane.doe",
+                fullName = FullName(firstName = "Jane", lastName = "Doe"),
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                status = SprintStatus.IN_PROGRESS,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprint.cancelSprint(productOwnerOfAnotherProject)
+        }
+    }
+
+    @Test
+    fun ensureSprintCancellationFailsWhenCallerIsNotAProductOwner() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                status = SprintStatus.IN_PROGRESS,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprint.cancelSprint(null)
+        }
+    }
+
+    @Test
+    fun ensureSprintCancellationFailsWhenSprintIsCompleted() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jane.doe",
+                fullName = FullName(firstName = "Jane", lastName = "Doe"),
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                status = SprintStatus.COMPLETED,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprint.cancelSprint(productOwner)
         }
     }
 }
