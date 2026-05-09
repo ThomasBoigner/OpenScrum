@@ -18,6 +18,7 @@ import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,7 +29,7 @@ import java.time.Duration
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("postgres")
-class SprintControllerTest {
+class SprintControllerSprintPlanningTest {
     @Autowired
     lateinit var userService: UserService
 
@@ -256,7 +257,7 @@ class SprintControllerTest {
         val productBacklogPageSource = webDriver.pageSource
         assertThat(productBacklogPageSource).contains(itemTitle)
         assertThat(productBacklogPageSource).contains(itemDescription)
-        assertThat(productBacklogPageSource).contains("Commited to sprint")
+        assertThat(productBacklogPageSource).contains("Committed to sprint")
 
         webDriver.close()
     }

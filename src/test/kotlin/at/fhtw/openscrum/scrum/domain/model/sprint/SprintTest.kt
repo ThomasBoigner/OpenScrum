@@ -653,7 +653,7 @@ class SprintTest {
         // Given
         val projectId = UUID.randomUUID()
         val sprintId = UUID.randomUUID()
-        val developerOfAnotherProject =
+        val developer =
             Developer(
                 teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "jane.doe",
@@ -679,7 +679,7 @@ class SprintTest {
 
         // When
         assertThrows<IllegalArgumentException> {
-            sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.RIGHT, developerOfAnotherProject)
+            sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.RIGHT, developer)
         }
     }
 
@@ -688,7 +688,7 @@ class SprintTest {
         // Given
         val projectId = UUID.randomUUID()
         val sprintId = UUID.randomUUID()
-        val developerOfAnotherProject =
+        val developer =
             Developer(
                 teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
                 username = "jane.doe",
@@ -708,7 +708,7 @@ class SprintTest {
 
         // When
         assertThrows<IllegalArgumentException> {
-            sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.RIGHT, developerOfAnotherProject)
+            sprint.moveSprintBacklogItem(sprintBacklogItemId, MoveDirection.RIGHT, developer)
         }
     }
 }

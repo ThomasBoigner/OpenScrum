@@ -6,7 +6,7 @@ enum class ProductBacklogItemStatusDto(
     val displayName: String,
 ) {
     IN_BACKLOG("In backlog"),
-    COMMITED_TO_SPRINT("Commited to sprint"),
+    COMMITED_TO_SPRINT("Committed to sprint"),
     DONE("Done"),
     ;
 
