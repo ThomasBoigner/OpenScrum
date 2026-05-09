@@ -1,11 +1,13 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
@@ -115,5 +117,39 @@ class SprintApplicationService(
         log.info("Planned sprint {}", sprint)
 
         return SprintDto(sprintRepository.save(sprint))
+    }
+
+    @Transactional(readOnly = false)
+    fun moveSprintBacklogItem(
+        authenticatedUserUsername: String,
+        command: MoveSprintBacklogItemCommand,
+    ): SprintBacklogItemDto {
+        log.debug("Trying to move sprint backlog item with command {}", command)
+
+        val sprint =
+            sprintRepository.findSprintBySprintId(SprintId(command.projectId, command.sprintId))
+                ?: throw IllegalArgumentException(
+                    "Could not find sprint with projectId ${command.projectId} and sprintId ${command.sprintId}",
+                )
+
+        val developer = developerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
+
+        val sprintBacklogItem =
+            sprint.moveSprintBacklogItem(
+                SprintBacklogItemId(command.projectId, command.sprintId, command.productBacklogItemId),
+                command.moveDirection,
+                developer,
+            )
+
+        sprintRepository.save(sprint)
+
+        log.info("Moved sprint backlog item {}", sprintBacklogItem)
+
+        return SprintBacklogItemDto(
+            sprintBacklogItem,
+            sprintBacklogItem.assignedDeveloper?.let {
+                developerRepository.findByTeamMemberId(it)
+            },
+        )
     }
 }

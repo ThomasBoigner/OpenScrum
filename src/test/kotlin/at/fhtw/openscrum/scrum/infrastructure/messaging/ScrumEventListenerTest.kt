@@ -4,11 +4,14 @@ import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
+import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.SprintLength
 import at.fhtw.openscrum.scrum.domain.model.project.SprintScheduled
 import at.fhtw.openscrum.scrum.domain.model.sprint.ProductBacklogItemCommitted
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemMarkedAsDone
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemUnmarkedAsDone
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -61,6 +64,42 @@ class ScrumEventListenerTest {
 
         // When
         scrumEventListener.receiveProductBacklogItemCommitedEvent(event)
+
+        // Then
+        verify(productBacklogItemApplicationService).markAsCommittedToSprint(
+            MarkAsCommitedToSprintCommand(
+                projectId = productBacklogItemId.projectId,
+                productBacklogItemId = productBacklogItemId.productBacklogItemId,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveSprintBacklogItemMarkedAsDoneEventWorksProperly() {
+        // Given
+        val productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
+        val event = SprintBacklogItemMarkedAsDone(productBacklogItemId = productBacklogItemId)
+
+        // When
+        scrumEventListener.receiveSprintBacklogItemMarkedAsDoneEvent(event)
+
+        // Then
+        verify(productBacklogItemApplicationService).markAsDone(
+            MarkAsDoneCommand(
+                projectId = productBacklogItemId.projectId,
+                productBacklogItemId = productBacklogItemId.productBacklogItemId,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveSprintBacklogItemUnmarkedAsDoneEventWorksProperly() {
+        // Given
+        val productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
+        val event = SprintBacklogItemUnmarkedAsDone(productBacklogItemId = productBacklogItemId)
+
+        // When
+        scrumEventListener.receiveSprintBacklogItemUnmarkedAsDoneEvent(event)
 
         // Then
         verify(productBacklogItemApplicationService).markAsCommittedToSprint(

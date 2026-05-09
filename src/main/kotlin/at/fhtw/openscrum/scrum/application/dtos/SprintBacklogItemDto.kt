@@ -6,6 +6,7 @@ import java.util.UUID
 
 data class SprintBacklogItemDto(
     val projectId: UUID,
+    val sprintId: UUID,
     val productBacklogItemId: UUID,
     val title: String,
     val description: String,
@@ -13,8 +14,9 @@ data class SprintBacklogItemDto(
     val status: SprintBacklogItemStatusDto,
 ) {
     constructor(sprintBacklogItem: SprintBacklogItem, teamMember: TeamMember?) : this(
-        projectId = sprintBacklogItem.productBacklogItemId.projectId,
-        productBacklogItemId = sprintBacklogItem.productBacklogItemId.productBacklogItemId,
+        projectId = sprintBacklogItem.sprintBacklogItemId.projectId,
+        sprintId = sprintBacklogItem.sprintBacklogItemId.sprintId,
+        productBacklogItemId = sprintBacklogItem.sprintBacklogItemId.productBacklogItemId,
         title = sprintBacklogItem.title,
         description = sprintBacklogItem.description,
         assignedDeveloper = teamMember?.let { TeamMemberDto(it) },

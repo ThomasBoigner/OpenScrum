@@ -77,4 +77,21 @@ class ProductBacklogItemTest {
         // Then
         assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.COMMITTED_TO_SPRINT)
     }
+
+    @Test
+    fun ensureProductBacklogSetStatusToDoneWorksProperly() {
+        // Given
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                title = "Define Backlog",
+                description = "Description",
+            )
+
+        // When
+        productBacklogItem.setStatusToDone()
+
+        // Then
+        assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.DONE)
+    }
 }

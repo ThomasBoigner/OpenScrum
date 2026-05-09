@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemStatusDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
@@ -8,12 +9,15 @@ import at.fhtw.openscrum.scrum.application.dtos.SprintStatusDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
+import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
 import at.fhtw.openscrum.scrum.domain.model.sprint.Sprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintService
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
@@ -149,14 +153,24 @@ class SprintApplicationServiceTest {
         val sprintId = UUID.randomUUID()
         val toDoItem =
             SprintBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
                 title = "Implement login",
                 description = "As a user I want to log in",
                 status = SprintBacklogItemStatus.TO_DO,
             )
         val doneItem =
             SprintBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
                 title = "Implement logout",
                 description = "As a user I want to log out",
                 status = SprintBacklogItemStatus.DONE,
@@ -176,7 +190,7 @@ class SprintApplicationServiceTest {
 
         // Then
         assertThat(result).hasSize(1)
-        assertThat(result[0].productBacklogItemId).isEqualTo(toDoItem.productBacklogItemId.productBacklogItemId)
+        assertThat(result[0].productBacklogItemId).isEqualTo(toDoItem.sprintBacklogItemId.productBacklogItemId)
         assertThat(result[0].title).isEqualTo(toDoItem.title)
         assertThat(result[0].status).isEqualTo(SprintBacklogItemStatusDto.TO_DO)
     }
@@ -189,7 +203,12 @@ class SprintApplicationServiceTest {
         val developerTeamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId)
         val inProgressItem =
             SprintBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
                 title = "Implement registration",
                 description = "As a user I want to register",
                 assignedDeveloper = developerTeamMemberId,
@@ -213,7 +232,8 @@ class SprintApplicationServiceTest {
         whenever(developerRepository.findByTeamMemberId(developerTeamMemberId)).thenReturn(developer)
 
         // When
-        val result = sprintApplicationService.getSprintBacklogItems(projectId, sprintId, SprintBacklogItemStatus.IN_PROGRESS)
+        val result =
+            sprintApplicationService.getSprintBacklogItems(projectId, sprintId, SprintBacklogItemStatus.IN_PROGRESS)
 
         // Then
         assertThat(result).hasSize(1)
@@ -377,6 +397,81 @@ class SprintApplicationServiceTest {
         // When
         assertThrows<IllegalArgumentException> {
             sprintApplicationService.planSprint(username, command)
+        }
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val username = "john.doe"
+        val command =
+            MoveSprintBacklogItemCommand(
+                projectId = projectId,
+                sprintId = sprintId,
+                productBacklogItemId = productBacklogItemId,
+                moveDirection = MoveDirection.RIGHT,
+            )
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = productBacklogItemId,
+                    ),
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2025, 1, 6),
+                endDate = LocalDate.of(2025, 1, 19),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+                status = SprintStatus.IN_PROGRESS,
+            )
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = username,
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(sprint)
+        whenever(developerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(developer)
+        whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = sprintApplicationService.moveSprintBacklogItem(username, command)
+
+        // Then
+        assertThat(result.projectId).isEqualTo(projectId)
+        assertThat(result.sprintId).isEqualTo(sprintId)
+        assertThat(sprintBacklogItem.status).isEqualTo(SprintBacklogItemStatus.IN_PROGRESS)
+        assertThat(sprintBacklogItem.assignedDeveloper).isEqualTo(developer.teamMemberId)
+    }
+
+    @Test
+    fun ensureMoveSprintBacklogItemRightThrowsExceptionWhenSprintCanNotBeFound() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val command =
+            MoveSprintBacklogItemCommand(
+                projectId = projectId,
+                sprintId = sprintId,
+                productBacklogItemId = UUID.randomUUID(),
+                moveDirection = MoveDirection.RIGHT,
+            )
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprintApplicationService.moveSprintBacklogItem("john.doe", command)
         }
     }
 }

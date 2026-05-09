@@ -8,4 +8,9 @@ interface DeveloperRepository {
     fun findByProjectId(projectId: UUID): List<Developer>
 
     fun findByTeamMemberId(teamMemberId: TeamMemberId): Developer?
+
+    fun findByProjectIdAndUsername(
+        projectId: UUID,
+        username: String,
+    ): Developer?
 }

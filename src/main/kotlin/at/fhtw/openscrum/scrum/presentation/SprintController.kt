@@ -3,6 +3,9 @@ package at.fhtw.openscrum.scrum.presentation
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
+import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
+import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.presentation.forms.PlanSprintForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
@@ -16,7 +19,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import java.security.Principal
 import java.util.UUID
 
@@ -36,6 +41,7 @@ class SprintController(
         const val ROUTE_PLANNING = "/{sprintId}/planning"
         const val ROUTE_KANBAN_BOARD = "/{sprintId}/kanban-board"
         const val FRAGMENT_SPRINT_BACKLOG_ITEMS = "/{sprintId}/backlog-items"
+        const val ROUTE_MOVE_SPRINT_BACKLOG_ITEM = "/{sprintId}/move-backlog-item/{productBacklogItemId}"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -153,13 +159,50 @@ class SprintController(
     @GetMapping(value = [FRAGMENT_SPRINT_BACKLOG_ITEMS])
     fun getSprintBacklogItems(
         model: Model,
+        principal: Principal,
         @PathVariable projectId: UUID,
         @PathVariable sprintId: UUID,
+        @RequestParam status: SprintBacklogItemStatus,
     ): String {
-        model.addAttribute(
-            "sprintBacklogItems",
-            sprintApplicationService.getSprintBacklogItems(projectId, sprintId, SprintBacklogItemStatus.TO_DO),
-        )
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
+        val sprintBacklogItems = sprintApplicationService.getSprintBacklogItems(projectId, sprintId, status)
+        model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
+        model.addAttribute("sprintBacklogItems", sprintBacklogItems)
         return "fragments/sprint-backlog-item"
+    }
+
+    @HxRequest
+    @PutMapping(value = [ROUTE_MOVE_SPRINT_BACKLOG_ITEM])
+    fun moveSprintBacklogItem(
+        model: Model,
+        principal: Principal,
+        @PathVariable projectId: UUID,
+        @PathVariable sprintId: UUID,
+        @PathVariable productBacklogItemId: UUID,
+        @RequestParam moveDirection: MoveDirection,
+    ): String {
+        log.debug(
+            "Received http PUT request to move sprint backlog item with id {} of project with id {} and sprint with id {}",
+            productBacklogItemId,
+            projectId,
+            sprintId,
+        )
+        try {
+            val authenticatedTeamMember =
+                teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
+            val sprintBacklogItem =
+                sprintApplicationService.moveSprintBacklogItem(
+                    principal.name,
+                    MoveSprintBacklogItemCommand(projectId, sprintId, productBacklogItemId, moveDirection),
+                )
+            model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
+            model.addAttribute("sprintBacklogItems", listOf(sprintBacklogItem))
+            return "fragments/sprint-backlog-item"
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while moving sprint backlog item with message: {}", ex.message)
+            model.addAttribute("sprintBacklogItems", listOf<SprintBacklogItemDto>())
+            return "fragments/sprint-backlog-item"
+        }
     }
 }

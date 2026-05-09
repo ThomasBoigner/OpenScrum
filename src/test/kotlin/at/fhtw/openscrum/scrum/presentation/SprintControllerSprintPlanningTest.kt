@@ -28,7 +28,7 @@ import java.time.Duration
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("postgres")
-class SprintControllerTest {
+class SprintControllerSprintPlanningTest {
     @Autowired
     lateinit var userService: UserService
 
@@ -256,7 +256,7 @@ class SprintControllerTest {
         val productBacklogPageSource = webDriver.pageSource
         assertThat(productBacklogPageSource).contains(itemTitle)
         assertThat(productBacklogPageSource).contains(itemDescription)
-        assertThat(productBacklogPageSource).contains("Commited to sprint")
+        assertThat(productBacklogPageSource).contains("Committed to sprint")
 
         webDriver.close()
     }

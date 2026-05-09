@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.domain.model.sprint
 
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -15,7 +16,6 @@ class Sprint(
     status: SprintStatus = SprintStatus.NOT_PLANNED,
     sprintGoal: String? = null,
     val sprintBacklogItems: MutableSet<SprintBacklogItem> = mutableSetOf(),
-    val productBacklogItemCommittedEvents: MutableList<ProductBacklogItemCommitted> = mutableListOf(),
 ) {
     constructor(
         sprintId: SprintId,
@@ -59,17 +59,36 @@ class Sprint(
         productBacklogItems.forEach { pbi ->
             sprintBacklogItems.add(
                 SprintBacklogItem(
-                    productBacklogItemId = pbi.productBacklogItemId,
+                    sprintBacklogItemId =
+                        SprintBacklogItemId(
+                            pbi.productBacklogItemId.projectId,
+                            sprintId.sprintId,
+                            pbi.productBacklogItemId.productBacklogItemId,
+                        ),
                     title = pbi.title,
                     description = pbi.description,
                 ),
             )
-            productBacklogItemCommittedEvents.add(
-                ProductBacklogItemCommitted(
-                    productBacklogItemId = pbi.productBacklogItemId,
-                ),
-            )
         }
+    }
+
+    fun moveSprintBacklogItem(
+        sprintBacklogItemId: SprintBacklogItemId,
+        moveDirection: MoveDirection,
+        developer: Developer?,
+    ): SprintBacklogItem {
+        require(status == SprintStatus.IN_PROGRESS) {
+            "Sprint backlog items can only be moved if sprint is in progress"
+        }
+        require(developer?.teamMemberId?.projectId == this.sprintId.projectId) {
+            "You are not a developer of this project"
+        }
+        val item =
+            sprintBacklogItems.find { it.sprintBacklogItemId == sprintBacklogItemId } ?: throw IllegalArgumentException(
+                "Could not find backlog item with sprintBacklogItemId=$sprintBacklogItemId",
+            )
+        item.move(moveDirection, developer.teamMemberId)
+        return item
     }
 
     fun getSprintBacklogItems(status: SprintBacklogItemStatus): List<SprintBacklogItem> = sprintBacklogItems.filter { it.status == status }

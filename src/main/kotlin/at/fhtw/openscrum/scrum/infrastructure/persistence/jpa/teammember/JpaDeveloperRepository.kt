@@ -21,4 +21,9 @@ class JpaDeveloperRepository(
 
     override fun findByTeamMemberId(teamMemberId: TeamMemberId): Developer? =
         developerEntityRepository.findByUserIdAndProjectId(teamMemberId.userId, teamMemberId.projectId)?.toDeveloper()
+
+    override fun findByProjectIdAndUsername(
+        projectId: UUID,
+        username: String,
+    ): Developer? = developerEntityRepository.findByProjectIdAndUsername(projectId, username)?.toDeveloper()
 }
