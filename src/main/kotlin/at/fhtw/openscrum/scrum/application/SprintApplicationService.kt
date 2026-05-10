@@ -176,6 +176,6 @@ class SprintApplicationService(
 
         log.info("Canceled sprint {}", sprint)
 
-        return SprintDto(sprint)
+        return SprintDto(sprintRepository.save(sprint))
     }
 }

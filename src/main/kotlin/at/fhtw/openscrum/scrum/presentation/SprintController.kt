@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.presentation
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.scrum.application.command.CancelSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
 import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
@@ -42,6 +43,7 @@ class SprintController(
         const val ROUTE_KANBAN_BOARD = "/{sprintId}/kanban-board"
         const val FRAGMENT_SPRINT_BACKLOG_ITEMS = "/{sprintId}/backlog-items"
         const val ROUTE_MOVE_SPRINT_BACKLOG_ITEM = "/{sprintId}/move-backlog-item/{productBacklogItemId}"
+        const val ROUTE_CANCEL_SPRINT = "/{sprintId}/cancel"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -204,5 +206,21 @@ class SprintController(
             model.addAttribute("sprintBacklogItems", listOf<SprintBacklogItemDto>())
             return "fragments/sprint-backlog-item"
         }
+    }
+
+    @HxRequest
+    @PutMapping(value = [ROUTE_CANCEL_SPRINT])
+    fun cancelSprint(
+        model: Model,
+        principal: Principal,
+        @PathVariable projectId: UUID,
+        @PathVariable sprintId: UUID,
+    ) {
+        log.debug("Received http PUT request to cancel sprint with id {} of project with id {}", sprintId, projectId)
+        val sprint = sprintApplicationService.cancelSprint(
+            principal.name,
+            CancelSprintCommand(projectId, sprintId),
+        )
+        model.addAttribute("sprint", sprint)
     }
 }

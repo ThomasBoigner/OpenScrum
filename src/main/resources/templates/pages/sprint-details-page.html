@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:hx="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -17,6 +17,8 @@
 
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/pages/sprint-details-page.css}">
+
+    <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
 </head>
 <body>
 <div class="container" th:object="${sprint}">
@@ -35,7 +37,10 @@
                 Kanban Board
             </a>
         </nav>
-        <a class="btn cancel-sprint-button">
+        <a class="btn cancel-sprint-button"
+           hx:put="@{/projects/{projectId}/sprints/{sprintId}/cancel(projectId=*{projectId}, sprintId=*{sprintId})}"
+           hx-trigger="click"
+           hx-swap="delete">
             <img th:src="@{/assets/svg/cancel.svg}" alt="Cancel">
             Cancel sprint
         </a>
@@ -72,7 +77,8 @@
             </div>
         </div>
 
-        <a th:if="${authenticatedTeamMember.isScrumMaster() && !sprint.status.isPlanned()}" class="sprint-planning-button"
+        <a th:if="${authenticatedTeamMember.isScrumMaster() && !sprint.status.isPlanned()}"
+           class="sprint-planning-button"
            th:href="@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=*{projectId}, sprintId=*{sprintId})}">
             <img th:src="@{/assets/svg/gear.svg}" alt="Gear">
         </a>

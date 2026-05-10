@@ -38,7 +38,10 @@
                 Kanban Board
             </a>
         </nav>
-        <a class="btn cancel-sprint-button">
+        <a class="btn cancel-sprint-button"
+            hx:put="@{/projects/{projectId}/sprints/{sprintId}/cancel(projectId=*{projectId}, sprintId=*{sprintId})}"
+            hx-trigger="click"
+            hx-swap="delete">
             <img th:src="@{/assets/svg/cancel.svg}" alt="Cancel">
             Cancel sprint
         </a>
@@ -47,17 +50,20 @@
     <div id="kanban-board">
         <div class="kanban-column" id="todo-column">
             <h3>To-Do</h3>
-            <p hx:get="@{/projects/{projectId}/sprints/{sprintId}/backlog-items(projectId=${sprint.projectId}, sprintId=${sprint.sprintId}, status='TO_DO')}" hx-trigger="load" hx-swap="outerHTML">Could not load sprint backlog items!</p>
+            <p hx:get="@{/projects/{projectId}/sprints/{sprintId}/backlog-items(projectId=${sprint.projectId}, sprintId=${sprint.sprintId}, status='TO_DO')}"
+               hx-trigger="load" hx-swap="outerHTML">Could not load sprint backlog items!</p>
         </div>
 
         <div class="kanban-column" id="in-progress-column">
             <h3>In progress</h3>
-            <p hx:get="@{/projects/{projectId}/sprints/{sprintId}/backlog-items(projectId=${sprint.projectId}, sprintId=${sprint.sprintId}, status='IN_PROGRESS')}" hx-trigger="load" hx-swap="outerHTML">Could not load sprint backlog items!</p>
+            <p hx:get="@{/projects/{projectId}/sprints/{sprintId}/backlog-items(projectId=${sprint.projectId}, sprintId=${sprint.sprintId}, status='IN_PROGRESS')}"
+               hx-trigger="load" hx-swap="outerHTML">Could not load sprint backlog items!</p>
         </div>
 
         <div class="kanban-column" id="done-column">
             <h3>Done</h3>
-            <p hx:get="@{/projects/{projectId}/sprints/{sprintId}/backlog-items(projectId=${sprint.projectId}, sprintId=${sprint.sprintId}, status='DONE')}" hx-trigger="load" hx-swap="outerHTML">Could not load sprint backlog items!</p>
+            <p hx:get="@{/projects/{projectId}/sprints/{sprintId}/backlog-items(projectId=${sprint.projectId}, sprintId=${sprint.sprintId}, status='DONE')}"
+               hx-trigger="load" hx-swap="outerHTML">Could not load sprint backlog items!</p>
         </div>
     </div>
 </div>
