@@ -18,6 +18,7 @@ class Sprint(
     sprintGoal: String? = null,
     val sprintBacklogItems: MutableSet<SprintBacklogItem> = mutableSetOf(),
     val sprintCanceledEvents: MutableList<SprintCanceled> = mutableListOf(),
+    val sprintCompletedEvents: MutableList<SprintCompleted> = mutableListOf(),
 ) {
     constructor(
         sprintId: SprintId,
@@ -106,6 +107,17 @@ class Sprint(
             .forEach { it.uncommitFromSprint() }
 
         sprintCanceledEvents.add(SprintCanceled(sprintId = sprintId))
+    }
+
+    fun completeSprint() {
+        require(!status.isFinished) {
+            "Sprint can only be completed when its in progress or not planned"
+        }
+        this.status = SprintStatus.COMPLETED
+
+        sprintBacklogItems.forEach { it.uncommitFromSprint() }
+
+        sprintCompletedEvents.add(SprintCompleted(sprintId = sprintId))
     }
 
     fun getSprintBacklogItems(status: SprintBacklogItemStatus): List<SprintBacklogItem> = sprintBacklogItems.filter { it.status == status }

@@ -301,87 +301,6 @@ class SprintTest {
     }
 
     @Test
-    fun ensureGetSprintBacklogItemsReturnsOnlyItemsWithMatchingStatus() {
-        // Given
-        val projectId = UUID.randomUUID()
-        val sprintId = UUID.randomUUID()
-        val toDoItem =
-            SprintBacklogItem(
-                sprintBacklogItemId =
-                    SprintBacklogItemId(
-                        projectId = projectId,
-                        sprintId = sprintId,
-                        productBacklogItemId = UUID.randomUUID(),
-                    ),
-                title = "Implement login",
-                description = "As a user I want to log in",
-                status = SprintBacklogItemStatus.TO_DO,
-            )
-        val inProgressItem =
-            SprintBacklogItem(
-                sprintBacklogItemId =
-                    SprintBacklogItemId(
-                        projectId = projectId,
-                        sprintId = sprintId,
-                        productBacklogItemId = UUID.randomUUID(),
-                    ),
-                title = "Implement registration",
-                description = "As a user I want to register",
-                status = SprintBacklogItemStatus.IN_PROGRESS,
-            )
-        val doneItem =
-            SprintBacklogItem(
-                sprintBacklogItemId =
-                    SprintBacklogItemId(
-                        projectId = projectId,
-                        sprintId = sprintId,
-                        productBacklogItemId = UUID.randomUUID(),
-                    ),
-                title = "Implement logout",
-                description = "As a user I want to log out",
-                status = SprintBacklogItemStatus.DONE,
-            )
-        val sprint =
-            Sprint(
-                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
-                sprintName = "Sprint 1",
-                startDate = LocalDate.of(2000, 1, 1),
-                endDate = LocalDate.of(2000, 1, 14),
-                sprintBacklogItems = mutableSetOf(toDoItem, inProgressItem, doneItem),
-            )
-
-        // When
-        val toDoItems = sprint.getSprintBacklogItems(SprintBacklogItemStatus.TO_DO)
-        val inProgressItems = sprint.getSprintBacklogItems(SprintBacklogItemStatus.IN_PROGRESS)
-        val doneItems = sprint.getSprintBacklogItems(SprintBacklogItemStatus.DONE)
-
-        // Then
-        assertThat(toDoItems).containsExactly(toDoItem)
-        assertThat(inProgressItems).containsExactly(inProgressItem)
-        assertThat(doneItems).containsExactly(doneItem)
-    }
-
-    @Test
-    fun ensureGetSprintBacklogItemsReturnsEmptyListWhenNoItemsMatchStatus() {
-        // Given
-        val projectId = UUID.randomUUID()
-        val sprint =
-            Sprint(
-                sprintId = SprintId(projectId = projectId),
-                sprintName = "Sprint 1",
-                startDate = LocalDate.of(2000, 1, 1),
-                endDate = LocalDate.of(2000, 1, 14),
-                sprintBacklogItems = mutableSetOf(),
-            )
-
-        // When
-        val result = sprint.getSprintBacklogItems(SprintBacklogItemStatus.TO_DO)
-
-        // Then
-        assertThat(result).isEmpty()
-    }
-
-    @Test
     fun ensureMoveSprintBacklogItemRightMovesItemFromTodoToInProgress() {
         // Given
         val projectId = UUID.randomUUID()
@@ -778,6 +697,7 @@ class SprintTest {
         assertThat(sprint.status).isEqualTo(SprintStatus.CANCELLED)
         assertThat(sprint.sprintCanceledEvents).hasSize(1)
         assertThat(sprint.sprintCanceledEvents[0].sprintId).isEqualTo(sprint.sprintId)
+        assertThat(sprint.sprintBacklogItems.sumOf { it.sprintBacklogItemUncommitedFromSprintEvents.size }).isEqualTo(3)
     }
 
     @Test
@@ -791,42 +711,6 @@ class SprintTest {
                 username = "jane.doe",
                 fullName = FullName(firstName = "Jane", lastName = "Doe"),
             )
-        val toDoItem =
-            SprintBacklogItem(
-                sprintBacklogItemId =
-                    SprintBacklogItemId(
-                        projectId = projectId,
-                        sprintId = sprintId,
-                        productBacklogItemId = UUID.randomUUID(),
-                    ),
-                title = "Implement login",
-                description = "As a user I want to log in",
-                status = SprintBacklogItemStatus.TO_DO,
-            )
-        val inProgressItem =
-            SprintBacklogItem(
-                sprintBacklogItemId =
-                    SprintBacklogItemId(
-                        projectId = projectId,
-                        sprintId = sprintId,
-                        productBacklogItemId = UUID.randomUUID(),
-                    ),
-                title = "Implement registration",
-                description = "As a user I want to register",
-                status = SprintBacklogItemStatus.IN_PROGRESS,
-            )
-        val doneItem =
-            SprintBacklogItem(
-                sprintBacklogItemId =
-                    SprintBacklogItemId(
-                        projectId = projectId,
-                        sprintId = sprintId,
-                        productBacklogItemId = UUID.randomUUID(),
-                    ),
-                title = "Implement logout",
-                description = "As a user I want to log out",
-                status = SprintBacklogItemStatus.DONE,
-            )
         val sprint =
             Sprint(
                 sprintId = SprintId(projectId = projectId, sprintId = sprintId),
@@ -834,7 +718,6 @@ class SprintTest {
                 startDate = LocalDate.of(2000, 1, 15),
                 endDate = LocalDate.of(2000, 1, 28),
                 status = SprintStatus.NOT_PLANNED,
-                sprintBacklogItems = mutableSetOf(toDoItem, inProgressItem, doneItem),
             )
 
         // When
@@ -914,5 +797,210 @@ class SprintTest {
         assertThrows<IllegalArgumentException> {
             sprint.cancelSprint(productOwner)
         }
+    }
+
+    @Test
+    fun ensureSprintCancellationFailsWhenSprintIsCancelled() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jane.doe",
+                fullName = FullName(firstName = "Jane", lastName = "Doe"),
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                status = SprintStatus.CANCELLED,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprint.cancelSprint(productOwner)
+        }
+    }
+
+    @Test
+    fun ensureSprintIsCompletedSuccessfully() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val toDoItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val inProgressItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement registration",
+                description = "As a user I want to register",
+                status = SprintBacklogItemStatus.IN_PROGRESS,
+            )
+        val doneItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement logout",
+                description = "As a user I want to log out",
+                status = SprintBacklogItemStatus.DONE,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                status = SprintStatus.IN_PROGRESS,
+                sprintBacklogItems = mutableSetOf(toDoItem, inProgressItem, doneItem),
+            )
+
+        // When
+        sprint.completeSprint()
+
+        // Then
+        assertThat(sprint.status).isEqualTo(SprintStatus.COMPLETED)
+        assertThat(sprint.sprintCompletedEvents).hasSize(1)
+        assertThat(sprint.sprintCompletedEvents[0].sprintId).isEqualTo(sprint.sprintId)
+        assertThat(sprint.sprintBacklogItems.sumOf { it.sprintBacklogItemUncommitedFromSprintEvents.size }).isEqualTo(3)
+    }
+
+    @Test
+    fun ensureSprintCompletionFailsWhenSprintIsAlreadyCompleted() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                status = SprintStatus.COMPLETED,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprint.completeSprint()
+        }
+    }
+
+    @Test
+    fun ensureSprintCompletionFailsWhenSprintIsAlreadyCancelled() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                status = SprintStatus.CANCELLED,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprint.completeSprint()
+        }
+    }
+
+    @Test
+    fun ensureGetSprintBacklogItemsReturnsOnlyItemsWithMatchingStatus() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val toDoItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val inProgressItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement registration",
+                description = "As a user I want to register",
+                status = SprintBacklogItemStatus.IN_PROGRESS,
+            )
+        val doneItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement logout",
+                description = "As a user I want to log out",
+                status = SprintBacklogItemStatus.DONE,
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(toDoItem, inProgressItem, doneItem),
+            )
+
+        // When
+        val toDoItems = sprint.getSprintBacklogItems(SprintBacklogItemStatus.TO_DO)
+        val inProgressItems = sprint.getSprintBacklogItems(SprintBacklogItemStatus.IN_PROGRESS)
+        val doneItems = sprint.getSprintBacklogItems(SprintBacklogItemStatus.DONE)
+
+        // Then
+        assertThat(toDoItems).containsExactly(toDoItem)
+        assertThat(inProgressItems).containsExactly(inProgressItem)
+        assertThat(doneItems).containsExactly(doneItem)
+    }
+
+    @Test
+    fun ensureGetSprintBacklogItemsReturnsEmptyListWhenNoItemsMatchStatus() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(),
+            )
+
+        // When
+        val result = sprint.getSprintBacklogItems(SprintBacklogItemStatus.TO_DO)
+
+        // Then
+        assertThat(result).isEmpty()
     }
 }

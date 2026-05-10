@@ -14,6 +14,7 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemMarkedAsDone
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemUncommitedFromSprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemUnmarkedAsDone
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintCanceled
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintCompleted
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.modulith.events.ApplicationModuleListener
@@ -84,6 +85,16 @@ class ScrumEventListener(
     @ApplicationModuleListener
     fun receiveSprintCanceledEvent(event: SprintCanceled) {
         log.trace("Received sprintCanceled event: {}", event)
+        projectApplicationService.scheduleSprint(
+            ScheduleSprintCommand(
+                projectId = event.sprintId.projectId,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveSprintCompletedEvent(event: SprintCompleted) {
+        log.trace("Received sprintCompleted event: {}", event)
         projectApplicationService.scheduleSprint(
             ScheduleSprintCommand(
                 projectId = event.sprintId.projectId,

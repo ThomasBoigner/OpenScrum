@@ -58,6 +58,7 @@ class SprintEntity(
             }
         }
         sprint.sprintCanceledEvents.forEach { this.registerEvent(it) }
+        sprint.sprintCompletedEvents.forEach { this.registerEvent(it) }
     }
 
     fun toSprint(): Sprint =

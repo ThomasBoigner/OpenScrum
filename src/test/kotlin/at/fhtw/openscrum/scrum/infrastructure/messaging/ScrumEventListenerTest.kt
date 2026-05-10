@@ -17,6 +17,7 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemMarkedAsDone
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemUncommitedFromSprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemUnmarkedAsDone
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintCanceled
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintCompleted
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -155,6 +156,24 @@ class ScrumEventListenerTest {
 
         // When
         scrumEventListener.receiveSprintCanceledEvent(event)
+
+        // Then
+        verify(projectApplicationService).scheduleSprint(
+            ScheduleSprintCommand(
+                projectId = projectId,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveSprintCompletedEventWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val event = SprintCompleted(SprintId(projectId = projectId, sprintId = sprintId))
+
+        // When
+        scrumEventListener.receiveSprintCompletedEvent(event)
 
         // Then
         verify(projectApplicationService).scheduleSprint(
