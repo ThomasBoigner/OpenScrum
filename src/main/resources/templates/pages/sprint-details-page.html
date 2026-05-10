@@ -21,13 +21,13 @@
     <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.8/dist/htmx.js}"></script>
 </head>
 <body>
-<div class="container" th:object="${sprint}">
-    <header id="sprint-header">
+<div class="container">
+    <header id="sprint-header" th:object="${sprint}">
         <a class="btn back-button" th:href="@{/projects/{projectId}/sprints(projectId=*{projectId})}">
             <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
             Back
         </a>
-        <nav th:if="${sprint.status.isPlanned()}">
+        <nav th:if="*{numberOfSprintBacklogItems > 0}">
             <a class="btn selected"
                th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">
                 Details
@@ -38,15 +38,18 @@
             </a>
         </nav>
         <a class="btn cancel-sprint-button"
+           th:if="${!sprint.status.isFinished() && authenticatedTeamMember.isProductOwner()}"
            hx:put="@{/projects/{projectId}/sprints/{sprintId}/cancel(projectId=*{projectId}, sprintId=*{sprintId})}"
            hx-trigger="click"
-           hx-swap="delete">
+           hx-target="#sprint-details"
+           hx-swap="outerHTML"
+           hx-on::after-request="this.closest('.cancel-sprint-button').remove()">
             <img th:src="@{/assets/svg/cancel.svg}" alt="Cancel">
             Cancel sprint
         </a>
     </header>
 
-    <section id="sprint-details">
+    <section id="sprint-details" th:fragment="sprint-details" th:object="${sprint}">
         <h1 th:text="*{sprintName}">Sprint Name</h1>
 
         <div class="details-row">
@@ -77,7 +80,7 @@
             </div>
         </div>
 
-        <a th:if="${authenticatedTeamMember.isScrumMaster() && !sprint.status.isPlanned()}"
+        <a th:if="${authenticatedTeamMember != null && authenticatedTeamMember.isScrumMaster() && !sprint.status.isPlanned()}"
            class="sprint-planning-button"
            th:href="@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=*{projectId}, sprintId=*{sprintId})}">
             <img th:src="@{/assets/svg/gear.svg}" alt="Gear">

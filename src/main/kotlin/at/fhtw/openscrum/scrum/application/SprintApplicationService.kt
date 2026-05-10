@@ -71,6 +71,7 @@ class SprintApplicationService(
                 SprintBacklogItemDto(
                     it,
                     it.assignedDeveloper?.let { teamMemberId -> developerRepository.findByTeamMemberId(teamMemberId) },
+                    sprint,
                 )
             }
         log.info(
@@ -154,6 +155,7 @@ class SprintApplicationService(
             sprintBacklogItem.assignedDeveloper?.let {
                 developerRepository.findByTeamMemberId(it)
             },
+            sprint,
         )
     }
 
@@ -170,7 +172,8 @@ class SprintApplicationService(
                     "Could not find sprint with projectId ${command.projectId} and sprintId ${command.sprintId}",
                 )
 
-        val productOwner = productOwnerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
+        val productOwner =
+            productOwnerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
         sprint.cancelSprint(productOwner)
 

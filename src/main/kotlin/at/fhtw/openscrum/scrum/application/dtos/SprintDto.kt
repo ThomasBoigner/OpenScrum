@@ -12,6 +12,7 @@ data class SprintDto(
     val endDate: LocalDate,
     val status: SprintStatusDto,
     val sprintGoal: String?,
+    val numberOfSprintBacklogItems: Int,
 ) {
     constructor(sprint: Sprint) : this(
         sprintId = sprint.sprintId.sprintId,
@@ -21,5 +22,6 @@ data class SprintDto(
         endDate = sprint.endDate,
         status = SprintStatusDto.fromSprintStatus(sprint.status),
         sprintGoal = sprint.sprintGoal,
+        numberOfSprintBacklogItems = sprint.sprintBacklogItems.size,
     )
 }

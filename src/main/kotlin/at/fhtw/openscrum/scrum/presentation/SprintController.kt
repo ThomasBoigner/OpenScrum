@@ -150,7 +150,7 @@ class SprintController(
         val authenticatedTeamMember =
             teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
-        if (!sprint.status.isPlanned) return "error/404"
+        if (sprint.numberOfSprintBacklogItems <= 0) return "error/404"
 
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("sprint", sprint)
@@ -215,12 +215,17 @@ class SprintController(
         principal: Principal,
         @PathVariable projectId: UUID,
         @PathVariable sprintId: UUID,
-    ) {
+    ): String {
         log.debug("Received http PUT request to cancel sprint with id {} of project with id {}", sprintId, projectId)
-        val sprint = sprintApplicationService.cancelSprint(
-            principal.name,
-            CancelSprintCommand(projectId, sprintId),
-        )
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
+        val sprint =
+            sprintApplicationService.cancelSprint(
+                principal.name,
+                CancelSprintCommand(projectId, sprintId),
+            )
+        model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("sprint", sprint)
+        return "pages/sprint-details-page :: sprint-details"
     }
 }

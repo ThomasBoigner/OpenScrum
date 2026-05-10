@@ -79,7 +79,7 @@ class Sprint(
         moveDirection: MoveDirection,
         developer: Developer?,
     ): SprintBacklogItem {
-        require(status == SprintStatus.IN_PROGRESS) {
+        require(!status.isFinished) {
             "Sprint backlog items can only be moved if sprint is in progress"
         }
         require(developer?.teamMemberId?.projectId == this.sprintId.projectId) {
@@ -94,7 +94,7 @@ class Sprint(
     }
 
     fun cancelSprint(productOwner: ProductOwner?) {
-        require(status == SprintStatus.IN_PROGRESS || status == SprintStatus.NOT_PLANNED) {
+        require(!status.isFinished) {
             "Sprint can only be cancelled when its in progress or not planned"
         }
         require(productOwner?.teamMemberId?.projectId == this.sprintId.projectId) {
@@ -111,7 +111,8 @@ class Sprint(
 
     fun getSprintBacklogItems(status: SprintBacklogItemStatus): List<SprintBacklogItem> = sprintBacklogItems.filter { it.status == status }
 
-    override fun toString(): String = "Sprint(sprintId=$sprintId, startDate=$startDate, endDate=$endDate, status=$status)"
+    override fun toString(): String =
+        "Sprint(sprintBacklogItems=$sprintBacklogItems, startDate=$startDate, sprintName='$sprintName', sprintId=$sprintId)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

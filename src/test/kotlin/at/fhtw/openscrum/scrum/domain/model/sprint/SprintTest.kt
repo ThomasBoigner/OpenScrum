@@ -676,6 +676,7 @@ class SprintTest {
                 startDate = LocalDate.of(2000, 1, 1),
                 endDate = LocalDate.of(2000, 1, 14),
                 sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+                status = SprintStatus.COMPLETED,
             )
 
         // When

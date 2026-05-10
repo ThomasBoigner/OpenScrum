@@ -39,9 +39,10 @@
             </a>
         </nav>
         <a class="btn cancel-sprint-button"
-            hx:put="@{/projects/{projectId}/sprints/{sprintId}/cancel(projectId=*{projectId}, sprintId=*{sprintId})}"
-            hx-trigger="click"
-            hx-swap="delete">
+           th:if="${!sprint.status.isFinished() && authenticatedTeamMember.isProductOwner()}"
+           hx:put="@{/projects/{projectId}/sprints/{sprintId}/cancel(projectId=*{projectId}, sprintId=*{sprintId})}"
+           hx-trigger="click"
+           hx-swap="delete">
             <img th:src="@{/assets/svg/cancel.svg}" alt="Cancel">
             Cancel sprint
         </a>
