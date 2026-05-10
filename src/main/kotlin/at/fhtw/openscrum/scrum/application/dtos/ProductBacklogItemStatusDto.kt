@@ -7,7 +7,7 @@ enum class ProductBacklogItemStatusDto(
 ) {
     IN_BACKLOG("In backlog"),
     COMMITED_TO_SPRINT("Committed to sprint"),
-    COMMITED_TO_SPRINT_DONE("Commited to sprint (done)"),
+    COMMITED_TO_SPRINT_DONE("Committed to sprint (done)"),
     DONE("Done"),
     ;
 

@@ -3,7 +3,7 @@ package at.fhtw.openscrum.scrum.application
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
-import at.fhtw.openscrum.scrum.application.command.MarkAsInBacklogCommand
+import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemStatusDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
@@ -160,11 +160,11 @@ class ProductBacklogItemApplicationServiceTest {
     }
 
     @Test
-    fun ensureMarkAsInBacklogWorksProperly() {
+    fun ensureUncommitFromSprintWorksProperly() {
         // Given
         val projectId = UUID.randomUUID()
         val productBacklogItemId = UUID.randomUUID()
-        val command = MarkAsInBacklogCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
+        val command = UncommitFromSprintCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
         val productBacklogItem =
             ProductBacklogItem(
                 productBacklogItemId = ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
@@ -180,7 +180,7 @@ class ProductBacklogItemApplicationServiceTest {
         whenever(productBacklogItemRepository.save(productBacklogItem)).thenReturn(productBacklogItem)
 
         // When
-        val result = productBacklogItemApplicationService.markAsInBacklog(command)
+        val result = productBacklogItemApplicationService.uncommitFromSprint(command)
 
         // Then
         assertThat(result).isNotNull()
@@ -190,11 +190,11 @@ class ProductBacklogItemApplicationServiceTest {
     }
 
     @Test
-    fun ensureMarkAsInBacklogReturnsNullWhenItemNotFound() {
+    fun ensureUncommitFromSprintReturnsNullWhenItemNotFound() {
         // Given
         val projectId = UUID.randomUUID()
         val productBacklogItemId = UUID.randomUUID()
-        val command = MarkAsInBacklogCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
+        val command = UncommitFromSprintCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
 
         whenever(
             productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
@@ -203,7 +203,7 @@ class ProductBacklogItemApplicationServiceTest {
         ).thenReturn(null)
 
         // When
-        val result = productBacklogItemApplicationService.markAsInBacklog(command)
+        val result = productBacklogItemApplicationService.uncommitFromSprint(command)
 
         // Then
         assertThat(result).isNull()
@@ -284,7 +284,7 @@ class ProductBacklogItemApplicationServiceTest {
 
         // Then
         assertThat(result).isNotNull()
-        assertThat(result!!.status).isEqualTo(ProductBacklogItemStatusDto.DONE)
+        assertThat(result!!.status).isEqualTo(ProductBacklogItemStatusDto.COMMITED_TO_SPRINT_DONE)
         assertThat(result.title).isEqualTo(productBacklogItem.title)
         assertThat(result.description).isEqualTo(productBacklogItem.description)
     }

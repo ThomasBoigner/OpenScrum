@@ -103,7 +103,6 @@ class Sprint(
         this.status = SprintStatus.CANCELLED
 
         sprintBacklogItems
-            .filter { it.status != SprintBacklogItemStatus.DONE }
             .forEach { it.uncommitFromSprint() }
 
         sprintCanceledEvents.add(SprintCanceled(sprintId = sprintId))

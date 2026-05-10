@@ -26,16 +26,20 @@ class ProductBacklogItem(
         this.description = description
     }
 
-    fun setStatusToInBacklog() {
-        this.status = ProductBacklogItemStatus.IN_BACKLOG
-    }
-
     fun setStatusToCommittedToSprint() {
         this.status = ProductBacklogItemStatus.COMMITTED_TO_SPRINT
     }
 
     fun setStatusToCommittedToSprintDone() {
         this.status = ProductBacklogItemStatus.COMMITTED_TO_SPRINT_DONE
+    }
+
+    fun uncommitFromSprint() {
+        if (this.status == ProductBacklogItemStatus.COMMITTED_TO_SPRINT) {
+            this.status = ProductBacklogItemStatus.IN_BACKLOG
+        } else if (this.status == ProductBacklogItemStatus.COMMITTED_TO_SPRINT_DONE) {
+            this.status = ProductBacklogItemStatus.DONE
+        }
     }
 
     override fun toString(): String =

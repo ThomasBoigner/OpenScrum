@@ -6,7 +6,7 @@ import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
-import at.fhtw.openscrum.scrum.application.command.MarkAsInBacklogCommand
+import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
 import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
 import at.fhtw.openscrum.scrum.domain.model.project.SprintScheduled
 import at.fhtw.openscrum.scrum.domain.model.sprint.ProductBacklogItemCommitted
@@ -74,8 +74,8 @@ class ScrumEventListener(
     @ApplicationModuleListener
     fun receiveSprintBacklogItemUncommitedFromSprintEvent(event: SprintBacklogItemUncommitedFromSprint) {
         log.trace("Received sprintBacklogUncommitedFromSprint event: {}", event)
-        productBacklogItemApplicationService.markAsInBacklog(
-            MarkAsInBacklogCommand(
+        productBacklogItemApplicationService.uncommitFromSprint(
+            UncommitFromSprintCommand(
                 projectId = event.productBacklogItemId.projectId,
                 productBacklogItemId = event.productBacklogItemId.productBacklogItemId,
             ),
