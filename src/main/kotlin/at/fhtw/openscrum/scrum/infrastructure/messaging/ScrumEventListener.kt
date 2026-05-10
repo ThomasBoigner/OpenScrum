@@ -6,8 +6,8 @@ import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
-import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
 import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
+import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
 import at.fhtw.openscrum.scrum.domain.model.project.SprintScheduled
 import at.fhtw.openscrum.scrum.domain.model.sprint.ProductBacklogItemCommitted
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemMarkedAsDone
@@ -36,7 +36,6 @@ class ScrumEventListener(
             ),
         )
     }
-
 
     @ApplicationModuleListener
     fun receiveProductBacklogItemCommitedEvent(event: ProductBacklogItemCommitted) {

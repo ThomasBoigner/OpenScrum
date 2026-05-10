@@ -2,7 +2,6 @@ package at.fhtw.openscrum.scrum.application.dtos
 
 import at.fhtw.openscrum.scrum.domain.model.sprint.Sprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItem
-import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMember
 import java.util.UUID
 

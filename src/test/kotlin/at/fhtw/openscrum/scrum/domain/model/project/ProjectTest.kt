@@ -201,7 +201,12 @@ class ProjectTest {
     @Test
     fun ensureScheduleSprintWorksProperly() {
         // Given
-        val project = Project(projectId = ProjectId(UUID.randomUUID()), projectName = "Test Project", sprintScheduledEvents = mutableListOf())
+        val project =
+            Project(
+                projectId = ProjectId(UUID.randomUUID()),
+                projectName = "Test Project",
+                sprintScheduledEvents = mutableListOf(),
+            )
 
         // When
         project.scheduleSprint()

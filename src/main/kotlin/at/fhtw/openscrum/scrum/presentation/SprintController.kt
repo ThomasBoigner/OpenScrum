@@ -203,8 +203,7 @@ class SprintController(
             return "fragments/sprint-backlog-item"
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while moving sprint backlog item with message: {}", ex.message)
-            model.addAttribute("sprintBacklogItems", listOf<SprintBacklogItemDto>())
-            return "fragments/sprint-backlog-item"
+            return "redirect:htmx:/error/400"
         }
     }
 
@@ -217,15 +216,20 @@ class SprintController(
         @PathVariable sprintId: UUID,
     ): String {
         log.debug("Received http PUT request to cancel sprint with id {} of project with id {}", sprintId, projectId)
-        val authenticatedTeamMember =
-            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
-        val sprint =
-            sprintApplicationService.cancelSprint(
-                principal.name,
-                CancelSprintCommand(projectId, sprintId),
-            )
-        model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
-        model.addAttribute("sprint", sprint)
-        return "pages/sprint-details-page :: sprint-details"
+        try {
+            val authenticatedTeamMember =
+                teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
+            val sprint =
+                sprintApplicationService.cancelSprint(
+                    principal.name,
+                    CancelSprintCommand(projectId, sprintId),
+                )
+            model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
+            model.addAttribute("sprint", sprint)
+            return "pages/sprint-details-page :: sprint-details"
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while canceling sprint with message: {}", ex.message)
+            return "redirect:htmx:/error/400"
+        }
     }
 }
