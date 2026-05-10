@@ -82,7 +82,7 @@ class ProductBacklogItemApplicationService(
 
         if (productBacklogItem == null) {
             log.error(
-                "Cannot mark as commited to sprint, product backlog with projectId {} and productBacklogItemId {} does not exits",
+                "Cannot mark as commited to sprint, product backlog with projectId {} and productBacklogItemId {} does not exist",
                 command.projectId,
                 command.productBacklogItemId,
             )
@@ -106,7 +106,7 @@ class ProductBacklogItemApplicationService(
 
         if (productBacklogItem == null) {
             log.error(
-                "Cannot mark as done, product backlog with projectId {} and productBacklogItemId {} does not exits",
+                "Cannot mark as done, product backlog with projectId {} and productBacklogItemId {} does not exist",
                 command.projectId,
                 command.productBacklogItemId,
             )

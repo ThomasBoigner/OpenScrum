@@ -197,4 +197,16 @@ class ProjectTest {
         // Then
         assertThat(project.definitionOfDone).isNull()
     }
+
+    @Test
+    fun ensureScheduleSprintWorksProperly() {
+        // Given
+        val project = Project(projectId = ProjectId(UUID.randomUUID()), projectName = "Test Project", sprintScheduledEvents = mutableListOf())
+
+        // When
+        project.scheduleSprint()
+
+        // Then
+        assertThat(project.sprintScheduledEvents).hasSize(1)
+    }
 }
