@@ -52,7 +52,7 @@ class ScrumEventListener(
     @ApplicationModuleListener
     fun receiveSprintBacklogItemMarkedAsDoneEvent(event: SprintBacklogItemMarkedAsDone) {
         log.trace("Received sprintBacklogItemMarkedAsDone event: {}", event)
-        productBacklogItemApplicationService.markAsDone(
+        productBacklogItemApplicationService.markAsCommitedToSprintDone(
             MarkAsDoneCommand(
                 projectId = event.productBacklogItemId.projectId,
                 productBacklogItemId = event.productBacklogItemId.productBacklogItemId,

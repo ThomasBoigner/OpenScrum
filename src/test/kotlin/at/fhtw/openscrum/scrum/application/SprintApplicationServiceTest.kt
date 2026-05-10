@@ -505,6 +505,7 @@ class SprintApplicationServiceTest {
             )
         whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(sprint)
         whenever(productOwnerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(productOwner)
+        whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
 
         // When
         val result = sprintApplicationService.cancelSprint(username, command)

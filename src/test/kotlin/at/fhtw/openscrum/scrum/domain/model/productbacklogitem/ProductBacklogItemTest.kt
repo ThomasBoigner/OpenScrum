@@ -96,7 +96,7 @@ class ProductBacklogItemTest {
     }
 
     @Test
-    fun ensureProductBacklogSetStatusToDoneWorksProperly() {
+    fun ensureProductBacklogSetStatusToCommitedToSprintDoneWorksProperly() {
         // Given
         val productBacklogItem =
             ProductBacklogItem(
@@ -106,7 +106,7 @@ class ProductBacklogItemTest {
             )
 
         // When
-        productBacklogItem.setStatusToDone()
+        productBacklogItem.setStatusToCommittedToSprintDone()
 
         // Then
         assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.DONE)

@@ -100,7 +100,7 @@ class ScrumEventListenerTest {
         scrumEventListener.receiveSprintBacklogItemMarkedAsDoneEvent(event)
 
         // Then
-        verify(productBacklogItemApplicationService).markAsDone(
+        verify(productBacklogItemApplicationService).markAsCommitedToSprintDone(
             MarkAsDoneCommand(
                 projectId = productBacklogItemId.projectId,
                 productBacklogItemId = productBacklogItemId.productBacklogItemId,

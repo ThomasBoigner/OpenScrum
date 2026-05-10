@@ -119,7 +119,7 @@ class ProductBacklogItemApplicationService(
     }
 
     @Transactional(readOnly = false)
-    fun markAsDone(command: MarkAsDoneCommand): ProductBacklogItemDto? {
+    fun markAsCommitedToSprintDone(command: MarkAsDoneCommand): ProductBacklogItemDto? {
         log.debug("Trying to mark product backlog item as done with command: {}", command)
         val productBacklogItem =
             productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
@@ -138,7 +138,7 @@ class ProductBacklogItemApplicationService(
             return null
         }
 
-        productBacklogItem.setStatusToDone()
+        productBacklogItem.setStatusToCommittedToSprintDone()
         return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
     }
 }
