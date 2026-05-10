@@ -1,17 +1,23 @@
 package at.fhtw.openscrum.scrum.infrastructure.messaging
 
 import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
+import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
+import at.fhtw.openscrum.scrum.application.command.MarkAsInBacklogCommand
+import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.SprintLength
 import at.fhtw.openscrum.scrum.domain.model.project.SprintScheduled
 import at.fhtw.openscrum.scrum.domain.model.sprint.ProductBacklogItemCommitted
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemMarkedAsDone
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemUncommitedFromSprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemUnmarkedAsDone
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintCanceled
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -25,6 +31,9 @@ class ScrumEventListenerTest {
     lateinit var scrumEventListener: ScrumEventListener
 
     @Mock
+    lateinit var projectApplicationService: ProjectApplicationService
+
+    @Mock
     lateinit var sprintApplicationService: SprintApplicationService
 
     @Mock
@@ -32,7 +41,12 @@ class ScrumEventListenerTest {
 
     @BeforeEach
     fun setUp() {
-        scrumEventListener = ScrumEventListener(sprintApplicationService, productBacklogItemApplicationService)
+        scrumEventListener =
+            ScrumEventListener(
+                projectApplicationService,
+                sprintApplicationService,
+                productBacklogItemApplicationService,
+            )
     }
 
     @Test
@@ -59,7 +73,8 @@ class ScrumEventListenerTest {
     @Test
     fun ensureReceiveProductBacklogItemCommitedEventWorksProperly() {
         // Given
-        val productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
+        val productBacklogItemId =
+            ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
         val event = ProductBacklogItemCommitted(productBacklogItemId = productBacklogItemId)
 
         // When
@@ -77,7 +92,8 @@ class ScrumEventListenerTest {
     @Test
     fun ensureReceiveSprintBacklogItemMarkedAsDoneEventWorksProperly() {
         // Given
-        val productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
+        val productBacklogItemId =
+            ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
         val event = SprintBacklogItemMarkedAsDone(productBacklogItemId = productBacklogItemId)
 
         // When
@@ -95,7 +111,8 @@ class ScrumEventListenerTest {
     @Test
     fun ensureReceiveSprintBacklogItemUnmarkedAsDoneEventWorksProperly() {
         // Given
-        val productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
+        val productBacklogItemId =
+            ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
         val event = SprintBacklogItemUnmarkedAsDone(productBacklogItemId = productBacklogItemId)
 
         // When
@@ -106,6 +123,43 @@ class ScrumEventListenerTest {
             MarkAsCommitedToSprintCommand(
                 projectId = productBacklogItemId.projectId,
                 productBacklogItemId = productBacklogItemId.productBacklogItemId,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveSprintBacklogItemUncommitedFromSprintEventWorksProperly() {
+        // Given
+        val productBacklogItemId =
+            ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
+        val event = SprintBacklogItemUncommitedFromSprint(productBacklogItemId = productBacklogItemId)
+
+        // When
+        scrumEventListener.receiveSprintBacklogItemUncommitedFromSprintEvent(event)
+
+        // Then
+        verify(productBacklogItemApplicationService).markAsInBacklog(
+            MarkAsInBacklogCommand(
+                projectId = productBacklogItemId.projectId,
+                productBacklogItemId = productBacklogItemId.productBacklogItemId,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveSprintCanceledEventWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val event = SprintCanceled(SprintId(projectId = projectId, sprintId = sprintId))
+
+        // When
+        scrumEventListener.receiveSprintCanceledEvent(event)
+
+        // Then
+        verify(projectApplicationService).scheduleSprint(
+            ScheduleSprintCommand(
+                projectId = projectId,
             ),
         )
     }

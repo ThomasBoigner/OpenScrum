@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.application
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
+import at.fhtw.openscrum.scrum.application.command.MarkAsInBacklogCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
@@ -67,6 +68,30 @@ class ProductBacklogItemApplicationService(
                 command.description,
             ),
         )
+    }
+
+    @Transactional(readOnly = false)
+    fun markAsInBacklog(command: MarkAsInBacklogCommand): ProductBacklogItemDto? {
+        log.debug("Trying to mark product backlog item as in backlog with command: {}", command)
+        val productBacklogItem =
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(
+                    projectId = command.projectId,
+                    productBacklogItemId = command.productBacklogItemId,
+                ),
+            )
+
+        if (productBacklogItem == null) {
+            log.error(
+                "Cannot mark as in backlog, product backlog with projectId {} and productBacklogItemId {} does not exist",
+                command.projectId,
+                command.productBacklogItemId,
+            )
+            return null
+        }
+
+        productBacklogItem.setStatusToInBacklog()
+        return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
     }
 
     @Transactional(readOnly = false)
