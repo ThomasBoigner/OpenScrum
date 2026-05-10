@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.scrum.application
 
+import at.fhtw.openscrum.scrum.application.command.CancelSprintCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
@@ -9,10 +10,12 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemUnmarkedAsDone
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintService
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -25,6 +28,7 @@ import java.util.UUID
 class SprintApplicationService(
     private val sprintService: SprintService,
     private val sprintRepository: SprintRepository,
+    private val productOwnerRepository: ProductOwnerRepository,
     private val scrumMasterRepository: ScrumMasterRepository,
     private val developerRepository: DeveloperRepository,
     private val productBacklogItemRepository: ProductBacklogItemRepository,
@@ -151,5 +155,27 @@ class SprintApplicationService(
                 developerRepository.findByTeamMemberId(it)
             },
         )
+    }
+
+    @Transactional(readOnly = false)
+    fun cancelSprint(
+        authenticatedUserUsername: String,
+        command: CancelSprintCommand,
+    ): SprintDto {
+        log.debug("Trying to cancel sprint with command {}", command)
+
+        val sprint =
+            sprintRepository.findSprintBySprintId(SprintId(command.projectId, command.sprintId))
+                ?: throw IllegalArgumentException(
+                    "Could not find sprint with projectId ${command.projectId} and sprintId ${command.sprintId}",
+                )
+
+        val productOwner = productOwnerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
+
+        sprint.cancelSprint(productOwner)
+
+        log.info("Canceled sprint {}", sprint)
+
+        return SprintDto(sprint)
     }
 }
