@@ -529,4 +529,36 @@ class SprintApplicationServiceTest {
             sprintApplicationService.cancelSprint("jane.doe", command)
         }
     }
+
+    @Test
+    fun ensureCompleteSprintsWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprints =
+            listOf(
+                Sprint(
+                    sprintId = SprintId(projectId = projectId),
+                    sprintName = "Sprint 1",
+                    startDate = LocalDate.of(2025, 1, 6),
+                    endDate = LocalDate.of(2025, 1, 19),
+                    status = SprintStatus.IN_PROGRESS,
+                ),
+                Sprint(
+                    sprintId = SprintId(projectId = projectId),
+                    sprintName = "Sprint 2",
+                    startDate = LocalDate.of(2025, 1, 20),
+                    endDate = LocalDate.of(2025, 2, 2),
+                    status = SprintStatus.IN_PROGRESS,
+                ),
+            )
+        whenever(sprintRepository.findSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlanned(any())).thenReturn(sprints)
+        whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = sprintApplicationService.completeSprints()
+
+        // Then
+        assertThat(result).hasSize(2)
+        assertThat(result).allMatch { it.status == SprintStatusDto.COMPLETED }
+    }
 }

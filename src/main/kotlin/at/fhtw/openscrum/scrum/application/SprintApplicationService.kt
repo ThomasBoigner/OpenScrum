@@ -20,6 +20,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.util.UUID
 
 @Service
@@ -179,5 +180,17 @@ class SprintApplicationService(
         log.info("Canceled sprint {}", sprint)
 
         return SprintDto(sprintRepository.save(sprint))
+    }
+
+    @Transactional(readOnly = false)
+    fun completeSprints(): List<SprintDto> {
+        val today = LocalDate.now()
+        log.debug("Trying to complete all sprints that have ended before {}", today)
+
+        val sprints = sprintRepository.findSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlanned(today)
+        sprints.forEach { it.completeSprint() }
+
+        log.info("Completed {} sprints", sprints.size)
+        return sprints.map { SprintDto(sprintRepository.save(it)) }
     }
 }
