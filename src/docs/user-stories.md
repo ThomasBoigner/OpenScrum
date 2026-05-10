@@ -288,7 +288,7 @@ Then the scrum master should receive an error that the sprint backlog can not be
 
 Given a product owner and a sprint with status "in progress" or "not planned"  
 When the product owner clicks the cancel sprint button  
-Then the sprint status should be updated to cancelled, not finished sprint backlog items should have status 
+Then the sprint status should be updated to canceled, not finished sprint backlog items should have status 
 "in product backlog" and the next sprint should be scheduled
 
 ### Test 2
