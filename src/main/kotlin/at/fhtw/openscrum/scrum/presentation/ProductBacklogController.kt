@@ -55,9 +55,15 @@ class ProductBacklogController(
     @HxRequest
     @GetMapping(value = [FRAGMENT_PRODUCT_BACKLOG_LIST_ITEM])
     fun getProductBacklogListItems(
+        principal: Principal,
         model: Model,
         @PathVariable projectId: UUID,
     ): String {
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
+                ?: return "redirect:htmx:/error/403"
+
+        model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("productBacklog", productBacklogApplicationService.getProductBacklogOfProject(projectId))
         return "fragments/product-backlog-list-item"
     }

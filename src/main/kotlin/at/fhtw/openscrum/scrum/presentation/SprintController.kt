@@ -167,7 +167,9 @@ class SprintController(
     ): String {
         val authenticatedTeamMember =
             teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
-        val sprintBacklogItems = sprintApplicationService.getSprintBacklogItems(projectId, sprintId, status)
+                ?: return "redirect:htmx:/error/403"
+        val sprintBacklogItems =
+            sprintApplicationService.getSprintBacklogItems(projectId, sprintId, status)
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("sprintBacklogItems", sprintBacklogItems)
         return "fragments/sprint-backlog-item"
@@ -192,6 +194,7 @@ class SprintController(
         try {
             val authenticatedTeamMember =
                 teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
+                    ?: return "redirect:htmx:/error/403"
             val sprintBacklogItem =
                 sprintApplicationService.moveSprintBacklogItem(
                     principal.name,
@@ -218,6 +221,7 @@ class SprintController(
         try {
             val authenticatedTeamMember =
                 teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
+                    ?: return "redirect:htmx:/error/403"
             val sprint =
                 sprintApplicationService.cancelSprint(
                     principal.name,

@@ -4,17 +4,19 @@
         <h2 th:text="*{projectName}">Project name</h2>
         <div class="user-count">
             <img th:src="@{/assets/svg/user.svg}" alt="User">
-            <p th:text="*{numberOfDevelopers}">0</p>
+            <p th:text="*{#lists.size(developerIds)}">0</p>
         </div>
     </div>
     <div class="edit-delete-buttons">
-        <a class="details-button" th:href="@{/projects/{projectId}(projectId=*{projectId})}">
+        <a class="details-button"
+           th:href="@{/projects/{projectId}(projectId=*{projectId})}"
+           th:if="${project.scrumMasterId == authenticatedUser.userId || project.productOwnerId == authenticatedUser.userId || #lists.contains(project.developerIds, authenticatedUser.userId)}">
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Arrow">
         </a>
-        <a class="edit-button">
+        <a class="edit-button" th:if="${authenticatedUser.role.isManager()}">
             <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
         </a>
-        <a class="delete-button">
+        <a class="delete-button" th:if="${authenticatedUser.role.isManager()}">
             <img th:src="@{/assets/svg/trash.svg}" alt="Trash">
         </a>
     </div>

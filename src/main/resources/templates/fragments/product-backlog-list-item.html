@@ -14,10 +14,10 @@
         </div>
     </div>
     <div class="edit-delete-buttons">
-        <a class="edit-button">
+        <a class="edit-button" th:if="${false}">
             <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
         </a>
-        <a class="delete-button">
+        <a class="delete-button" th:if="${authenticatedTeamMember.isProductOwner()}">
             <img th:src="@{/assets/svg/trash.svg}" alt="Trash">
         </a>
     </div>

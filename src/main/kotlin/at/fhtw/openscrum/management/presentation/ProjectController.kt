@@ -45,8 +45,15 @@ class ProjectController(
 
     @HxRequest
     @GetMapping(value = [FRAGMENT_PROJECTS_LIST_ITEM])
-    fun getProjectsListItems(model: Model): String {
+    fun getProjectsListItems(
+        principal: Principal,
+        model: Model,
+    ): String {
         model.addAttribute("projects", projectApplicationService.getProjects())
+        model.addAttribute(
+            "authenticatedUser",
+            userApplicationService.getUserByUsername(principal.name),
+        )
         return "fragments/project-list-item"
     }
 

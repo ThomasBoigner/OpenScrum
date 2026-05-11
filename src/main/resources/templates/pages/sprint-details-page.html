@@ -80,7 +80,7 @@
             </div>
         </div>
 
-        <a th:if="${authenticatedTeamMember != null && authenticatedTeamMember.isScrumMaster() && !sprint.status.isPlanned()}"
+        <a th:if="${authenticatedTeamMember.isScrumMaster() && !sprint.status.isPlanned()}"
            class="sprint-planning-button"
            th:href="@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=*{projectId}, sprintId=*{sprintId})}">
             <img th:src="@{/assets/svg/gear.svg}" alt="Gear">

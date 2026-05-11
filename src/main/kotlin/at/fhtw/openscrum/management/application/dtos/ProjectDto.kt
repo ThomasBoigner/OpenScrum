@@ -1,16 +1,21 @@
 package at.fhtw.openscrum.management.application.dtos
 
 import at.fhtw.openscrum.management.domain.model.project.Project
+import at.fhtw.openscrum.management.domain.model.user.UserId
 import java.util.UUID
 
 data class ProjectDto(
     val projectId: UUID,
     val projectName: String,
-    val numberOfDevelopers: Int,
+    val productOwnerId: UUID,
+    val scrumMasterId: UUID,
+    val developerIds: List<UUID>,
 ) {
     constructor(project: Project) : this(
         projectId = project.projectId.token,
         projectName = project.projectName,
-        numberOfDevelopers = project.developerIds.size,
+        productOwnerId = project.productOwnerId.token,
+        scrumMasterId = project.scrumMasterId.token,
+        developerIds = project.developerIds.map { it.token },
     )
 }
