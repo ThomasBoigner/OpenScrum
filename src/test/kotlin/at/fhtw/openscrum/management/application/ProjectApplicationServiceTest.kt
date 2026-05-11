@@ -138,7 +138,7 @@ class ProjectApplicationServiceTest {
         // Then
         assertThat(projectDto.projectId).isEqualTo(expectedProject.projectId.token)
         assertThat(projectDto.projectName).isEqualTo(expectedProject.projectName)
-        assertThat(projectDto.numberOfDevelopers).isEqualTo(expectedProject.developerIds.size)
+        assertThat(projectDto.developerIds).hasSize(expectedProject.developerIds.size)
     }
 
     @Test

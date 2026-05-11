@@ -27,6 +27,50 @@ class ProjectServiceTest {
     }
 
     @Test
+    fun ensureGetProjectsReturnsAllProjectsForManager() {
+        // Given
+        val manager =
+            User(
+                username = "manager",
+                emailAddress = EmailAddress("manager@gmail.com"),
+                fullName = FullName("Manager", "User"),
+                password = "password",
+                role = Role.MANAGER,
+            )
+
+        val projects = listOf<Project>()
+        whenever(projectRepository.findAll()).thenReturn(projects)
+
+        // When
+        val result = projectService.getProjects(manager)
+
+        // Then
+        assertThat(result).isEqualTo(projects)
+    }
+
+    @Test
+    fun ensureGetProjectsReturnsOnlyUserProjectsForRegularUser() {
+        // Given
+        val user =
+            User(
+                username = "user",
+                emailAddress = EmailAddress("user@gmail.com"),
+                fullName = FullName("Regular", "User"),
+                password = "password",
+                role = Role.USER,
+            )
+
+        val projects = listOf<Project>()
+        whenever(projectRepository.findProjectsOfUser(user.userId)).thenReturn(projects)
+
+        // When
+        val result = projectService.getProjects(user)
+
+        // Then
+        assertThat(result).isEqualTo(projects)
+    }
+
+    @Test
     fun ensureCreateProjectWorksProperly() {
         // Given
         val projectName = "OpenScrum"
