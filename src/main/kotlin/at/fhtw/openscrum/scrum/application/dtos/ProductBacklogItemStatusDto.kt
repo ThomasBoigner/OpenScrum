@@ -7,6 +7,7 @@ enum class ProductBacklogItemStatusDto(
 ) {
     IN_BACKLOG("In backlog"),
     COMMITED_TO_SPRINT("Committed to sprint"),
+    COMMITED_TO_SPRINT_DONE("Committed to sprint (done)"),
     DONE("Done"),
     ;
 
@@ -15,6 +16,7 @@ enum class ProductBacklogItemStatusDto(
             when (productBacklogItemStatus) {
                 ProductBacklogItemStatus.IN_BACKLOG -> IN_BACKLOG
                 ProductBacklogItemStatus.COMMITTED_TO_SPRINT -> COMMITED_TO_SPRINT
+                ProductBacklogItemStatus.COMMITTED_TO_SPRINT_DONE -> COMMITED_TO_SPRINT_DONE
                 ProductBacklogItemStatus.DONE -> DONE
             }
     }

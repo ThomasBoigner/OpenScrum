@@ -284,37 +284,67 @@ Then the scrum master should receive an error that the sprint backlog can not be
 
 ## 13. As a product owner I want to cancel a sprint, so that I can stop a sprint that will not produce any value.
 
+### Test 1
+
+Given a product owner and a sprint with status "in progress" or "not planned"  
+When the product owner clicks the cancel sprint button  
+Then the sprint status should be updated to canceled, not finished sprint backlog items should have status 
+"in product backlog" and the next sprint should be scheduled
+
+### Test 2
+
+Given a product owner of another project and a sprint with status "in progress" or "not planned"    
+When the product owner clicks the cancel sprint button
+Then he receives an error that he is not the product owner of this project
+
+### Test 3
+
+Given a scrum master and a sprint with status "in progress" or "not planned"    
+When the scrum master clicks the cancel sprint button
+Then he receives an error that he has no permission to cancel the sprint
+
+### Test 4
+    
+Given a developer and a sprint with status "in progress" or "not planned"    
+When the developer clicks the cancel sprint button
+Then he receives an error that he has no permission to cancel the sprint
+
+### Test 5
+Given a product owner and a sprint with status "done" or "canceled"  
+When the product owner clicks the cancel sprint button
+Then he receives an error that the sprint is already finished
+
 ## 14. As a developer I want to mark a sprint backlog item as done, so that I can track the progress of the sprint.
 
 ### Test 1
 
 Given a developer, a sprint with status "in progress" and a sprint backlog item with status "To-Do"  
 When the sprint backlog item gets moved right  
-Then the status should be "In progress" and the developer should be assigned  
+Then the status should be "In progress" and the developer should be assigned
 
 ### Test 2
 
 Given a developer, a sprint with status "in progress" and a sprint backlog item with status "In progress"  
 When the sprint backlog item gets moved right  
-Then the status should be "Done" and the developer should be assigned  
+Then the status should be "Done" and the developer should be assigned
 
 ### Test 3
 
 Given a developer, a sprint with status "in progress" and a sprint backlog item with status "Done"  
 When the sprint backlog item gets moved right  
-Then the status should be "Done"  
+Then the status should be "Done"
 
 ### Test 4
 
 Given a developer, a sprint with status "in progress" and a sprint backlog item with status "Done"  
 When the sprint backlog item gets moved left  
-Then the status should be "In progress" and the developer should be assigned  
+Then the status should be "In progress" and the developer should be assigned
 
 ### Test 5
 
 Given a developer, a sprint with status "in progress" and a sprint backlog item with status "In progress"  
 When the sprint backlog item gets moved left  
-Then the status should be "To-Do" and no developer should be assigned  
+Then the status should be "To-Do" and no developer should be assigned
 
 ### Test 6
 

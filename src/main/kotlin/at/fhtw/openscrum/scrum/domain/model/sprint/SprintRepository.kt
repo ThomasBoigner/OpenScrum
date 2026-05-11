@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.scrum.domain.model.sprint
 
+import java.time.LocalDate
 import java.util.UUID
 
 interface SprintRepository {
@@ -8,6 +9,8 @@ interface SprintRepository {
     fun findSprintsByProjectId(projectId: UUID): List<Sprint>
 
     fun findSprintBySprintId(sprintId: SprintId): Sprint?
+
+    fun findSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlanned(endDate: LocalDate): List<Sprint>
 
     fun countByProjectId(projectId: UUID): Int
 }

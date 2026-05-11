@@ -79,7 +79,7 @@ class ProductBacklogItemTest {
     }
 
     @Test
-    fun ensureProductBacklogSetStatusToDoneWorksProperly() {
+    fun ensureProductBacklogSetStatusToCommitedToSprintDoneWorksProperly() {
         // Given
         val productBacklogItem =
             ProductBacklogItem(
@@ -89,9 +89,63 @@ class ProductBacklogItemTest {
             )
 
         // When
-        productBacklogItem.setStatusToDone()
+        productBacklogItem.setStatusToCommittedToSprintDone()
+
+        // Then
+        assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.COMMITTED_TO_SPRINT_DONE)
+    }
+
+    @Test
+    fun ensureUncommitFromSprintWorksProperlyWhenStatusIsCommittedToSprint() {
+        // Given
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                title = "Define Backlog",
+                description = "Description",
+                status = ProductBacklogItemStatus.COMMITTED_TO_SPRINT,
+            )
+
+        // When
+        productBacklogItem.uncommitFromSprint()
+
+        // Then
+        assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.IN_BACKLOG)
+    }
+
+    @Test
+    fun ensureUncommitFromSprintWorksProperlyWhenStatusIsCommittedToSprintDone() {
+        // Given
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                title = "Define Backlog",
+                description = "Description",
+                status = ProductBacklogItemStatus.COMMITTED_TO_SPRINT_DONE,
+            )
+
+        // When
+        productBacklogItem.uncommitFromSprint()
 
         // Then
         assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.DONE)
+    }
+
+    @Test
+    fun ensureUncommitFromSprintWorksProperlyWhenStatusIsOtherStatus() {
+        // Given
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                title = "Define Backlog",
+                description = "Description",
+                status = ProductBacklogItemStatus.IN_BACKLOG,
+            )
+
+        // When
+        productBacklogItem.uncommitFromSprint()
+
+        // Then
+        assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.IN_BACKLOG)
     }
 }

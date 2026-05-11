@@ -337,7 +337,7 @@ class SprintControllerKanbanBoardTest {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".product-backlog-list-item")))
 
         val productBacklogPageSource = webDriver.pageSource
-        assertThat(productBacklogPageSource).contains("Done")
+        assertThat(productBacklogPageSource).contains("Committed to sprint (done)")
 
         webDriver.close()
     }

@@ -5,6 +5,7 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 import at.fhtw.openscrum.scrum.domain.model.sprint.Sprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
@@ -94,5 +95,74 @@ class JpaSprintRepositoryTest {
         assertThat(result).isNotNull
         assertThat(result).isEqualTo(sprint)
         assertThat(result!!.sprintName).isEqualTo("Sprint 1")
+    }
+
+    @Test
+    fun ensureFindSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlannedWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val cutoff = LocalDate.of(2025, 1, 2)
+        val beforeCutoff = LocalDate.of(2025, 1, 1)
+        val afterCutoff = LocalDate.of(2025, 1, 2)
+
+        val inProgressExpired =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2025, 1, 1),
+                endDate = beforeCutoff,
+                status = SprintStatus.IN_PROGRESS,
+            )
+        val notPlannedBeforeCutoff =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 2",
+                startDate = LocalDate.of(2025, 1, 1),
+                endDate = beforeCutoff,
+                status = SprintStatus.NOT_PLANNED,
+            )
+        val notPlannedAfterCutoff =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 3",
+                startDate = LocalDate.of(2025, 2, 1),
+                endDate = afterCutoff,
+                status = SprintStatus.NOT_PLANNED,
+            )
+        val inProgressNotExpired =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 4",
+                startDate = LocalDate.of(2025, 2, 1),
+                endDate = afterCutoff,
+                status = SprintStatus.IN_PROGRESS,
+            )
+        val completed =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 5",
+                startDate = LocalDate.of(2025, 1, 1),
+                endDate = beforeCutoff,
+                status = SprintStatus.COMPLETED,
+            )
+        val cancelled =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintName = "Sprint 6",
+                startDate = LocalDate.of(2025, 1, 1),
+                endDate = beforeCutoff,
+                status = SprintStatus.CANCELLED,
+            )
+
+        listOf(inProgressExpired, notPlannedBeforeCutoff, notPlannedAfterCutoff, inProgressNotExpired, completed, cancelled)
+            .forEach { sprintRepository.save(it) }
+
+        // When
+        val result = sprintRepository.findSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlanned(cutoff)
+
+        // Then
+        assertThat(result).hasSize(3)
+        assertThat(result).contains(inProgressExpired, notPlannedBeforeCutoff, notPlannedAfterCutoff)
+        assertThat(result).doesNotContain(inProgressNotExpired, completed, cancelled)
     }
 }

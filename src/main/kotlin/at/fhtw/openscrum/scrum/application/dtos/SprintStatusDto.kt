@@ -5,11 +5,12 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 enum class SprintStatusDto(
     val displayName: String,
     val isPlanned: Boolean,
+    val isFinished: Boolean,
 ) {
-    NOT_PLANNED("Not Planned", false),
-    IN_PROGRESS("In Progress", true),
-    COMPLETED("Completed", true),
-    CANCELLED("Cancelled", true),
+    NOT_PLANNED("Not Planned", false, false),
+    IN_PROGRESS("In Progress", true, false),
+    COMPLETED("Completed", true, true),
+    CANCELLED("Cancelled", true, true),
     ;
 
     companion object {

@@ -1,5 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
+import at.fhtw.openscrum.scrum.application.command.CancelSprintCommand
+import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
@@ -21,6 +23,8 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
@@ -47,6 +51,9 @@ class SprintApplicationServiceTest {
     lateinit var sprintRepository: SprintRepository
 
     @Mock
+    lateinit var productOwnerRepository: ProductOwnerRepository
+
+    @Mock
     lateinit var scrumMasterRepository: ScrumMasterRepository
 
     @Mock
@@ -61,6 +68,7 @@ class SprintApplicationServiceTest {
             SprintApplicationService(
                 sprintService,
                 sprintRepository,
+                productOwnerRepository,
                 scrumMasterRepository,
                 developerRepository,
                 productBacklogItemRepository,
@@ -473,5 +481,86 @@ class SprintApplicationServiceTest {
         assertThrows<IllegalArgumentException> {
             sprintApplicationService.moveSprintBacklogItem("john.doe", command)
         }
+    }
+
+    @Test
+    fun ensureCancelSprintWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val username = "jane.doe"
+        val command = CancelSprintCommand(projectId = projectId, sprintId = sprintId)
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = username,
+                fullName = FullName(firstName = "Jane", lastName = "Doe"),
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2025, 1, 6),
+                endDate = LocalDate.of(2025, 1, 19),
+                status = SprintStatus.IN_PROGRESS,
+            )
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(sprint)
+        whenever(productOwnerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(productOwner)
+        whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = sprintApplicationService.cancelSprint(username, command)
+
+        // Then
+        assertThat(result.projectId).isEqualTo(projectId)
+        assertThat(result.sprintId).isEqualTo(sprintId)
+        assertThat(result.status).isEqualTo(SprintStatusDto.CANCELLED)
+    }
+
+    @Test
+    fun ensureCancelSprintThrowsExceptionWhenSprintCanNotBeFound() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val command = CancelSprintCommand(projectId = projectId, sprintId = sprintId)
+        whenever(sprintRepository.findSprintBySprintId(SprintId(projectId, sprintId))).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            sprintApplicationService.cancelSprint("jane.doe", command)
+        }
+    }
+
+    @Test
+    fun ensureCompleteSprintsWorksProperly() {
+        // Given
+        val date = LocalDate.of(2025, 1, 1)
+        val projectId = UUID.randomUUID()
+        val sprints =
+            listOf(
+                Sprint(
+                    sprintId = SprintId(projectId = projectId),
+                    sprintName = "Sprint 1",
+                    startDate = LocalDate.of(2025, 1, 6),
+                    endDate = LocalDate.of(2025, 1, 19),
+                    status = SprintStatus.IN_PROGRESS,
+                ),
+                Sprint(
+                    sprintId = SprintId(projectId = projectId),
+                    sprintName = "Sprint 2",
+                    startDate = LocalDate.of(2025, 1, 20),
+                    endDate = LocalDate.of(2025, 2, 2),
+                    status = SprintStatus.IN_PROGRESS,
+                ),
+            )
+        whenever(sprintRepository.findSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlanned(date)).thenReturn(sprints)
+        whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = sprintApplicationService.completeSprints(CompleteSprintsCommand(date))
+
+        // Then
+        assertThat(result).hasSize(2)
+        assertThat(result).allMatch { it.status == SprintStatusDto.COMPLETED }
     }
 }

@@ -4,6 +4,7 @@ import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
 import at.fhtw.openscrum.scrum.application.command.DefineDefinitionOfDoneCommand
 import at.fhtw.openscrum.scrum.application.command.DefineProductGoalCommand
 import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
+import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectRepository
@@ -202,5 +203,36 @@ class ProjectApplicationServiceTest {
 
         // When + Then
         assertThrows<IllegalArgumentException> { projectApplicationService.defineDefinitionOfDone("scrummaster", command) }
+    }
+
+    @Test
+    fun ensureScheduleSprintWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val command = ScheduleSprintCommand(projectId = projectId)
+        val project = Project(projectId = ProjectId(projectId), projectName = "Test Project")
+        whenever(projectRepository.findByProjectId(ProjectId(projectId))).thenReturn(project)
+        whenever(projectRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = projectApplicationService.scheduleSprint(command)
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result!!.projectId).isEqualTo(projectId)
+        assertThat(result.projectName).isEqualTo(project.projectName)
+    }
+
+    @Test
+    fun ensureScheduleSprintReturnsNullWhenProjectDoesNotExist() {
+        // Given
+        val command = ScheduleSprintCommand(projectId = UUID.randomUUID())
+        whenever(projectRepository.findByProjectId(any())).thenReturn(null)
+
+        // When
+        val result = projectApplicationService.scheduleSprint(command)
+
+        // Then
+        assertThat(result).isNull()
     }
 }

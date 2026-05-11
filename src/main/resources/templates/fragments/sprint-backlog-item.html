@@ -14,7 +14,7 @@
         <label>Description</label>
         <p th:text="*{description}">Item description goes here.</p>
     </div>
-    <div class="move-buttons">
+    <div class="move-buttons" th:if="*{canBeMoved}">
         <button class="move-left-button"
                 th:if="${sprintBacklogItem.status.canMoveLeft && authenticatedTeamMember != null && authenticatedTeamMember.isDeveloper()}"
                 hx:target="|#*{status.columnLeft}|"

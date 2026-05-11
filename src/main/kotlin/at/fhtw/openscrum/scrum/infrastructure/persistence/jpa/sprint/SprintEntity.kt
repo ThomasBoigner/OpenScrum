@@ -53,7 +53,12 @@ class SprintEntity(
             it.sprintBacklogItemUnmarkedAsDoneEvents.forEach { event ->
                 this.registerEvent(event)
             }
+            it.sprintBacklogItemUncommitedFromSprintEvents.forEach { event ->
+                this.registerEvent(event)
+            }
         }
+        sprint.sprintCanceledEvents.forEach { this.registerEvent(it) }
+        sprint.sprintCompletedEvents.forEach { this.registerEvent(it) }
     }
 
     fun toSprint(): Sprint =

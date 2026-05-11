@@ -1,21 +1,31 @@
 package at.fhtw.openscrum.scrum.infrastructure.messaging
 
 import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
+import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
+import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
+import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
+import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
 import at.fhtw.openscrum.scrum.domain.model.project.SprintScheduled
 import at.fhtw.openscrum.scrum.domain.model.sprint.ProductBacklogItemCommitted
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemMarkedAsDone
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemUncommitedFromSprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemUnmarkedAsDone
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintCanceled
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintCompleted
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.context.event.EventListener
 import org.springframework.modulith.events.ApplicationModuleListener
+import org.springframework.modulith.moments.WeekHasPassed
 import org.springframework.stereotype.Component
 
 @Component
 class ScrumEventListener(
+    private val projectApplicationService: ProjectApplicationService,
     private val sprintApplicationService: SprintApplicationService,
     private val productBacklogItemApplicationService: ProductBacklogItemApplicationService,
     private val log: Logger = LoggerFactory.getLogger(ScrumEventListener::class.java),
@@ -45,7 +55,7 @@ class ScrumEventListener(
     @ApplicationModuleListener
     fun receiveSprintBacklogItemMarkedAsDoneEvent(event: SprintBacklogItemMarkedAsDone) {
         log.trace("Received sprintBacklogItemMarkedAsDone event: {}", event)
-        productBacklogItemApplicationService.markAsDone(
+        productBacklogItemApplicationService.markAsCommitedToSprintDone(
             MarkAsDoneCommand(
                 projectId = event.productBacklogItemId.projectId,
                 productBacklogItemId = event.productBacklogItemId.productBacklogItemId,
@@ -60,6 +70,45 @@ class ScrumEventListener(
             MarkAsCommitedToSprintCommand(
                 projectId = event.productBacklogItemId.projectId,
                 productBacklogItemId = event.productBacklogItemId.productBacklogItemId,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveSprintBacklogItemUncommitedFromSprintEvent(event: SprintBacklogItemUncommitedFromSprint) {
+        log.trace("Received sprintBacklogUncommitedFromSprint event: {}", event)
+        productBacklogItemApplicationService.uncommitFromSprint(
+            UncommitFromSprintCommand(
+                projectId = event.productBacklogItemId.projectId,
+                productBacklogItemId = event.productBacklogItemId.productBacklogItemId,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveSprintCanceledEvent(event: SprintCanceled) {
+        log.trace("Received sprintCanceled event: {}", event)
+        projectApplicationService.scheduleSprint(
+            ScheduleSprintCommand(
+                projectId = event.sprintId.projectId,
+            ),
+        )
+    }
+
+    @EventListener
+    fun receiveWeekHasPassed(event: WeekHasPassed) {
+        log.trace("Received weekHasPassed event: {}", event)
+        sprintApplicationService.completeSprints(
+            CompleteSprintsCommand(event.endDate.plusDays(1)),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveSprintCompletedEvent(event: SprintCompleted) {
+        log.trace("Received sprintCompleted event: {}", event)
+        projectApplicationService.scheduleSprint(
+            ScheduleSprintCommand(
+                projectId = event.sprintId.projectId,
             ),
         )
     }

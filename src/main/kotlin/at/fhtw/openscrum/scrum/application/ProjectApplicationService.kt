@@ -4,6 +4,7 @@ import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
 import at.fhtw.openscrum.scrum.application.command.DefineDefinitionOfDoneCommand
 import at.fhtw.openscrum.scrum.application.command.DefineProductGoalCommand
 import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
+import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProjectDto
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
@@ -94,6 +95,20 @@ class ProjectApplicationService(
 
         project.defineDefinitionOfDone(scrumMaster, command.definitionOfDone)
         log.info("Updated definition of done of project {}", project)
+        return ProjectDto(projectRepository.save(project))
+    }
+
+    @Transactional(readOnly = true)
+    fun scheduleSprint(command: ScheduleSprintCommand): ProjectDto? {
+        log.debug("Trying to schedule sprint with command {}", command)
+        val project = projectRepository.findByProjectId(ProjectId(command.projectId))
+
+        if (project == null) {
+            log.error("Cannot schedule sprint, project with projectId {} does not exist", command.projectId)
+            return null
+        }
+
+        project.scheduleSprint()
         return ProjectDto(projectRepository.save(project))
     }
 }

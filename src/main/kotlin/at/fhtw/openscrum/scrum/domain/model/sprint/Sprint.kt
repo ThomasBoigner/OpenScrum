@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.domain.model.sprint
 
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -16,6 +17,8 @@ class Sprint(
     status: SprintStatus = SprintStatus.NOT_PLANNED,
     sprintGoal: String? = null,
     val sprintBacklogItems: MutableSet<SprintBacklogItem> = mutableSetOf(),
+    val sprintCanceledEvents: MutableList<SprintCanceled> = mutableListOf(),
+    val sprintCompletedEvents: MutableList<SprintCompleted> = mutableListOf(),
 ) {
     constructor(
         sprintId: SprintId,
@@ -77,7 +80,7 @@ class Sprint(
         moveDirection: MoveDirection,
         developer: Developer?,
     ): SprintBacklogItem {
-        require(status == SprintStatus.IN_PROGRESS) {
+        require(!status.isFinished) {
             "Sprint backlog items can only be moved if sprint is in progress"
         }
         require(developer?.teamMemberId?.projectId == this.sprintId.projectId) {
@@ -91,9 +94,36 @@ class Sprint(
         return item
     }
 
+    fun cancelSprint(productOwner: ProductOwner?) {
+        require(!status.isFinished) {
+            "Sprint can only be cancelled when its in progress or not planned"
+        }
+        require(productOwner?.teamMemberId?.projectId == this.sprintId.projectId) {
+            "You are not the product owner of this project"
+        }
+        this.status = SprintStatus.CANCELLED
+
+        sprintBacklogItems
+            .forEach { it.uncommitFromSprint() }
+
+        sprintCanceledEvents.add(SprintCanceled(sprintId = sprintId))
+    }
+
+    fun completeSprint() {
+        require(!status.isFinished) {
+            "Sprint can only be completed when its in progress or not planned"
+        }
+        this.status = SprintStatus.COMPLETED
+
+        sprintBacklogItems.forEach { it.uncommitFromSprint() }
+
+        sprintCompletedEvents.add(SprintCompleted(sprintId = sprintId))
+    }
+
     fun getSprintBacklogItems(status: SprintBacklogItemStatus): List<SprintBacklogItem> = sprintBacklogItems.filter { it.status == status }
 
-    override fun toString(): String = "Sprint(sprintId=$sprintId, startDate=$startDate, endDate=$endDate, status=$status)"
+    override fun toString(): String =
+        "Sprint(sprintBacklogItems=$sprintBacklogItems, startDate=$startDate, sprintName='$sprintName', sprintId=$sprintId)"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

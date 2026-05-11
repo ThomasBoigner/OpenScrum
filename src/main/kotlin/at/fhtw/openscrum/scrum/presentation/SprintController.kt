@@ -3,8 +3,8 @@ package at.fhtw.openscrum.scrum.presentation
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.scrum.application.command.CancelSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
-import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
 import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.presentation.forms.PlanSprintForm
@@ -42,6 +42,7 @@ class SprintController(
         const val ROUTE_KANBAN_BOARD = "/{sprintId}/kanban-board"
         const val FRAGMENT_SPRINT_BACKLOG_ITEMS = "/{sprintId}/backlog-items"
         const val ROUTE_MOVE_SPRINT_BACKLOG_ITEM = "/{sprintId}/move-backlog-item/{productBacklogItemId}"
+        const val ROUTE_CANCEL_SPRINT = "/{sprintId}/cancel"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -148,7 +149,7 @@ class SprintController(
         val authenticatedTeamMember =
             teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
         val sprint = sprintApplicationService.getSprint(projectId, sprintId) ?: return "error/404"
-        if (!sprint.status.isPlanned) return "error/404"
+        if (sprint.numberOfSprintBacklogItems <= 0) return "error/404"
 
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("sprint", sprint)
@@ -201,8 +202,33 @@ class SprintController(
             return "fragments/sprint-backlog-item"
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while moving sprint backlog item with message: {}", ex.message)
-            model.addAttribute("sprintBacklogItems", listOf<SprintBacklogItemDto>())
-            return "fragments/sprint-backlog-item"
+            return "redirect:htmx:/error/400"
+        }
+    }
+
+    @HxRequest
+    @PutMapping(value = [ROUTE_CANCEL_SPRINT])
+    fun cancelSprint(
+        model: Model,
+        principal: Principal,
+        @PathVariable projectId: UUID,
+        @PathVariable sprintId: UUID,
+    ): String {
+        log.debug("Received http PUT request to cancel sprint with id {} of project with id {}", sprintId, projectId)
+        try {
+            val authenticatedTeamMember =
+                teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
+            val sprint =
+                sprintApplicationService.cancelSprint(
+                    principal.name,
+                    CancelSprintCommand(projectId, sprintId),
+                )
+            model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
+            model.addAttribute("sprint", sprint)
+            return "pages/sprint-details-page :: sprint-details"
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while canceling sprint with message: {}", ex.message)
+            return "redirect:htmx:/error/400"
         }
     }
 }

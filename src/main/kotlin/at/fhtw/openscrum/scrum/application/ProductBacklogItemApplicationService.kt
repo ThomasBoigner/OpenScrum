@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.application
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
+import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
@@ -71,7 +72,7 @@ class ProductBacklogItemApplicationService(
 
     @Transactional(readOnly = false)
     fun markAsCommittedToSprint(command: MarkAsCommitedToSprintCommand): ProductBacklogItemDto? {
-        log.debug("Trying to mark product backlog item as commited to sprint with command: {}", command)
+        log.debug("Trying to mark product backlog item as committed to sprint with command: {}", command)
         val productBacklogItem =
             productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
                 ProductBacklogItemId(
@@ -82,7 +83,7 @@ class ProductBacklogItemApplicationService(
 
         if (productBacklogItem == null) {
             log.error(
-                "Cannot mark as commited to sprint, product backlog with projectId {} and productBacklogItemId {} does not exits",
+                "Cannot mark as committed to sprint, product backlog with projectId {} and productBacklogItemId {} does not exist",
                 command.projectId,
                 command.productBacklogItemId,
             )
@@ -90,12 +91,13 @@ class ProductBacklogItemApplicationService(
         }
 
         productBacklogItem.setStatusToCommittedToSprint()
+        log.info("Marked product backlog item as committed to sprint {}", productBacklogItem)
         return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
     }
 
     @Transactional(readOnly = false)
-    fun markAsDone(command: MarkAsDoneCommand): ProductBacklogItemDto? {
-        log.debug("Trying to mark product backlog item as done with command: {}", command)
+    fun markAsCommitedToSprintDone(command: MarkAsDoneCommand): ProductBacklogItemDto? {
+        log.debug("Trying to mark product backlog item as committed to sprint done with command: {}", command)
         val productBacklogItem =
             productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
                 ProductBacklogItemId(
@@ -106,14 +108,39 @@ class ProductBacklogItemApplicationService(
 
         if (productBacklogItem == null) {
             log.error(
-                "Cannot mark as done, product backlog with projectId {} and productBacklogItemId {} does not exits",
+                "Cannot mark as committed to sprint done, product backlog with projectId {} and productBacklogItemId {} does not exist",
                 command.projectId,
                 command.productBacklogItemId,
             )
             return null
         }
 
-        productBacklogItem.setStatusToDone()
+        productBacklogItem.setStatusToCommittedToSprintDone()
+        log.info("Marked product backlog item as committed to sprint done {}", productBacklogItem)
+        return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
+    }
+
+    @Transactional(readOnly = false)
+    fun uncommitFromSprint(command: UncommitFromSprintCommand): ProductBacklogItemDto? {
+        log.debug("Trying to uncommit product backlog item from sprint with command: {}", command)
+        val productBacklogItem =
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(
+                    projectId = command.projectId,
+                    productBacklogItemId = command.productBacklogItemId,
+                ),
+            )
+
+        if (productBacklogItem == null) {
+            log.error(
+                "Cannot uncommit from sprint, product backlog with projectId {} and productBacklogItemId {} does not exist",
+                command.projectId,
+                command.productBacklogItemId,
+            )
+            return null
+        }
+
+        productBacklogItem.uncommitFromSprint()
         return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
     }
 }
