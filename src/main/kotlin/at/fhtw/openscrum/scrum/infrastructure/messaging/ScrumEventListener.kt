@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.infrastructure.messaging
 import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
+import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
@@ -18,6 +19,7 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintCompleted
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.modulith.events.ApplicationModuleListener
+import org.springframework.modulith.moments.WeekHasPassed
 import org.springframework.stereotype.Component
 
 @Component
@@ -89,6 +91,14 @@ class ScrumEventListener(
             ScheduleSprintCommand(
                 projectId = event.sprintId.projectId,
             ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveWeekHasPassed(event: WeekHasPassed) {
+        log.trace("Received weekHasPassed event: {}", event)
+        sprintApplicationService.completeSprints(
+            CompleteSprintsCommand(event.endDate.plusDays(1)),
         )
     }
 

@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CancelSprintCommand
+import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
@@ -533,6 +534,7 @@ class SprintApplicationServiceTest {
     @Test
     fun ensureCompleteSprintsWorksProperly() {
         // Given
+        val date = LocalDate.of(2025, 1, 1)
         val projectId = UUID.randomUUID()
         val sprints =
             listOf(
@@ -551,11 +553,11 @@ class SprintApplicationServiceTest {
                     status = SprintStatus.IN_PROGRESS,
                 ),
             )
-        whenever(sprintRepository.findSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlanned(any())).thenReturn(sprints)
+        whenever(sprintRepository.findSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlanned(date)).thenReturn(sprints)
         whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
 
         // When
-        val result = sprintApplicationService.completeSprints()
+        val result = sprintApplicationService.completeSprints(CompleteSprintsCommand(date))
 
         // Then
         assertThat(result).hasSize(2)

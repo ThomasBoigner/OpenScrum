@@ -36,6 +36,7 @@ spring-boot-starter-log4j2 = { module = "org.springframework.boot:spring-boot-st
 spring-modulith-bom = { module = "org.springframework.modulith:spring-modulith-bom", version.ref = "spring-modulith" }
 spring-modulith-core = { module = "org.springframework.modulith:spring-modulith-core", version.ref = "spring-modulith" }
 spring-modulith-starter-jdbc = { module = "org.springframework.modulith:spring-modulith-starter-jdbc", version.ref = "spring-modulith" }
+spring-modulith-moments = { module = "org.springframework.modulith:spring-modulith-moments", version.ref = "spring-modulith" }
 # spring security
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security", version.ref = "spring-boot" }
 # thymeleaf
@@ -51,4 +52,4 @@ mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers-junit-jupiter" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers-postgresql" }
-selenium-java = { module = "org.seleniumhq.selenium:selenium-java", version.ref = "selenium-java"}
+selenium-java = { module = "org.seleniumhq.selenium:selenium-java", version.ref = "selenium-java" }

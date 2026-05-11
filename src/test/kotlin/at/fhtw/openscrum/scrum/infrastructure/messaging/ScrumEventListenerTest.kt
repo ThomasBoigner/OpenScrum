@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.infrastructure.messaging
 import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
+import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
@@ -25,6 +26,9 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.verify
+import org.springframework.modulith.moments.WeekHasPassed
+import java.time.LocalDate
+import java.time.Year
 import java.util.UUID
 
 @ExtendWith(MockitoExtension::class)
@@ -162,6 +166,20 @@ class ScrumEventListenerTest {
             ScheduleSprintCommand(
                 projectId = projectId,
             ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveWeekHasPassedEventWorksProperly() {
+        // Given
+        val weekHasPassed = WeekHasPassed.of(Year.of(2025), 1)
+
+        // When
+        scrumEventListener.receiveWeekHasPassed(weekHasPassed)
+
+        // Then
+        verify(sprintApplicationService).completeSprints(
+            CompleteSprintsCommand(LocalDate.of(2025, 1, 6)),
         )
     }
 

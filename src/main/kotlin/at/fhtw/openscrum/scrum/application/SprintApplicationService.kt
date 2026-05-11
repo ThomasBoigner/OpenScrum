@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CancelSprintCommand
+import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
@@ -183,11 +184,10 @@ class SprintApplicationService(
     }
 
     @Transactional(readOnly = false)
-    fun completeSprints(): List<SprintDto> {
-        val today = LocalDate.now()
-        log.debug("Trying to complete all sprints that have ended before {}", today)
+    fun completeSprints(command: CompleteSprintsCommand): List<SprintDto> {
+        log.debug("Trying to complete all sprints that have ended before {}", command.date)
 
-        val sprints = sprintRepository.findSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlanned(today)
+        val sprints = sprintRepository.findSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlanned(command.date)
         sprints.forEach { it.completeSprint() }
 
         log.info("Completed {} sprints", sprints.size)

@@ -48,6 +48,7 @@ dependencies {
     // spring modulith
     implementation(libs.spring.modulith.core)
     implementation(libs.spring.modulith.starter.jdbc)
+    implementation(libs.spring.modulith.moments)
     // spring security
     implementation(libs.spring.boot.starter.security)
     // thymeleaf
