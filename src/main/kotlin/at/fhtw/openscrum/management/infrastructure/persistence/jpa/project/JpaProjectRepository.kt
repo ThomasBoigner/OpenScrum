@@ -18,12 +18,7 @@ class JpaProjectRepository(
     }
 
     override fun findProjectsOfUser(userId: UserId): List<Project> =
-        projectEntityRepository
-            .findByScrumMasterIdOrProductOwnerIdOrDeveloperIdsContains(
-                userId.token,
-                userId.token,
-                userId.token,
-            ).map { it.toProject() }
+        projectEntityRepository.findProjectsOfUser(userId.token).map { it.toProject() }
 
     override fun existsByProjectName(projectName: String): Boolean = projectEntityRepository.existsByProjectName(projectName)
 }
