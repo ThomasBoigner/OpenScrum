@@ -1,7 +1,9 @@
 package at.fhtw.openscrum.scrum.domain.model.productbacklogitem
 
+import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
+import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.UUID
 
@@ -87,6 +90,122 @@ class ProductBacklogItemServiceTest {
         // When
         assertThrows<IllegalArgumentException> {
             productBacklogItemService.defineBacklogItem(productOwner, projectId, title, description)
+        }
+    }
+
+    @Test
+    fun ensureDeleteProductBacklogItemWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "productowner",
+                fullName = FullName("First", "Last"),
+            )
+
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+                status = ProductBacklogItemStatus.IN_BACKLOG,
+            )
+
+        // When
+        productBacklogItemService.deleteProductBacklogItem(productOwner, productBacklogItem)
+
+        // Then
+        verify(productBacklogItemRepository).delete(productBacklogItem.productBacklogItemId)
+    }
+
+    @Test
+    fun ensureDeleteProductBacklogItemThrowsWhenProductOwnerBelongsToAnotherProject() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val anotherProjectId = UUID.randomUUID()
+
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = anotherProjectId),
+                username = "productowner",
+                fullName = FullName("First", "Last"),
+            )
+
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+                status = ProductBacklogItemStatus.IN_BACKLOG,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            productBacklogItemService.deleteProductBacklogItem(productOwner, productBacklogItem)
+        }
+    }
+
+    @Test
+    fun ensureDeleteProductBacklogItemThrowsWhenCallerIsScrumMaster() {
+        // Given
+        val projectId = UUID.randomUUID()
+
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+                status = ProductBacklogItemStatus.IN_BACKLOG,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            productBacklogItemService.deleteProductBacklogItem(null, productBacklogItem)
+        }
+    }
+
+    @Test
+    fun ensureDeleteProductBacklogItemThrowsWhenCallerIsDeveloper() {
+        // Given
+        val projectId = UUID.randomUUID()
+
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+                status = ProductBacklogItemStatus.IN_BACKLOG,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            productBacklogItemService.deleteProductBacklogItem(null, productBacklogItem)
+        }
+    }
+
+    @Test
+    fun ensureDeleteProductBacklogItemThrowsWhenItemIsCommittedToSprint() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "productowner",
+                fullName = FullName("First", "Last"),
+            )
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+                status = ProductBacklogItemStatus.COMMITTED_TO_SPRINT,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            productBacklogItemService.deleteProductBacklogItem(productOwner, productBacklogItem)
         }
     }
 

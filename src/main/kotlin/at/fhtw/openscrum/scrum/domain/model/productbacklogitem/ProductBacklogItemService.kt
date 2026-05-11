@@ -27,4 +27,18 @@ class ProductBacklogItemService(
         log.info("Defined product backlog item {}", productBacklogItem)
         return productBacklogItemRepository.save(productBacklogItem)
     }
+
+    fun deleteProductBacklogItem(
+        productOwner: ProductOwner?,
+        productBacklogItem: ProductBacklogItem,
+    ) {
+        log.debug("Trying to delete product backlog item {}", productBacklogItem)
+        require(productOwner?.teamMemberId?.projectId == productBacklogItem.productBacklogItemId.projectId) {
+            "You are not the product owner of this project!"
+        }
+        require(!productBacklogItem.status.isCommitedToSprint) { "Cannot delete a product backlog item that is committed to a sprint!" }
+
+        productBacklogItemRepository.delete(productBacklogItem.productBacklogItemId)
+        log.info("Deleted product backlog item {}", productBacklogItem)
+    }
 }
