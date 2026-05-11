@@ -4,11 +4,12 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 
 enum class ProductBacklogItemStatusDto(
     val displayName: String,
+    val isCommitedToSprint: Boolean,
 ) {
-    IN_BACKLOG("In backlog"),
-    COMMITED_TO_SPRINT("Committed to sprint"),
-    COMMITED_TO_SPRINT_DONE("Committed to sprint (done)"),
-    DONE("Done"),
+    IN_BACKLOG("In backlog", false),
+    COMMITED_TO_SPRINT("Committed to sprint", true),
+    COMMITED_TO_SPRINT_DONE("Committed to sprint (done)", true),
+    DONE("Done", false),
     ;
 
     companion object {

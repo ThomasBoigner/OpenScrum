@@ -2,7 +2,7 @@
      class="sprint-backlog-item"
      th:each="sprintBacklogItem : ${sprintBacklogItems}"
      th:object="${sprintBacklogItem}"
-     th:id="|item-*{productBacklogItemId}|"
+     th:id="|sprint-backlog-item-*{productBacklogItemId}|"
      xmlns:hx="http://www.w3.org/1999/xhtml"
      xmlns:hx-on="http://www.w3.org/1999/xhtml">
     <h4 th:text="*{title}">Item Title</h4>

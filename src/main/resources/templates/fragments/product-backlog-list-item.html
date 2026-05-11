@@ -1,5 +1,10 @@
 <p th:if="${#lists.isEmpty(productBacklog)}">No product backlog items found!</p>
-<div th:fragment="product-backlog-list-item" class="product-backlog-list-item" th:each="productBacklogItem : ${productBacklog}" th:object="${productBacklogItem}">
+<div th:id="|product-backlog-item-*{productBacklogItemId}|"
+     th:fragment="product-backlog-list-item"
+     class="product-backlog-list-item"
+     th:each="productBacklogItem : ${productBacklog}"
+     th:object="${productBacklogItem}"
+     xmlns:hx="http://www.w3.org/1999/xhtml">
     <div class="product-backlog-item-information">
         <h2 th:text="*{title}">Title</h2>
         <div class="status-description-information">
@@ -17,7 +22,12 @@
         <a class="edit-button" th:if="${false}">
             <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
         </a>
-        <a class="delete-button" th:if="${authenticatedTeamMember.isProductOwner()}">
+        <a class="delete-button"
+           th:if="${authenticatedTeamMember.isProductOwner() && !productBacklogItem.status.isCommitedToSprint()}"
+           hx:delete="@{/projects/{projectId}/backlog/{productBacklogItemId}/delete(projectId=*{projectId}, productBacklogItemId=*{productBacklogItemId})}"
+           hx-trigger="click"
+           hx-swap="delete"
+           hx:target="|#product-backlog-item-*{productBacklogItemId}|">
             <img th:src="@{/assets/svg/trash.svg}" alt="Trash">
         </a>
     </div>
