@@ -18,6 +18,7 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintCanceled
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintCompleted
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.context.event.EventListener
 import org.springframework.modulith.events.ApplicationModuleListener
 import org.springframework.modulith.moments.WeekHasPassed
 import org.springframework.stereotype.Component
@@ -94,7 +95,7 @@ class ScrumEventListener(
         )
     }
 
-    @ApplicationModuleListener
+    @EventListener
     fun receiveWeekHasPassed(event: WeekHasPassed) {
         log.trace("Received weekHasPassed event: {}", event)
         sprintApplicationService.completeSprints(
