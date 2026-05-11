@@ -5,7 +5,6 @@ import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.application.command.CancelSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
-import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
 import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.presentation.forms.PlanSprintForm

@@ -1,22 +1,22 @@
 [versions]
 # kotlin
-kotlin-reflect = "2.3.20"
+kotlin-reflect = "2.3.21"
 # spring boot
-spring-boot = "4.0.4"
+spring-boot = "4.0.6"
 # spring modulith
-spring-modulith = "2.0.4"
+spring-modulith = "2.0.6"
 # thymeleaf
 htmx-spring-boot-thymeleaf = "5.1.0"
-htmx = "2.0.8"
+htmx = "2.0.10"
 # database
 h2 = "2.4.240"
-postgresql = "42.7.10"
+postgresql = "42.7.11"
 # testing
 mockito-kotlin = "6.3.0"
-testcontainers = "2.0.4"
+testcontainers = "2.0.5"
 testcontainers-junit-jupiter = "1.21.4"
 testcontainers-postgresql = "1.21.4"
-selenium-java = "4.41.0"
+selenium-java = "4.43.0"
 # plugins
 spring-dependency-management = "1.1.7"
 ktlint = "14.0.1"
