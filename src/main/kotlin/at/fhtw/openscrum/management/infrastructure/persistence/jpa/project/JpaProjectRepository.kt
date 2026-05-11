@@ -19,7 +19,7 @@ class JpaProjectRepository(
 
     override fun findProjectsOfUser(userId: UserId): List<Project> =
         projectEntityRepository
-            .findByScrumMasterIdOrProductOwnerIdOrDeveloperIdsContaining(
+            .findByScrumMasterIdOrProductOwnerIdOrDeveloperIdsContains(
                 userId.token,
                 userId.token,
                 userId.token,

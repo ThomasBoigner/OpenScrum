@@ -21,7 +21,6 @@ class ProjectEntity(
     var projectName: String,
     var productOwnerId: UUID,
     var scrumMasterId: UUID,
-    @ElementCollection(fetch = FetchType.EAGER)
     var developerIds: Set<UUID> = setOf(),
 ) : AbstractAggregateRoot<ProjectEntity>() {
     constructor(project: Project) : this(

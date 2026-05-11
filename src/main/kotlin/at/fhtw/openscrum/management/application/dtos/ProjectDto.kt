@@ -9,13 +9,13 @@ data class ProjectDto(
     val projectName: String,
     val productOwnerId: UUID,
     val scrumMasterId: UUID,
-    val developerIds: List<UUID>,
+    val developerIds: Set<UUID>,
 ) {
     constructor(project: Project) : this(
         projectId = project.projectId.token,
         projectName = project.projectName,
         productOwnerId = project.productOwnerId.token,
         scrumMasterId = project.scrumMasterId.token,
-        developerIds = project.developerIds.map { it.token },
+        developerIds = project.developerIds.map { it.token }.toSet(),
     )
 }

@@ -2,7 +2,6 @@ package at.fhtw.openscrum.management.application
 
 import at.fhtw.openscrum.management.application.command.CreateProjectCommand
 import at.fhtw.openscrum.management.application.dtos.ProjectDto
-import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import at.fhtw.openscrum.management.domain.model.project.ProjectService
 import at.fhtw.openscrum.management.domain.model.user.UserId
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
@@ -15,14 +14,16 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class ProjectApplicationService(
     private val projectService: ProjectService,
-    private val projectRepository: ProjectRepository,
     private val userRepository: UserRepository,
     private val log: Logger = LoggerFactory.getLogger(ProjectApplicationService::class.java),
 ) {
-    fun getProjects(): List<ProjectDto> {
-        log.info("Trying to get all projects")
-        val projects = projectRepository.findAll()
-        log.info("Found all ({}) projects", projects.size)
+    fun getProjects(authenticatedUserUsername: String): List<ProjectDto> {
+        log.info("User {} is trying to find all of his projects", authenticatedUserUsername)
+        val authenticatedUser =
+            userRepository.findByUsername(authenticatedUserUsername)
+                ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
+        val projects = projectService.getProjects(authenticatedUser)
+        log.info("Found all ({}) projects of user {}", projects.size, authenticatedUser)
         return projects.map { ProjectDto(it) }
     }
 

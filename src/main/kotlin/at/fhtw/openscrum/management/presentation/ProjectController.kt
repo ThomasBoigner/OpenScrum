@@ -49,7 +49,12 @@ class ProjectController(
         principal: Principal,
         model: Model,
     ): String {
-        model.addAttribute("projects", projectApplicationService.getProjects())
+        try {
+            model.addAttribute("projects", projectApplicationService.getProjects(principal.name))
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while trying to get all projects with message: {}", ex.message)
+            return "redirect:htmx:/error/400"
+        }
         model.addAttribute(
             "authenticatedUser",
             userApplicationService.getUserByUsername(principal.name),
