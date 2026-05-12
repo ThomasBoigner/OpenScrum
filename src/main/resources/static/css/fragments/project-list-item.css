@@ -7,6 +7,7 @@ div.projects-list-item {
     border-radius: 8px;
     width: 100%;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+    align-items: center;
 }
 
 div.projects-list-item h2 {
@@ -20,12 +21,10 @@ div.projects-list-item div.user-count {
     align-items: center;
 }
 
-div.projects-list-item div.edit-delete-buttons {
+div.projects-list-item div.details-edit-delete-buttons {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    justify-content: center;
-    height: 100%;
 }
 
 div.projects-list-item a.details-button,
@@ -74,13 +73,14 @@ div.projects-list-item a.delete-button {
         justify-content: flex-start;
         gap: 16px;
         padding: 16px;
+        align-items: start;
     }
 
     section#projects-list div.projects-list-item h2 {
         margin-bottom: 8px;
     }
 
-    section#projects-list div.projects-list-item div.edit-delete-buttons {
+    section#projects-list div.projects-list-item div.details-edit-delete-buttons {
         flex-direction: row;
         gap: 8px;
         justify-content: start;

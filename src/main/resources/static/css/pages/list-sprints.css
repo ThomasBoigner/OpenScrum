@@ -117,6 +117,11 @@ section#sprint-list div.search-input input {
     header#scrum-header a.btn img {
         display: none;
     }
+
+    section#sprint-list div.search-input img {
+        width: 24px;
+        height: 24px;
+    }
 }
 
 /* < 600px */

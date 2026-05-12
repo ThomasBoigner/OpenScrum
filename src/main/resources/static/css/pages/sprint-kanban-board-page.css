@@ -106,6 +106,7 @@ div#kanban-board {
     align-items: flex-start;
     background-color: var(--black5);
     flex: 1;
+    height: 100%;
 }
 
 /* Kanban columns */

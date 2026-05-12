@@ -7,7 +7,7 @@
             <p th:text="*{#lists.size(developerIds)}">0</p>
         </div>
     </div>
-    <div class="edit-delete-buttons">
+    <div class="details-edit-delete-buttons">
         <a class="details-button"
            th:href="@{/projects/{projectId}(projectId=*{projectId})}"
            th:if="${project.scrumMasterId == authenticatedUser.userId || project.productOwnerId == authenticatedUser.userId || #lists.contains(project.developerIds, authenticatedUser.userId)}">

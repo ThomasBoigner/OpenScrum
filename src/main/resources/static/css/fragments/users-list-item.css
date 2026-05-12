@@ -7,6 +7,7 @@ div.users-list-item {
     padding: 24px;
     width: 100%;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+    align-items: center;
 }
 
 div.users-list-item h2 {
@@ -26,7 +27,6 @@ div.users-list-item div.promote-edit-delete-buttons {
     flex-direction: column;
     gap: 16px;
     justify-content: center;
-    height: 100%;
 }
 
 div.users-list-item button.promote-button,
@@ -71,6 +71,7 @@ div.users-list-item button.delete-button {
         justify-content: flex-start;
         gap: 16px;
         padding: 16px;
+        align-items: start;
     }
 
     section#users-list div.users-list-item h2 {
