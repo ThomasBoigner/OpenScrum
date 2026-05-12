@@ -185,7 +185,7 @@ class SprintControllerKanbanBoardTest {
         val moveRightButton =
             wait.until(
                 ExpectedConditions.elementToBeClickable(
-                    By.cssSelector("#item-${productBacklogItem.productBacklogItemId} .move-right-button"),
+                    By.cssSelector("#sprint-backlog-item-${productBacklogItem.productBacklogItemId} .move-right-button"),
                 ),
             )
         moveRightButton.click()
@@ -194,7 +194,7 @@ class SprintControllerKanbanBoardTest {
         val inProgressItem =
             wait.until(
                 ExpectedConditions.visibilityOfElementLocated(
-                    By.cssSelector("#in-progress-column #item-${productBacklogItem.productBacklogItemId}"),
+                    By.cssSelector("#in-progress-column #sprint-backlog-item-${productBacklogItem.productBacklogItemId}"),
                 ),
             )
         assertThat(inProgressItem.text).contains("${developer.fullName.firstName} ${developer.fullName.lastName}")
@@ -319,7 +319,9 @@ class SprintControllerKanbanBoardTest {
         val moveRightButton =
             wait.until(
                 ExpectedConditions.elementToBeClickable(
-                    By.cssSelector("#in-progress-column #item-${productBacklogItem.productBacklogItemId} .move-right-button"),
+                    By.cssSelector(
+                        "#in-progress-column #sprint-backlog-item-${productBacklogItem.productBacklogItemId} .move-right-button",
+                    ),
                 ),
             )
         moveRightButton.click()
@@ -328,7 +330,7 @@ class SprintControllerKanbanBoardTest {
         val doneItem =
             wait.until(
                 ExpectedConditions.visibilityOfElementLocated(
-                    By.cssSelector("#done-column #item-${productBacklogItem.productBacklogItemId}"),
+                    By.cssSelector("#done-column #sprint-backlog-item-${productBacklogItem.productBacklogItemId}"),
                 ),
             )
         assertThat(doneItem.text).contains("${developer.fullName.firstName} ${developer.fullName.lastName}")
@@ -459,7 +461,7 @@ class SprintControllerKanbanBoardTest {
         val moveLeftButton =
             wait.until(
                 ExpectedConditions.elementToBeClickable(
-                    By.cssSelector("#done-column #item-${productBacklogItem.productBacklogItemId} .move-left-button"),
+                    By.cssSelector("#done-column #sprint-backlog-item-${productBacklogItem.productBacklogItemId} .move-left-button"),
                 ),
             )
         moveLeftButton.click()
@@ -468,7 +470,7 @@ class SprintControllerKanbanBoardTest {
         val inProgressItem =
             wait.until(
                 ExpectedConditions.visibilityOfElementLocated(
-                    By.cssSelector("#in-progress-column #item-${productBacklogItem.productBacklogItemId}"),
+                    By.cssSelector("#in-progress-column #sprint-backlog-item-${productBacklogItem.productBacklogItemId}"),
                 ),
             )
         assertThat(inProgressItem.text).contains("${developer.fullName.firstName} ${developer.fullName.lastName}")
@@ -599,7 +601,7 @@ class SprintControllerKanbanBoardTest {
         val moveLeftButton =
             wait.until(
                 ExpectedConditions.elementToBeClickable(
-                    By.cssSelector("#in-progress-column #item-${productBacklogItem.productBacklogItemId} .move-left-button"),
+                    By.cssSelector("#in-progress-column #sprint-backlog-item-${productBacklogItem.productBacklogItemId} .move-left-button"),
                 ),
             )
         moveLeftButton.click()
@@ -608,7 +610,7 @@ class SprintControllerKanbanBoardTest {
         val todoItem =
             wait.until(
                 ExpectedConditions.visibilityOfElementLocated(
-                    By.cssSelector("#todo-column #item-${productBacklogItem.productBacklogItemId}"),
+                    By.cssSelector("#todo-column #sprint-backlog-item-${productBacklogItem.productBacklogItemId}"),
                 ),
             )
         assertThat(todoItem.text).doesNotContain("${developer.fullName.firstName} ${developer.fullName.lastName}")

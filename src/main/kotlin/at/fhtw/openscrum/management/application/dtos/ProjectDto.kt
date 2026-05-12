@@ -1,7 +1,6 @@
 package at.fhtw.openscrum.management.application.dtos
 
 import at.fhtw.openscrum.management.domain.model.project.Project
-import at.fhtw.openscrum.management.domain.model.user.UserId
 import java.util.UUID
 
 data class ProjectDto(

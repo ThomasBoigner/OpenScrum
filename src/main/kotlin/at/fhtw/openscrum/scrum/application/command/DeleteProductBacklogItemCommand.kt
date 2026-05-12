@@ -4,6 +4,5 @@ import java.util.UUID
 
 class DeleteProductBacklogItemCommand(
     val projectId: UUID,
-    val productBacklogItemId: UUID
-) {
-}
+    val productBacklogItemId: UUID,
+)

@@ -10,7 +10,12 @@ interface ProjectEntityRepository : JpaRepository<ProjectEntity, Long> {
     fun existsByProjectName(projectName: String): Boolean
 
     @Query(
-        value = "SELECT * FROM management_project_entity WHERE scrum_master_id = :userId OR product_owner_id = :userId OR :userId = ANY(developer_ids)",
+        value =
+            "SELECT * " +
+                "FROM management_project_entity " +
+                "WHERE scrum_master_id = :userId " +
+                "OR product_owner_id = :userId " +
+                "OR :userId = ANY(developer_ids)",
         nativeQuery = true,
     )
     fun findProjectsOfUser(userId: UUID): List<ProjectEntity>
