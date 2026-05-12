@@ -4,11 +4,14 @@ import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
+import at.fhtw.openscrum.scrum.application.command.DeleteProductBacklogItemCommand
+import at.fhtw.openscrum.scrum.application.command.DeleteSprintBacklogItemsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
 import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemDeleted
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.SprintLength
@@ -145,6 +148,25 @@ class ScrumEventListenerTest {
         // Then
         verify(productBacklogItemApplicationService).uncommitFromSprint(
             UncommitFromSprintCommand(
+                projectId = productBacklogItemId.projectId,
+                productBacklogItemId = productBacklogItemId.productBacklogItemId,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveProductBacklogItemDeletedEventWorksProperly() {
+        // Given
+        val productBacklogItemId =
+            ProductBacklogItemId(projectId = UUID.randomUUID(), productBacklogItemId = UUID.randomUUID())
+        val event = ProductBacklogItemDeleted(productBacklogItemId = productBacklogItemId)
+
+        // When
+        scrumEventListener.receiveProductBacklogItemDeletedEvent(event)
+
+        // Then
+        verify(sprintApplicationService).deleteSprintBacklogItems(
+            DeleteSprintBacklogItemsCommand(
                 projectId = productBacklogItemId.projectId,
                 productBacklogItemId = productBacklogItemId.productBacklogItemId,
             ),

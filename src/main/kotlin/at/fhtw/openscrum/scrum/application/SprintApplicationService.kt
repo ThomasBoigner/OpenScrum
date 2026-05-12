@@ -2,11 +2,13 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CancelSprintCommand
 import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
+import at.fhtw.openscrum.scrum.application.command.DeleteSprintBacklogItemsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemId
@@ -157,6 +159,23 @@ class SprintApplicationService(
             },
             sprint,
         )
+    }
+
+    @Transactional(readOnly = false)
+    fun deleteSprintBacklogItems(command: DeleteSprintBacklogItemsCommand): List<SprintDto> {
+        log.debug("Trying to delete sprint backlog items with command {}", command)
+        val sprints = sprintRepository.findSprintsByProjectId(command.projectId)
+
+        return sprints.map { sprint ->
+            sprint.deleteSprintBacklogItem(
+                ProductBacklogItemId(
+                    projectId = command.projectId,
+                    productBacklogItemId = command.productBacklogItemId,
+                ),
+            )
+            sprintRepository.save(sprint)
+            SprintDto(sprint)
+        }
     }
 
     @Transactional(readOnly = false)
