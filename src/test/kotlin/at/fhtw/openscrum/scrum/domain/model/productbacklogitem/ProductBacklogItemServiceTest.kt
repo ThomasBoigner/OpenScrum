@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.scrum.domain.model.productbacklogitem
 
+import at.fhtw.openscrum.scrum.domain.model.EventPublisher
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
@@ -24,9 +25,12 @@ class ProductBacklogItemServiceTest {
     @Mock
     lateinit var productBacklogItemRepository: ProductBacklogItemRepository
 
+    @Mock
+    lateinit var eventPublisher: EventPublisher
+
     @BeforeEach
     fun setUp() {
-        productBacklogItemService = ProductBacklogItemService(productBacklogItemRepository)
+        productBacklogItemService = ProductBacklogItemService(productBacklogItemRepository, eventPublisher)
     }
 
     @Test
@@ -94,6 +98,25 @@ class ProductBacklogItemServiceTest {
     }
 
     @Test
+    fun ensureDefineBacklogItemThrowsWhenDescriptionIsBlank() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "productowner",
+                fullName = FullName("First", "Last"),
+            )
+        val title = "Define Backlog"
+        val description = ""
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            productBacklogItemService.defineBacklogItem(productOwner, projectId, title, description)
+        }
+    }
+
+    @Test
     fun ensureDeleteProductBacklogItemWorksProperly() {
         // Given
         val projectId = UUID.randomUUID()
@@ -118,6 +141,7 @@ class ProductBacklogItemServiceTest {
 
         // Then
         verify(productBacklogItemRepository).delete(productBacklogItem.productBacklogItemId)
+        verify(eventPublisher).publishEvent(any())
     }
 
     @Test
@@ -206,25 +230,6 @@ class ProductBacklogItemServiceTest {
         // When
         assertThrows<IllegalArgumentException> {
             productBacklogItemService.deleteProductBacklogItem(productOwner, productBacklogItem)
-        }
-    }
-
-    @Test
-    fun ensureDefineBacklogItemThrowsWhenDescriptionIsBlank() {
-        // Given
-        val projectId = UUID.randomUUID()
-        val productOwner =
-            ProductOwner(
-                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
-                username = "productowner",
-                fullName = FullName("First", "Last"),
-            )
-        val title = "Define Backlog"
-        val description = ""
-
-        // When
-        assertThrows<IllegalArgumentException> {
-            productBacklogItemService.defineBacklogItem(productOwner, projectId, title, description)
         }
     }
 }
