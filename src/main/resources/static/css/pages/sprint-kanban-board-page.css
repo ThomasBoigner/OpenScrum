@@ -1,12 +1,8 @@
 /* Container */
-body {
-    height: 100vh;
-}
-
 div.container {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 100vh;
 }
 
 /* Header */
@@ -135,7 +131,7 @@ div.kanban-column {
     /* Kanban board */
     div#kanban-board {
         flex-direction: column;
-        flex: none;
+        flex: 1;
     }
 
     /* Kanban columns */

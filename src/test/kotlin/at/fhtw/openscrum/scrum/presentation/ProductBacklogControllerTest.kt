@@ -5,9 +5,13 @@ import at.fhtw.openscrum.management.domain.model.project.ProjectService
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.project.ProjectEntityRepository
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
+import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
+import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.productbacklogitem.ProductBacklogItemEntityRepository
 import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember.TeamMemberEntityRepository
 import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
@@ -44,6 +48,12 @@ class ProductBacklogControllerTest {
 
     @Autowired
     lateinit var productBacklogItemEntityRepository: ProductBacklogItemEntityRepository
+
+    @Autowired
+    lateinit var productBacklogItemApplicationService: ProductBacklogItemApplicationService
+
+    @Autowired
+    lateinit var teamMemberApplicationService: TeamMemberApplicationService
 
     @BeforeEach
     fun cleanUp() {
@@ -446,6 +456,90 @@ class ProductBacklogControllerTest {
         // Then
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error.text).containsIgnoringCase("description")
+        webDriver.close()
+    }
+
+    /*
+    Given a product owner and a product backlog item that is not committed to a sprint
+    When the product owner clicks the delete product backlog item button
+    Then the product backlog item should be deleted
+     */
+    @Test
+    fun ensureDeleteProductBacklogItemWorksProperly() {
+        // Given
+        val title = "Implement login page"
+        val description = "The login page should allow users to sign in with their credentials"
+
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwnerPassword = "abc123"
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = productOwnerPassword,
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null &&
+                    teamMemberApplicationService.getScrumMasterOfProject(project.projectId.token) != null
+            }
+
+        productBacklogItemApplicationService.defineProductBacklogItem(
+            authenticatedUserUsername = productOwner.username,
+            command =
+                DefineProductBacklogItemCommand(
+                    projectId = project.projectId.token,
+                    title = title,
+                    description = description,
+                ),
+        )
+
+        val webDriver = createHeadlessChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(productOwner.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(productOwnerPassword)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/backlog")
+        val productBacklogListItem =
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".product-backlog-list-item")))
+        wait
+            .until(ExpectedConditions.elementToBeClickable(By.cssSelector(".product-backlog-list-item .delete-button")))
+            .click()
+
+        // Then
+        wait.until(ExpectedConditions.stalenessOf(productBacklogListItem))
+        assertThat(webDriver.findElements(By.cssSelector(".product-backlog-list-item"))).isEmpty()
         webDriver.close()
     }
 }

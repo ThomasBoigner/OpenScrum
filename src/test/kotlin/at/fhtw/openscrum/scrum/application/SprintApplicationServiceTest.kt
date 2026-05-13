@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CancelSprintCommand
 import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
+import at.fhtw.openscrum.scrum.application.command.DeleteSprintBacklogItemsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
@@ -481,6 +482,81 @@ class SprintApplicationServiceTest {
         assertThrows<IllegalArgumentException> {
             sprintApplicationService.moveSprintBacklogItem("john.doe", command)
         }
+    }
+
+    @Test
+    fun ensureDeleteSprintBacklogItemsRemovesItemFromAllSprints() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId1 = UUID.randomUUID()
+        val sprintId2 = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val command = DeleteSprintBacklogItemsCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
+        val targetItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId1,
+                        productBacklogItemId = productBacklogItemId,
+                    ),
+                title = "Implement login",
+                description = "As a user I want to log in",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val otherItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId2,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement logout",
+                description = "As a user I want to log out",
+                status = SprintBacklogItemStatus.TO_DO,
+            )
+        val sprint1 =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId1),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2025, 1, 6),
+                endDate = LocalDate.of(2025, 1, 19),
+                sprintBacklogItems = mutableSetOf(targetItem),
+            )
+        val sprint2 =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId2),
+                sprintName = "Sprint 2",
+                startDate = LocalDate.of(2025, 1, 20),
+                endDate = LocalDate.of(2025, 2, 2),
+                sprintBacklogItems = mutableSetOf(otherItem),
+            )
+        whenever(sprintRepository.findSprintsByProjectId(projectId)).thenReturn(listOf(sprint1, sprint2))
+        whenever(sprintRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = sprintApplicationService.deleteSprintBacklogItems(command)
+
+        // Then
+        assertThat(result).hasSize(2)
+        assertThat(sprint1.sprintBacklogItems).isEmpty()
+        assertThat(sprint2.sprintBacklogItems).containsExactly(otherItem)
+    }
+
+    @Test
+    fun ensureDeleteSprintBacklogItemsReturnsEmptyListWhenNoSprintsExist() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val command = DeleteSprintBacklogItemsCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
+        whenever(sprintRepository.findSprintsByProjectId(projectId)).thenReturn(emptyList())
+
+        // When
+        val result = sprintApplicationService.deleteSprintBacklogItems(command)
+
+        // Then
+        assertThat(result).isEmpty()
     }
 
     @Test

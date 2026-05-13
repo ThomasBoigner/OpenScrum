@@ -3,19 +3,23 @@ package at.fhtw.openscrum.scrum.presentation
 import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.scrum.application.command.DeleteProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.presentation.forms.DefineProductBacklogItemForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import java.security.Principal
 import java.util.UUID
 
@@ -33,6 +37,7 @@ class ProductBacklogController(
         const val FRAGMENT_PRODUCT_BACKLOG_LIST_ITEM = "/list"
         const val ROUTE_DEFINE = "/define"
         const val FRAGMENT_SPRINT_PLANNING_PRODUCT_BACKLOG_LIST_ITEM = "/sprint-planning-list"
+        const val ROUTE_DELETE_PRODUCT_BACKLOG_ITEM = "/{productBacklogItemId}/delete"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -55,9 +60,15 @@ class ProductBacklogController(
     @HxRequest
     @GetMapping(value = [FRAGMENT_PRODUCT_BACKLOG_LIST_ITEM])
     fun getProductBacklogListItems(
+        principal: Principal,
         model: Model,
         @PathVariable projectId: UUID,
     ): String {
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
+                ?: return "redirect:htmx:/error/403"
+
+        model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
         model.addAttribute("productBacklog", productBacklogApplicationService.getProductBacklogOfProject(projectId))
         return "fragments/product-backlog-list-item"
     }
@@ -118,7 +129,33 @@ class ProductBacklogController(
         model: Model,
         @PathVariable projectId: UUID,
     ): String {
-        model.addAttribute("productBacklog", productBacklogApplicationService.getProductBacklogOfProjectWithStatusInBacklog(projectId))
+        model.addAttribute(
+            "productBacklog",
+            productBacklogApplicationService.getProductBacklogOfProjectWithStatusInBacklog(projectId),
+        )
         return "fragments/sprint-planning-product-backlog-list-item"
+    }
+
+    @HxRequest
+    @DeleteMapping(value = [ROUTE_DELETE_PRODUCT_BACKLOG_ITEM])
+    @ResponseStatus(value = HttpStatus.OK)
+    fun deleteProductBacklogItem(
+        principal: Principal,
+        @PathVariable projectId: UUID,
+        @PathVariable productBacklogItemId: UUID,
+    ) {
+        log.debug(
+            "Received http DELETE request to delete product backlog item with id {} of project with id {}",
+            projectId,
+            productBacklogItemId,
+        )
+        try {
+            productBacklogApplicationService.deleteProductBacklogItem(
+                principal.name,
+                DeleteProductBacklogItemCommand(projectId, productBacklogItemId),
+            )
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while deleting sprint backlog item: {}", ex.message)
+        }
     }
 }

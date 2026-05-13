@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.CancelSprintCommand
 import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
+import at.fhtw.openscrum.scrum.application.command.DeleteSprintBacklogItemsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
@@ -157,6 +158,23 @@ class SprintApplicationService(
             },
             sprint,
         )
+    }
+
+    @Transactional(readOnly = false)
+    fun deleteSprintBacklogItems(command: DeleteSprintBacklogItemsCommand): List<SprintDto> {
+        log.debug("Trying to delete sprint backlog items with command {}", command)
+        val sprints = sprintRepository.findSprintsByProjectId(command.projectId)
+
+        return sprints.map { sprint ->
+            sprint.deleteSprintBacklogItem(
+                ProductBacklogItemId(
+                    projectId = command.projectId,
+                    productBacklogItemId = command.productBacklogItemId,
+                ),
+            )
+            sprintRepository.save(sprint)
+            SprintDto(sprint)
+        }
     }
 
     @Transactional(readOnly = false)

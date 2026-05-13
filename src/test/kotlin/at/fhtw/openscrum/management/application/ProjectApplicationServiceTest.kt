@@ -3,7 +3,6 @@ package at.fhtw.openscrum.management.application
 import at.fhtw.openscrum.management.application.command.CreateProjectCommand
 import at.fhtw.openscrum.management.application.dtos.ProjectDto
 import at.fhtw.openscrum.management.domain.model.project.Project
-import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import at.fhtw.openscrum.management.domain.model.project.ProjectService
 import at.fhtw.openscrum.management.domain.model.user.EmailAddress
 import at.fhtw.openscrum.management.domain.model.user.FullName
@@ -28,19 +27,25 @@ class ProjectApplicationServiceTest {
     lateinit var projectService: ProjectService
 
     @Mock
-    lateinit var projectRepository: ProjectRepository
-
-    @Mock
     lateinit var userRepository: UserRepository
 
     @BeforeEach
     fun setUp() {
-        projectApplicationService = ProjectApplicationService(projectService, projectRepository, userRepository)
+        projectApplicationService = ProjectApplicationService(projectService, userRepository)
     }
 
     @Test
     fun ensureGetProjectsWorksProperly() {
         // Given
+        val username = "user"
+        val user =
+            User(
+                username = username,
+                emailAddress = EmailAddress("user@gmail.com"),
+                fullName = FullName("User", "User"),
+                password = "abc123",
+                role = Role.MANAGER,
+            )
         val project1 =
             Project(
                 projectName = "OpenScrum",
@@ -54,10 +59,11 @@ class ProjectApplicationServiceTest {
                 scrumMasterId = UserId(),
             )
 
-        whenever(projectRepository.findAll()).thenReturn(listOf(project1, project2))
+        whenever(userRepository.findByUsername(username)).thenReturn(user)
+        whenever(projectService.getProjects(user)).thenReturn(listOf(project1, project2))
 
         // When
-        val result = projectApplicationService.getProjects()
+        val result = projectApplicationService.getProjects(username)
 
         // Then
         assertThat(result).isEqualTo(listOf(ProjectDto(project1), ProjectDto(project2)))
@@ -138,7 +144,7 @@ class ProjectApplicationServiceTest {
         // Then
         assertThat(projectDto.projectId).isEqualTo(expectedProject.projectId.token)
         assertThat(projectDto.projectName).isEqualTo(expectedProject.projectName)
-        assertThat(projectDto.numberOfDevelopers).isEqualTo(expectedProject.developerIds.size)
+        assertThat(projectDto.developerIds).hasSize(expectedProject.developerIds.size)
     }
 
     @Test

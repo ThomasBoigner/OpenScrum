@@ -13,4 +13,6 @@ interface ProductBacklogItemRepository {
         projectId: UUID,
         status: ProductBacklogItemStatus,
     ): List<ProductBacklogItem>
+
+    fun delete(productBacklogItemId: ProductBacklogItemId)
 }

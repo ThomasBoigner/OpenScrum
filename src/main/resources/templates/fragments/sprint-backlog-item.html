@@ -2,7 +2,7 @@
      class="sprint-backlog-item"
      th:each="sprintBacklogItem : ${sprintBacklogItems}"
      th:object="${sprintBacklogItem}"
-     th:id="|item-*{productBacklogItemId}|"
+     th:id="|sprint-backlog-item-*{productBacklogItemId}|"
      xmlns:hx="http://www.w3.org/1999/xhtml"
      xmlns:hx-on="http://www.w3.org/1999/xhtml">
     <h4 th:text="*{title}">Item Title</h4>
@@ -16,7 +16,7 @@
     </div>
     <div class="move-buttons" th:if="*{canBeMoved}">
         <button class="move-left-button"
-                th:if="${sprintBacklogItem.status.canMoveLeft && authenticatedTeamMember != null && authenticatedTeamMember.isDeveloper()}"
+                th:if="${sprintBacklogItem.status.canMoveLeft && authenticatedTeamMember.isDeveloper()}"
                 hx:target="|#*{status.columnLeft}|"
                 hx-swap="beforeend"
                 hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId}, moveDirection='LEFT')}"
@@ -25,7 +25,7 @@
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Move left" class="arrow-left">
         </button>
         <button class="move-right-button"
-                th:if="${sprintBacklogItem.status.canMoveRight && authenticatedTeamMember != null && authenticatedTeamMember.isDeveloper()}"
+                th:if="${sprintBacklogItem.status.canMoveRight && authenticatedTeamMember.isDeveloper()}"
                 hx:target="|#*{status.columnRight}|"
                 hx-swap="beforeend"
                 hx:put="@{/projects/{projectId}/sprints/{sprintId}/move-backlog-item/{productBacklogItemId}(projectId=*{projectId}, sprintId=*{sprintId}, productBacklogItemId=*{productBacklogItemId}, moveDirection='RIGHT')}"

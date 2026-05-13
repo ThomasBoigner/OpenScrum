@@ -15,6 +15,6 @@ data class ProductBacklogItemDto(
         projectId = productBacklogItem.productBacklogItemId.projectId,
         title = productBacklogItem.title,
         description = productBacklogItem.description,
-        status = ProductBacklogItemStatusDto.Companion.fromProductBacklogItemStatus(productBacklogItem.status),
+        status = ProductBacklogItemStatusDto.fromProductBacklogItemStatus(productBacklogItem.status),
     )
 }

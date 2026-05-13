@@ -4,11 +4,13 @@ import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.SprintApplicationService
 import at.fhtw.openscrum.scrum.application.command.CompleteSprintsCommand
+import at.fhtw.openscrum.scrum.application.command.DeleteSprintBacklogItemsCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
 import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemDeleted
 import at.fhtw.openscrum.scrum.domain.model.project.SprintScheduled
 import at.fhtw.openscrum.scrum.domain.model.sprint.ProductBacklogItemCommitted
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemMarkedAsDone
@@ -79,6 +81,17 @@ class ScrumEventListener(
         log.trace("Received sprintBacklogUncommitedFromSprint event: {}", event)
         productBacklogItemApplicationService.uncommitFromSprint(
             UncommitFromSprintCommand(
+                projectId = event.productBacklogItemId.projectId,
+                productBacklogItemId = event.productBacklogItemId.productBacklogItemId,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveProductBacklogItemDeletedEvent(event: ProductBacklogItemDeleted) {
+        log.trace("Received productBacklogItemDeletedEvent event: {}", event)
+        sprintApplicationService.deleteSprintBacklogItems(
+            DeleteSprintBacklogItemsCommand(
                 projectId = event.productBacklogItemId.projectId,
                 productBacklogItemId = event.productBacklogItemId.productBacklogItemId,
             ),

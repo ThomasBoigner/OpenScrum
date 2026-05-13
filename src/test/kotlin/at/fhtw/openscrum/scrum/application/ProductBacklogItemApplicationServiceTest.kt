@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
+import at.fhtw.openscrum.scrum.application.command.DeleteProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.UUID
 
@@ -167,7 +169,11 @@ class ProductBacklogItemApplicationServiceTest {
         val command = UncommitFromSprintCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
         val productBacklogItem =
             ProductBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
+                productBacklogItemId =
+                    ProductBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = productBacklogItemId,
+                    ),
                 title = "Define Backlog",
                 description = "As a product owner, I want to define the product backlog items.",
             )
@@ -217,7 +223,11 @@ class ProductBacklogItemApplicationServiceTest {
         val command = MarkAsCommitedToSprintCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
         val productBacklogItem =
             ProductBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
+                productBacklogItemId =
+                    ProductBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = productBacklogItemId,
+                    ),
                 title = "Define Backlog",
                 description = "As a product owner, I want to define the product backlog items.",
             )
@@ -267,7 +277,11 @@ class ProductBacklogItemApplicationServiceTest {
         val command = MarkAsDoneCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
         val productBacklogItem =
             ProductBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
+                productBacklogItemId =
+                    ProductBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = productBacklogItemId,
+                    ),
                 title = "Define Backlog",
                 description = "As a product owner, I want to define the product backlog items.",
             )
@@ -307,5 +321,45 @@ class ProductBacklogItemApplicationServiceTest {
 
         // Then
         assertThat(result).isNull()
+    }
+
+    @Test
+    fun ensureDeleteProductBacklogItemWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val username = "productowner"
+        val command =
+            DeleteProductBacklogItemCommand(projectId = projectId, productBacklogItemId = productBacklogItemId)
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = username,
+                fullName = FullName("First", "Last"),
+            )
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId =
+                    ProductBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = productBacklogItemId,
+                    ),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+                status = ProductBacklogItemStatus.IN_BACKLOG,
+            )
+
+        whenever(
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
+            ),
+        ).thenReturn(productBacklogItem)
+        whenever(productOwnerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(productOwner)
+
+        // When
+        productBacklogItemApplicationService.deleteProductBacklogItem(username, command)
+
+        // Then
+        verify(productBacklogItemService).deleteProductBacklogItem(productOwner, productBacklogItem)
     }
 }

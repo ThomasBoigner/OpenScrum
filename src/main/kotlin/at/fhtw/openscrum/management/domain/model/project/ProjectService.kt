@@ -8,6 +8,12 @@ class ProjectService(
     private val projectRepository: ProjectRepository,
     private val log: Logger = LoggerFactory.getLogger(ProjectService::class.java),
 ) {
+    fun getProjects(authenticatedUser: User): List<Project> =
+        when (authenticatedUser.role.isManager) {
+            true -> projectRepository.findAll()
+            false -> projectRepository.findProjectsOfUser(authenticatedUser.userId)
+        }
+
     fun createProject(
         authenticatedUser: User,
         projectName: String,

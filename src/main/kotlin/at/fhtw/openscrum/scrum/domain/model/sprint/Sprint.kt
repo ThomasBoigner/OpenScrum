@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.domain.model.sprint
 
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
@@ -92,6 +93,10 @@ class Sprint(
             )
         item.move(moveDirection, developer.teamMemberId)
         return item
+    }
+
+    fun deleteSprintBacklogItem(productBackLogItemId: ProductBacklogItemId) {
+        sprintBacklogItems.removeIf { it.sprintBacklogItemId.productBacklogItemId == productBackLogItemId.productBacklogItemId }
     }
 
     fun cancelSprint(productOwner: ProductOwner?) {

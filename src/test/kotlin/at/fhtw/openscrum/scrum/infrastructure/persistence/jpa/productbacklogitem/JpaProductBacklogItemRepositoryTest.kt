@@ -125,4 +125,23 @@ class JpaProductBacklogItemRepositoryTest {
         assertThat(result).hasSize(1)
         assertThat(result).isEqualTo(listOf(inBacklogItem))
     }
+
+    @Test
+    fun ensureDeleteWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+        productBacklogItemRepository.save(productBacklogItem)
+
+        // When
+        productBacklogItemRepository.delete(productBacklogItem.productBacklogItemId)
+
+        // Then
+        assertThat(productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId)).isEmpty()
+    }
 }

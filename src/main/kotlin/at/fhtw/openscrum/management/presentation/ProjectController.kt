@@ -45,8 +45,20 @@ class ProjectController(
 
     @HxRequest
     @GetMapping(value = [FRAGMENT_PROJECTS_LIST_ITEM])
-    fun getProjectsListItems(model: Model): String {
-        model.addAttribute("projects", projectApplicationService.getProjects())
+    fun getProjectsListItems(
+        principal: Principal,
+        model: Model,
+    ): String {
+        try {
+            model.addAttribute("projects", projectApplicationService.getProjects(principal.name))
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while trying to get all projects with message: {}", ex.message)
+            return "redirect:htmx:/error/400"
+        }
+        model.addAttribute(
+            "authenticatedUser",
+            userApplicationService.getUserByUsername(principal.name),
+        )
         return "fragments/project-list-item"
     }
 

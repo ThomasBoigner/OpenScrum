@@ -34,4 +34,11 @@ class JpaProductBacklogItemRepository(
         productBacklogItemEntityRepository
             .findProductBacklogItemEntitiesByProjectIdAndStatus(projectId, status)
             .map { it.toProductBacklogItem() }
+
+    override fun delete(productBacklogItemId: ProductBacklogItemId) {
+        productBacklogItemEntityRepository.deleteByProjectIdAndProductBacklogItemId(
+            productBacklogItemId.projectId,
+            productBacklogItemId.productBacklogItemId,
+        )
+    }
 }

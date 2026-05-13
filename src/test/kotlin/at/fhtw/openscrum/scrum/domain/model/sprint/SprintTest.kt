@@ -634,6 +634,78 @@ class SprintTest {
     }
 
     @Test
+    fun ensureDeleteSprintBacklogItemRemovesItemFromSprint() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val sprintBacklogItemId =
+            SprintBacklogItemId(projectId = projectId, sprintId = sprintId, productBacklogItemId = productBacklogItemId)
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId = sprintBacklogItemId,
+                title = "Implement login",
+                description = "As a user I want to log in",
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        sprint.deleteSprintBacklogItem(
+            ProductBacklogItemId(
+                projectId = projectId,
+                productBacklogItemId = productBacklogItemId,
+            ),
+        )
+
+        // Then
+        assertThat(sprint.sprintBacklogItems).isEmpty()
+    }
+
+    @Test
+    fun ensureDeleteSprintBacklogItemDoesNotFailWhenItemDoesNotExist() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val sprintId = UUID.randomUUID()
+        val sprintBacklogItem =
+            SprintBacklogItem(
+                sprintBacklogItemId =
+                    SprintBacklogItemId(
+                        projectId = projectId,
+                        sprintId = sprintId,
+                        productBacklogItemId = UUID.randomUUID(),
+                    ),
+                title = "Implement login",
+                description = "As a user I want to log in",
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId, sprintId = sprintId),
+                sprintName = "Sprint 1",
+                startDate = LocalDate.of(2000, 1, 1),
+                endDate = LocalDate.of(2000, 1, 14),
+                sprintBacklogItems = mutableSetOf(sprintBacklogItem),
+            )
+
+        // When
+        sprint.deleteSprintBacklogItem(
+            ProductBacklogItemId(
+                projectId = projectId,
+                productBacklogItemId = UUID.randomUUID(),
+            ),
+        )
+
+        // Then
+        assertThat(sprint.sprintBacklogItems).hasSize(1)
+    }
+
+    @Test
     fun ensureSprintIsCancelledByProductOwnerWhenInProgress() {
         // Given
         val projectId = UUID.randomUUID()

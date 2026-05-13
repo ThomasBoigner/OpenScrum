@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.scrum.application
 
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
+import at.fhtw.openscrum.scrum.application.command.DeleteProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
@@ -142,5 +143,25 @@ class ProductBacklogItemApplicationService(
 
         productBacklogItem.uncommitFromSprint()
         return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
+    }
+
+    @Transactional
+    fun deleteProductBacklogItem(
+        authenticatedUserUsername: String,
+        command: DeleteProductBacklogItemCommand,
+    ) {
+        log.debug("Trying to delete product backlog item with command: {}", command)
+        val productBacklogItem =
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(
+                    projectId = command.projectId,
+                    productBacklogItemId = command.productBacklogItemId,
+                ),
+            ) ?: return
+
+        val productOwner =
+            productOwnerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
+
+        productBacklogItemService.deleteProductBacklogItem(productOwner, productBacklogItem)
     }
 }

@@ -43,8 +43,15 @@ class UserController(
 
     @HxRequest
     @GetMapping(value = [FRAGMENT_USERS_LIST_ITEM])
-    fun getUsersListItems(model: Model): String {
+    fun getUsersListItems(
+        principal: Principal,
+        model: Model,
+    ): String {
         model.addAttribute("users", userApplicationService.getUsers())
+        model.addAttribute(
+            "authenticatedUser",
+            userApplicationService.getUserByUsername(principal.name),
+        )
         return "fragments/users-list-item"
     }
 
