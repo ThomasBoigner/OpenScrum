@@ -1,0 +1,177 @@
+@startuml
+
+hide empty members
+
+package "Management" {
+
+  class "User" <<Aggregate Root>> {
+    userId: UserId
+    username: String
+    emailAddress: EmailAddress
+    fullName: FullName
+    password: String
+    role: Role
+  }
+
+  class "UserId" as M_UserId <<Value Object>> {
+    token: UUID
+  }
+
+  class "EmailAddress" <<Value Object>> {
+    emailAddress: String
+  }
+
+  class "FullName" as M_FullName <<Value Object>> {
+    firstName: String
+    lastName: String
+    fullName: String
+  }
+
+  enum "Role" {
+    USER
+    MANAGER
+  }
+
+  class "Project" as M_Project <<Aggregate Root>> {
+    projectId: ProjectId
+    projectName: String
+    productOwnerId: UserId
+    scrumMasterId: UserId
+    developerIds: Set<UserId>
+  }
+
+  class "ProjectId" as M_ProjectId <<Value Object>> {
+    token: UUID
+  }
+
+  "User" --> M_UserId
+  "User" --> "EmailAddress"
+  "User" --> M_FullName
+  "User" --> "Role"
+  M_Project --> M_ProjectId
+  M_Project --> M_UserId
+}
+
+package "Scrum" {
+
+  class "Project" as S_Project <<Aggregate Root>> {
+    projectId: ProjectId
+    projectName: String
+    sprintLength: SprintLength
+    productGoal: String
+    definitionOfDone: String
+  }
+
+  class "ProjectId" as S_ProjectId <<Value Object>> {
+    token: UUID
+  }
+
+  class "SprintLength" <<Value Object>> {
+    length: Long
+  }
+
+  class "Sprint" <<Aggregate Root>> {
+    sprintId: SprintId
+    sprintName: String
+    startDate: LocalDate
+    endDate: LocalDate
+    status: SprintStatus
+    sprintGoal: String
+    sprintBacklogItems: Set<SprintBacklogItem>
+  }
+
+  class "SprintId" <<Value Object>> {
+    projectId: UUID
+    sprintId: UUID
+  }
+
+  class "SprintBacklogItem" <<Entity>> {
+    sprintBacklogItemId: SprintBacklogItemId
+    title: String
+    description: String
+    assignedDeveloper: TeamMemberId
+    status: SprintBacklogItemStatus
+  }
+
+  class "SprintBacklogItemId" <<Value Object>> {
+    projectId: UUID
+    sprintId: UUID
+    productBacklogItemId: UUID
+  }
+
+  enum "SprintStatus" {
+    NOT_PLANNED
+    IN_PROGRESS
+    COMPLETED
+    CANCELLED
+  }
+
+  enum "SprintBacklogItemStatus" {
+    TO_DO
+    IN_PROGRESS
+    DONE
+  }
+
+  class "ProductBacklogItem" <<Aggregate Root>> {
+    productBacklogItemId: ProductBacklogItemId
+    title: String
+    description: String
+    status: ProductBacklogItemStatus
+  }
+
+  class "ProductBacklogItemId" <<Value Object>> {
+    projectId: UUID
+    productBacklogItemId: UUID
+  }
+
+  enum "ProductBacklogItemStatus" {
+    IN_BACKLOG
+    COMMITTED_TO_SPRINT
+    COMMITTED_TO_SPRINT_DONE
+    DONE
+  }
+
+  abstract class "TeamMember" <<Entity>> {
+    teamMemberId: TeamMemberId
+    username: String
+    fullName: FullName
+    isDeveloper(): Boolean
+    isScrumMaster(): Boolean
+    isProductOwner(): Boolean
+  }
+
+  class "Developer" <<Entity>>
+  class "ProductOwner" <<Entity>>
+  class "ScrumMaster" <<Entity>>
+
+  class "TeamMemberId" <<Value Object>> {
+    userId: UUID
+    projectId: UUID
+  }
+
+  class "FullName" as S_FullName <<Value Object>> {
+    firstName: String
+    lastName: String
+    fullName: String
+  }
+
+  S_Project --> S_ProjectId
+  S_Project --> "SprintLength"
+  "Sprint" --> "SprintId"
+  "Sprint" --> "SprintStatus"
+  "Sprint" --> "SprintBacklogItem"
+  "SprintBacklogItem" --> "SprintBacklogItemId"
+  "SprintBacklogItem" --> "SprintBacklogItemStatus"
+  "SprintBacklogItem" --> "TeamMemberId"
+  "ProductBacklogItem" --> "ProductBacklogItemId"
+  "ProductBacklogItem" --> "ProductBacklogItemStatus"
+  "TeamMember" --> "TeamMemberId"
+  "TeamMember" --> S_FullName
+  "TeamMember" <|-- "Developer"
+  "TeamMember" <|-- "ProductOwner"
+  "TeamMember" <|-- "ScrumMaster"
+}
+
+M_Project ..> S_Project
+
+@enduml
