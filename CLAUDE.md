@@ -80,7 +80,7 @@ The ubiquitous language is documented in `src/docs/ubiquitous-language.md`. Ther
 
 "Project" means different things in each context: a company project in Management, a Scrum-executed project in Scrum.
 
-User stories are tracked in `src/docs/user-stories.md`.
+Specs are tracked in `src/docs/specs/`, one subdirectory per feature (e.g. `1-user-login/spec.md`). Each spec includes acceptance criteria and Figma screenshots for Phone, Tablet, and Laptop breakpoints.
 
 ## Key dependencies
 
