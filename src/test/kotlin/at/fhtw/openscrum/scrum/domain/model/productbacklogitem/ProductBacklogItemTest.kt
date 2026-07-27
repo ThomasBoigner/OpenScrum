@@ -1,5 +1,8 @@
 package at.fhtw.openscrum.scrum.domain.model.productbacklogitem
 
+import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -58,6 +61,135 @@ class ProductBacklogItemTest {
                 title = title,
                 description = description,
             )
+        }
+    }
+
+    @Test
+    fun ensureUpdateWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "productowner",
+                fullName = FullName("First", "Last"),
+            )
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+        val title = "Update Backlog"
+        val description = "As a product owner, I want to update the product backlog items."
+
+        // When
+        productBacklogItem.update(productOwner, title, description)
+
+        // Then
+        assertThat(productBacklogItem.title).isEqualTo(title)
+        assertThat(productBacklogItem.description).isEqualTo(description)
+    }
+
+    @Test
+    fun ensureUpdateThrowsWhenProductOwnerBelongsToAnotherProject() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val anotherProjectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = anotherProjectId),
+                username = "productowner",
+                fullName = FullName("First", "Last"),
+            )
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            productBacklogItem.update(productOwner, "Update Backlog", "Updated description")
+        }
+    }
+
+    @Test
+    fun ensureUpdateThrowsWhenCallerIsScrumMaster() {
+        // Given
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            productBacklogItem.update(null, "Update Backlog", "Updated description")
+        }
+    }
+
+    @Test
+    fun ensureUpdateThrowsWhenCallerIsDeveloper() {
+        // Given
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            productBacklogItem.update(null, "Update Backlog", "Updated description")
+        }
+    }
+
+    @Test
+    fun ensureUpdateThrowsWhenTitleIsBlank() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "productowner",
+                fullName = FullName("First", "Last"),
+            )
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            productBacklogItem.update(productOwner, "", "Updated description")
+        }
+    }
+
+    @Test
+    fun ensureUpdateThrowsWhenDescriptionIsBlank() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "productowner",
+                fullName = FullName("First", "Last"),
+            )
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            productBacklogItem.update(productOwner, "Update Backlog", "")
         }
     }
 

@@ -5,6 +5,7 @@ import at.fhtw.openscrum.scrum.application.command.DeleteProductBacklogItemComma
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemStatusDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
@@ -18,6 +19,7 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
@@ -321,6 +323,77 @@ class ProductBacklogItemApplicationServiceTest {
 
         // Then
         assertThat(result).isNull()
+    }
+
+    @Test
+    fun ensureUpdateProductBacklogItemWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val username = "productowner"
+        val command =
+            UpdateProductBacklogItemCommand(
+                projectId = projectId,
+                productBacklogItemId = productBacklogItemId,
+                title = "Updated Backlog",
+                description = "As a product owner, I want to update the product backlog items.",
+            )
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = username,
+                fullName = FullName("First", "Last"),
+            )
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId =
+                    ProductBacklogItemId(
+                        projectId = projectId,
+                        productBacklogItemId = productBacklogItemId,
+                    ),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+        whenever(
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
+            ),
+        ).thenReturn(productBacklogItem)
+        whenever(productOwnerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(productOwner)
+        whenever(productBacklogItemRepository.save(productBacklogItem)).thenReturn(productBacklogItem)
+
+        // When
+        val result = productBacklogItemApplicationService.updateProductBacklogItem(username, command)
+
+        // Then
+        assertThat(result.title).isEqualTo(command.title)
+        assertThat(result.description).isEqualTo(command.description)
+    }
+
+    @Test
+    fun ensureUpdateProductBacklogItemThrowsWhenItemDoesNotExist() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productBacklogItemId = UUID.randomUUID()
+        val username = "productowner"
+        val command =
+            UpdateProductBacklogItemCommand(
+                projectId = projectId,
+                productBacklogItemId = productBacklogItemId,
+                title = "Updated Backlog",
+                description = "As a product owner, I want to update the product backlog items.",
+            )
+
+        whenever(
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
+            ),
+        ).thenReturn(null)
+
+        // When
+        assertThrows<NoSuchElementException> {
+            productBacklogItemApplicationService.updateProductBacklogItem(username, command)
+        }
     }
 
     @Test

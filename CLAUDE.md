@@ -80,7 +80,19 @@ The ubiquitous language is documented in `src/docs/ubiquitous-language.md`. Ther
 
 "Project" means different things in each context: a company project in Management, a Scrum-executed project in Scrum.
 
-User stories are tracked in `src/docs/user-stories.md`.
+Specs are tracked in `src/docs/specs/`, one subdirectory per feature (e.g. `1-user-login/spec.md`). Each spec includes acceptance criteria and Figma screenshots for Phone, Tablet, and Laptop breakpoints.
+
+### Spec-driven development flow
+When implementing a feature from a spec, follow these steps in order:
+
+1. Implement only HTML and CSS from the Figma screenshot for the max (Laptop) screen.
+2. Make the screen responsive (Tablet, Phone breakpoints).
+3. Implement the domain layer.
+4. Test the domain layer with the behaviour-driven tests from the spec.
+5. Implement the application layer.
+6. Implement the controller functions.
+7. Make sure the UI is working properly.
+8. Implement integration tests that implement the behaviour-driven tests from the spec file.
 
 ## Key dependencies
 

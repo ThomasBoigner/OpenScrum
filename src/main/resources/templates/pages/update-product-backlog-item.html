@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Update a product backlog item</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/pages/update-product-backlog-item.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <section id="hero">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
+        <h1>Update the product backlog item!</h1>
+        <h3>Redefine the work that needs to be done</h3>
+    </section>
+    <section id="update-product-backlog-item-form">
+        <form method="post" th:action="@{/projects/{projectId}/backlog/{productBacklogItemId}/update(projectId=${project.projectId}, productBacklogItemId=${productBacklogItemId})}" th:object="${updateProductBacklogItemForm}">
+            <div class="error-message" th:if="${#fields.hasErrors() || errorMessage != null}">
+                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+                <p th:text="${errorMessage}">Error while updating product backlog item!</p>
+                <div>
+                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}">Validation error while updating product backlog item!</p>
+                </div>
+            </div>
+            <div class="input-fields">
+                <div class="label-input">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" placeholder="Update the title of the product backlog item!" th:field="*{title}">
+                </div>
+                <div class="label-input">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="Update the description to the product backlog item!" th:field="*{description}"></textarea>
+                </div>
+            </div>
+            <div class="submit-go-back">
+                <button type="submit">
+                    Update item
+                    <img th:src="@{/assets/svg/check-white.svg}" alt="check">
+                </button>
+                <p>Changed your mind? Go <a th:href="@{/projects/{projectId}/backlog(projectId=${project.projectId})}">back</a>!</p>
+            </div>
+        </form>
+    </section>
+</div>
+</body>
+</html>
