@@ -26,6 +26,14 @@ class ProductBacklogItem(
         this.description = description
     }
 
+    fun update(
+        title: String,
+        description: String,
+    ) {
+        this.title = title
+        this.description = description
+    }
+
     fun setStatusToCommittedToSprint() {
         this.status = ProductBacklogItemStatus.COMMITTED_TO_SPRINT
     }

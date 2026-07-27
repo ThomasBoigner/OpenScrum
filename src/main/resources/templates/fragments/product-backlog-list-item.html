@@ -19,7 +19,9 @@
         </div>
     </div>
     <div class="edit-delete-buttons">
-        <a class="edit-button" th:if="${false}">
+        <a class="edit-button"
+           th:if="${authenticatedTeamMember.isProductOwner() && !productBacklogItem.status.isCommitedToSprint()}"
+           th:href="@{/projects/{projectId}/backlog/{productBacklogItemId}/update(projectId=*{projectId}, productBacklogItemId=*{productBacklogItemId})}">
             <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
         </a>
         <a class="delete-button"

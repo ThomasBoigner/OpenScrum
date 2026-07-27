@@ -5,6 +5,7 @@ import at.fhtw.openscrum.scrum.application.command.DeleteProductBacklogItemComma
 import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemDto
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
@@ -49,6 +50,18 @@ class ProductBacklogItemApplicationService(
             projectId,
         )
         return productBacklogItems.map { ProductBacklogItemDto(it) }
+    }
+
+    fun getProductBacklogItem(
+        projectId: UUID,
+        productBacklogItemId: UUID,
+    ): ProductBacklogItemDto? {
+        log.debug("Trying to get product backlog item with id {} of project with id {}", productBacklogItemId, projectId)
+        val productBacklogItem =
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
+            ) ?: return null
+        return ProductBacklogItemDto(productBacklogItem)
     }
 
     @Transactional(readOnly = false)
@@ -143,6 +156,33 @@ class ProductBacklogItemApplicationService(
 
         productBacklogItem.uncommitFromSprint()
         return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
+    }
+
+    @Transactional(readOnly = false)
+    fun updateProductBacklogItem(
+        authenticatedUserUsername: String,
+        command: UpdateProductBacklogItemCommand,
+    ): ProductBacklogItemDto {
+        log.debug("Trying to update product backlog item with command: {}", command)
+        val productBacklogItem =
+            productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
+                ProductBacklogItemId(
+                    projectId = command.projectId,
+                    productBacklogItemId = command.productBacklogItemId,
+                ),
+            ) ?: throw NoSuchElementException("The product backlog item does not exist!")
+
+        val productOwner =
+            productOwnerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
+
+        return ProductBacklogItemDto(
+            productBacklogItemService.updateProductBacklogItem(
+                productOwner,
+                productBacklogItem,
+                command.title,
+                command.description,
+            ),
+        )
     }
 
     @Transactional

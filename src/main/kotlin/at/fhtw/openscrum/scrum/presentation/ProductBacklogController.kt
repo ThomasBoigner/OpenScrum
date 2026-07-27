@@ -5,6 +5,7 @@ import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.application.command.DeleteProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.presentation.forms.DefineProductBacklogItemForm
+import at.fhtw.openscrum.scrum.presentation.forms.UpdateProductBacklogItemForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import jakarta.validation.Valid
 import org.slf4j.Logger
@@ -36,6 +37,7 @@ class ProductBacklogController(
         const val PATH_INDEX = "/"
         const val FRAGMENT_PRODUCT_BACKLOG_LIST_ITEM = "/list"
         const val ROUTE_DEFINE = "/define"
+        const val ROUTE_UPDATE_PRODUCT_BACKLOG_ITEM = "/{productBacklogItemId}/update"
         const val FRAGMENT_SPRINT_PLANNING_PRODUCT_BACKLOG_LIST_ITEM = "/sprint-planning-list"
         const val ROUTE_DELETE_PRODUCT_BACKLOG_ITEM = "/{productBacklogItemId}/delete"
     }
@@ -119,6 +121,74 @@ class ProductBacklogController(
             model.addAttribute("errorMessage", ex.message)
 
             return "pages/define-product-backlog-item"
+        }
+        return "redirect:/projects/$projectId/backlog"
+    }
+
+    @GetMapping(value = [ROUTE_UPDATE_PRODUCT_BACKLOG_ITEM])
+    fun showUpdateBacklogItemForm(
+        model: Model,
+        principal: Principal,
+        @PathVariable projectId: UUID,
+        @PathVariable productBacklogItemId: UUID,
+    ): String {
+        log.debug(
+            "Serving update product backlog item page for item with id {} of project with id {}",
+            productBacklogItemId,
+            projectId,
+        )
+        val authenticatedTeamMember =
+            teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name) ?: return "error/404"
+        if (!authenticatedTeamMember.isProductOwner) return "error/403"
+        val project = projectApplicationService.getProject(projectId) ?: return "error/404"
+        val productBacklogItem =
+            productBacklogApplicationService.getProductBacklogItem(projectId, productBacklogItemId) ?: return "error/404"
+        val updateProductBacklogItemForm =
+            UpdateProductBacklogItemForm(
+                title = productBacklogItem.title,
+                description = productBacklogItem.description,
+            )
+
+        model.addAttribute("project", project)
+        model.addAttribute("productBacklogItemId", productBacklogItemId)
+        model.addAttribute("updateProductBacklogItemForm", updateProductBacklogItemForm)
+        return "pages/update-product-backlog-item"
+    }
+
+    @PostMapping(value = [ROUTE_UPDATE_PRODUCT_BACKLOG_ITEM])
+    fun handleUpdateBacklogItemForm(
+        model: Model,
+        principal: Principal,
+        @PathVariable projectId: UUID,
+        @PathVariable productBacklogItemId: UUID,
+        @Valid @ModelAttribute(name = "updateProductBacklogItemForm") form: UpdateProductBacklogItemForm,
+        brUpdateProductBacklogItemForm: BindingResult,
+    ): String {
+        log.debug("Received http POST request to update product backlog item with form {}", form)
+        if (brUpdateProductBacklogItemForm.hasErrors()) {
+            log.warn("Update product backlog item form {} has validation errors", form)
+            val project = projectApplicationService.getProject(projectId) ?: return "error/404"
+            model.addAttribute("project", project)
+            model.addAttribute("productBacklogItemId", productBacklogItemId)
+            return "pages/update-product-backlog-item"
+        }
+        try {
+            productBacklogApplicationService.updateProductBacklogItem(
+                principal.name,
+                form.toUpdateProductBacklogItemCommand(projectId, productBacklogItemId),
+            )
+        } catch (ex: NoSuchElementException) {
+            log.warn("Error while updating product backlog item with message: {}", ex.message)
+            return "error/404"
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while updating product backlog item with message: {}", ex.message)
+            val project = projectApplicationService.getProject(projectId) ?: return "error/404"
+
+            model.addAttribute("project", project)
+            model.addAttribute("productBacklogItemId", productBacklogItemId)
+            model.addAttribute("errorMessage", ex.message)
+
+            return "pages/update-product-backlog-item"
         }
         return "redirect:/projects/$projectId/backlog"
     }

@@ -30,6 +30,22 @@ class ProductBacklogItemService(
         return productBacklogItemRepository.save(productBacklogItem)
     }
 
+    fun updateProductBacklogItem(
+        productOwner: ProductOwner?,
+        productBacklogItem: ProductBacklogItem,
+        title: String,
+        description: String,
+    ): ProductBacklogItem {
+        log.debug("Trying to update product backlog item {}", productBacklogItem)
+        require(productOwner?.teamMemberId?.projectId == productBacklogItem.productBacklogItemId.projectId) {
+            "You are not the product owner of this project!"
+        }
+
+        productBacklogItem.update(title, description)
+        log.info("Updated product backlog item {}", productBacklogItem)
+        return productBacklogItemRepository.save(productBacklogItem)
+    }
+
     fun deleteProductBacklogItem(
         productOwner: ProductOwner?,
         productBacklogItem: ProductBacklogItem,
