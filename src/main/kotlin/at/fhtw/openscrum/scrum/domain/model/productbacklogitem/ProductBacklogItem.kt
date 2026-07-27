@@ -1,5 +1,7 @@
 package at.fhtw.openscrum.scrum.domain.model.productbacklogitem
 
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
+
 class ProductBacklogItem(
     val id: Long? = null,
     val productBacklogItemId: ProductBacklogItemId,
@@ -27,9 +29,14 @@ class ProductBacklogItem(
     }
 
     fun update(
+        productOwner: ProductOwner?,
         title: String,
         description: String,
     ) {
+        require(productOwner?.teamMemberId?.projectId == productBacklogItemId.projectId) {
+            "You are not the product owner of this project!"
+        }
+
         this.title = title
         this.description = description
     }

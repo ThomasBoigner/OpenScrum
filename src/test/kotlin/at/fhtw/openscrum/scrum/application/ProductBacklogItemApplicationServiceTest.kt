@@ -354,31 +354,13 @@ class ProductBacklogItemApplicationServiceTest {
                 title = "Define Backlog",
                 description = "As a product owner, I want to define the product backlog items.",
             )
-        val updatedProductBacklogItem =
-            ProductBacklogItem(
-                productBacklogItemId =
-                    ProductBacklogItemId(
-                        projectId = projectId,
-                        productBacklogItemId = productBacklogItemId,
-                    ),
-                title = command.title,
-                description = command.description,
-            )
-
         whenever(
             productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
                 ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
             ),
         ).thenReturn(productBacklogItem)
         whenever(productOwnerRepository.findByProjectIdAndUsername(projectId, username)).thenReturn(productOwner)
-        whenever(
-            productBacklogItemService.updateProductBacklogItem(
-                productOwner,
-                productBacklogItem,
-                command.title,
-                command.description,
-            ),
-        ).thenReturn(updatedProductBacklogItem)
+        whenever(productBacklogItemRepository.save(productBacklogItem)).thenReturn(productBacklogItem)
 
         // When
         val result = productBacklogItemApplicationService.updateProductBacklogItem(username, command)

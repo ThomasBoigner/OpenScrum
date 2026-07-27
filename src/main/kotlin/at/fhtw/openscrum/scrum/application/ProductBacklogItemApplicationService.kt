@@ -175,14 +175,9 @@ class ProductBacklogItemApplicationService(
         val productOwner =
             productOwnerRepository.findByProjectIdAndUsername(command.projectId, authenticatedUserUsername)
 
-        return ProductBacklogItemDto(
-            productBacklogItemService.updateProductBacklogItem(
-                productOwner,
-                productBacklogItem,
-                command.title,
-                command.description,
-            ),
-        )
+        productBacklogItem.update(productOwner, command.title, command.description)
+        log.info("Updated product backlog item {}", productBacklogItem)
+        return ProductBacklogItemDto(productBacklogItemRepository.save(productBacklogItem))
     }
 
     @Transactional
