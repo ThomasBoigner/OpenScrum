@@ -28,4 +28,4 @@ Then he receives an error that he has no permission to delete the product backlo
 
 Given a product owner and a product backlog item that is committed to a sprint
 When the product owner clicks the delete product backlog item button
-Then the product backlog item must not be commited to a sprint
+Then he receives an error that the product backlog item must not be commited to a sprint
