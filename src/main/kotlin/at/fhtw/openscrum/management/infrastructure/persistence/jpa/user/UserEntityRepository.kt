@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.management.infrastructure.persistence.jpa.user
 
+import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.UUID
@@ -13,4 +14,7 @@ interface UserEntityRepository : JpaRepository<UserEntity, Long> {
     fun findByUsername(username: String): UserEntity?
 
     fun findByUserId(userId: UUID): UserEntity?
+
+    @Transactional
+    fun deleteByUserId(userId: UUID)
 }

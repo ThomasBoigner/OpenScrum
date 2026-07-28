@@ -1,11 +1,13 @@
 package at.fhtw.openscrum.management.domain.model.user
 
+import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class UserService(
     private val encryptionService: EncryptionService,
     private val userRepository: UserRepository,
+    private val projectRepository: ProjectRepository,
     private val log: Logger = LoggerFactory.getLogger(UserService::class.java),
 ) {
     fun registerUser(
@@ -57,5 +59,20 @@ class UserService(
 
         log.info("Registered admin {}", admin)
         return userRepository.save(admin)
+    }
+
+    fun deleteUser(
+        authenticatedUser: User,
+        user: User,
+    ) {
+        log.debug("Trying to delete user {}", user)
+        require(authenticatedUser.role.isManager) { "You have no permission to delete users!" }
+        require(authenticatedUser.userId != user.userId) { "You can not delete your own account!" }
+        require(projectRepository.findProjectsOfUser(user.userId).isEmpty()) {
+            "The user must not be assigned to a project in order to be deleted!"
+        }
+
+        userRepository.delete(user.userId)
+        log.info("Deleted user {}", user)
     }
 }

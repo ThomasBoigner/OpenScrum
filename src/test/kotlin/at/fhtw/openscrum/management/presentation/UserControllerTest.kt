@@ -4,6 +4,7 @@ import at.fhtw.openscrum.createHeadlessChromeDriver
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
 import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
@@ -268,6 +269,59 @@ class UserControllerTest {
         assertThat(error.text).contains("First name")
         assertThat(error.text).contains("Last name")
         assertThat(error.text).contains("Password")
+        webDriver.close()
+    }
+
+    /*
+    Given a manager and a user that is not assigned to a project
+    When the manager clicks the delete user button
+    Then the user should be deleted
+     */
+    @Test
+    fun ensureDeleteUserWorksProperly() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val user =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "john.doe",
+                firstName = "John",
+                lastName = "Doe",
+                password = "abc123",
+                email = "john.doe@gmail.com",
+            )
+
+        val webDriver = createHeadlessChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        // login as admin
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        // delete user
+        webDriver.get("http://localhost:8080/users")
+        wait.until(
+            ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#user-${user.userId.token} .delete-button")),
+        )
+        // The floating create button overlaps the delete button, so the click is dispatched via JavaScript.
+        // htmx attaches its listeners in the settle phase after the swap, so the click is retried until the row is removed.
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(500))
+            .until {
+                webDriver.executeScript("document.querySelector('#user-${user.userId.token} .delete-button')?.click()")
+                webDriver.findElements(By.cssSelector("#user-${user.userId.token}")).isEmpty()
+            }
+
+        // Then
+        assertThat(webDriver.findElements(By.cssSelector("#user-${user.userId.token}"))).isEmpty()
+        assertThat(webDriver.findElements(By.cssSelector(".users-list-item"))).hasSize(1)
+        assertThat(userEntityRepository.findByUserId(user.userId.token)).isNull()
         webDriver.close()
     }
 }

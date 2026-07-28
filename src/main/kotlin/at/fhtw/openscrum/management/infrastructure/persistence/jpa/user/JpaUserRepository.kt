@@ -24,4 +24,6 @@ class JpaUserRepository(
     override fun findByUsername(username: String): User? = userEntityRepository.findByUsername(username)?.toUser()
 
     override fun findByUserId(userId: UserId): User? = userEntityRepository.findByUserId(userId.token)?.toUser()
+
+    override fun delete(userId: UserId) = userEntityRepository.deleteByUserId(userId.token)
 }

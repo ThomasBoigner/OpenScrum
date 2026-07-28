@@ -14,8 +14,9 @@ class ManagementBeanConfiguration {
     fun userService(
         encryptionService: EncryptionService,
         userRepository: UserRepository,
+        projectRepository: ProjectRepository,
     ): UserService {
-        val userService = UserService(encryptionService, userRepository)
+        val userService = UserService(encryptionService, userRepository, projectRepository)
         userService.registerAdmin()
         return userService
     }

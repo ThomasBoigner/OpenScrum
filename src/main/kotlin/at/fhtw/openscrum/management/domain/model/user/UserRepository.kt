@@ -12,4 +12,6 @@ interface UserRepository {
     fun findByUsername(username: String): User?
 
     fun findByUserId(userId: UserId): User?
+
+    fun delete(userId: UserId)
 }

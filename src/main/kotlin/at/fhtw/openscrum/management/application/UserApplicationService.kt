@@ -1,7 +1,9 @@
 package at.fhtw.openscrum.management.application
 
+import at.fhtw.openscrum.management.application.command.DeleteUserCommand
 import at.fhtw.openscrum.management.application.command.RegisterUserCommand
 import at.fhtw.openscrum.management.application.dtos.UserDto
+import at.fhtw.openscrum.management.domain.model.user.UserId
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import org.slf4j.Logger
@@ -51,5 +53,21 @@ class UserApplicationService(
                 password = command.password,
             ),
         )
+    }
+
+    @Transactional(readOnly = false)
+    fun deleteUser(
+        authenticatedUserUsername: String,
+        command: DeleteUserCommand,
+    ) {
+        log.debug("User {} is trying to delete user with id {}", authenticatedUserUsername, command.userId)
+
+        val authenticatedUser =
+            userRepository.findByUsername(authenticatedUserUsername)
+                ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
+
+        val user = userRepository.findByUserId(UserId(command.userId)) ?: return
+
+        userService.deleteUser(authenticatedUser = authenticatedUser, user = user)
     }
 }
