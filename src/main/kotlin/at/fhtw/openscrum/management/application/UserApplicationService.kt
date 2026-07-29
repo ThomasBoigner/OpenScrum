@@ -18,11 +18,16 @@ class UserApplicationService(
     private val userRepository: UserRepository,
     private val log: Logger = LoggerFactory.getLogger(UserApplicationService::class.java),
 ) {
-    fun getUsers(): List<UserDto> {
-        log.debug("Trying to get all users")
+    fun getUsers(authenticatedUserUsername: String): List<UserDto> {
+        log.debug("Trying to get all users for user {}", authenticatedUserUsername)
+
+        val authenticatedUser =
+            userRepository.findByUsername(authenticatedUserUsername)
+                ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
+
         val users = userRepository.findAll()
         log.info("Found all ({}) users", users.size)
-        return users.map { UserDto(it) }
+        return users.map { UserDto(it, userService.canDeleteUser(authenticatedUser, it)) }
     }
 
     fun getUserByUsername(username: String): UserDto? {

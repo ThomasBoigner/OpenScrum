@@ -17,19 +17,19 @@
         </div>
     </div>
     <div class="promote-edit-delete-buttons">
-        <button class="promote-button" th:if="${authenticatedUser.role.isManager()}">
+        <a class="btn promote-button" th:if="${authenticatedUser.role.isManager()}">
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Promote">
-        </button>
-        <button class="edit-button" th:if="${authenticatedUser.role.isManager()}">
+        </a>
+        <a class="btn edit-button" th:if="${authenticatedUser.role.isManager()}">
             <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
-        </button>
-        <button class="delete-button"
-                th:if="${authenticatedUser.role.isManager()}"
+        </a>
+        <a class="btn delete-button"
+                th:if="*{deletable}"
                 hx:delete="@{/users/{userId}/delete(userId=*{userId})}"
                 hx-trigger="click"
                 hx-swap="delete"
                 hx:target="|#user-*{userId}|">
             <img th:src="@{/assets/svg/trash.svg}" alt="Trash">
-        </button>
+        </a>
     </div>
 </div>

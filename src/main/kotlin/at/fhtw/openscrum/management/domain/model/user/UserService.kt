@@ -61,6 +61,14 @@ class UserService(
         return userRepository.save(admin)
     }
 
+    fun canDeleteUser(
+        authenticatedUser: User,
+        user: User,
+    ): Boolean =
+        authenticatedUser.role.isManager &&
+            authenticatedUser.userId != user.userId &&
+            projectRepository.findProjectsOfUser(user.userId).isEmpty()
+
     fun deleteUser(
         authenticatedUser: User,
         user: User,

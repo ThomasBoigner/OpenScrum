@@ -54,7 +54,7 @@ class UserController(
         principal: Principal,
         model: Model,
     ): String {
-        model.addAttribute("users", userApplicationService.getUsers())
+        model.addAttribute("users", userApplicationService.getUsers(principal.name))
         model.addAttribute(
             "authenticatedUser",
             userApplicationService.getUserByUsername(principal.name),

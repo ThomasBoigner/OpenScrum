@@ -38,8 +38,17 @@ class UserApplicationServiceTest {
     }
 
     @Test
-    fun ensureGetUsersWorksProperly() {
+    fun ensureGetUsersWithAuthenticatedUserWorksProperly() {
         // Given
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
         val user1 =
             User(
                 username = "John.Doe",
@@ -58,13 +67,29 @@ class UserApplicationServiceTest {
                 role = Role.USER,
             )
 
+        whenever(userRepository.findByUsername(authenticatedUser.username)).thenReturn(authenticatedUser)
         whenever(userRepository.findAll()).thenReturn(listOf(user1, user2))
+        whenever(userService.canDeleteUser(authenticatedUser, user1)).thenReturn(true)
+        whenever(userService.canDeleteUser(authenticatedUser, user2)).thenReturn(false)
 
         // When
-        val result = userApplicationService.getUsers()
+        val result = userApplicationService.getUsers(authenticatedUser.username)
 
         // Then
-        assertThat(result).isEqualTo(listOf(UserDto(user1), UserDto(user2)))
+        assertThat(result).isEqualTo(listOf(UserDto(user1, true), UserDto(user2, false)))
+    }
+
+    @Test
+    fun ensureGetUsersThrowsExceptionIfAuthenticatedUserCanNotBeFound() {
+        // Given
+        val authenticatedUserUsername = "admin"
+
+        whenever(userRepository.findByUsername(authenticatedUserUsername)).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            userApplicationService.getUsers(authenticatedUserUsername)
+        }
     }
 
     @Test
