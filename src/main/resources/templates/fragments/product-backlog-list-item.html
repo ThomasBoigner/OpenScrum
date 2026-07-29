@@ -19,12 +19,12 @@
         </div>
     </div>
     <div class="edit-delete-buttons">
-        <a class="edit-button"
+        <a class="btn edit-button"
            th:if="${authenticatedTeamMember.isProductOwner() && !productBacklogItem.status.isCommitedToSprint()}"
            th:href="@{/projects/{projectId}/backlog/{productBacklogItemId}/update(projectId=*{projectId}, productBacklogItemId=*{productBacklogItemId})}">
             <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
         </a>
-        <a class="delete-button"
+        <a class="btn delete-button"
            th:if="${authenticatedTeamMember.isProductOwner() && !productBacklogItem.status.isCommitedToSprint()}"
            hx:delete="@{/projects/{projectId}/backlog/{productBacklogItemId}/delete(projectId=*{projectId}, productBacklogItemId=*{productBacklogItemId})}"
            hx-trigger="click"

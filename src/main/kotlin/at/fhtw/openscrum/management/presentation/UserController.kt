@@ -1,19 +1,25 @@
 package at.fhtw.openscrum.management.presentation
 
 import at.fhtw.openscrum.management.application.UserApplicationService
+import at.fhtw.openscrum.management.application.command.DeleteUserCommand
 import at.fhtw.openscrum.management.presentation.forms.RegisterUserForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import java.security.Principal
+import java.util.UUID
 
 @Controller
 @RequestMapping(UserController.BASE_URL)
@@ -26,6 +32,7 @@ class UserController(
         const val PATH_INDEX = "/"
         const val ROUTE_REGISTER = "/register"
         const val FRAGMENT_USERS_LIST_ITEM = "/list"
+        const val ROUTE_DELETE_USER = "/{userId}/delete"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -47,7 +54,7 @@ class UserController(
         principal: Principal,
         model: Model,
     ): String {
-        model.addAttribute("users", userApplicationService.getUsers())
+        model.addAttribute("users", userApplicationService.getUsers(principal.name))
         model.addAttribute(
             "authenticatedUser",
             userApplicationService.getUserByUsername(principal.name),
@@ -87,5 +94,23 @@ class UserController(
         }
 
         return "redirect:$BASE_URL"
+    }
+
+    @HxRequest
+    @DeleteMapping(value = [ROUTE_DELETE_USER])
+    @ResponseStatus(value = HttpStatus.OK)
+    fun deleteUser(
+        principal: Principal,
+        @PathVariable userId: UUID,
+    ) {
+        log.debug("Received http DELETE request to delete user with id {}", userId)
+        try {
+            userApplicationService.deleteUser(
+                principal.name,
+                DeleteUserCommand(userId),
+            )
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while deleting user with message: {}", ex.message)
+        }
     }
 }

@@ -1,11 +1,13 @@
 package at.fhtw.openscrum.management.application
 
+import at.fhtw.openscrum.management.application.command.DeleteUserCommand
 import at.fhtw.openscrum.management.application.command.RegisterUserCommand
 import at.fhtw.openscrum.management.application.dtos.UserDto
 import at.fhtw.openscrum.management.domain.model.user.EmailAddress
 import at.fhtw.openscrum.management.domain.model.user.FullName
 import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.User
+import at.fhtw.openscrum.management.domain.model.user.UserId
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import org.assertj.core.api.Assertions.assertThat
@@ -15,6 +17,9 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExtendWith(MockitoExtension::class)
@@ -33,8 +38,17 @@ class UserApplicationServiceTest {
     }
 
     @Test
-    fun ensureGetUsersWorksProperly() {
+    fun ensureGetUsersWithAuthenticatedUserWorksProperly() {
         // Given
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
         val user1 =
             User(
                 username = "John.Doe",
@@ -53,13 +67,29 @@ class UserApplicationServiceTest {
                 role = Role.USER,
             )
 
+        whenever(userRepository.findByUsername(authenticatedUser.username)).thenReturn(authenticatedUser)
         whenever(userRepository.findAll()).thenReturn(listOf(user1, user2))
+        whenever(userService.canDeleteUser(authenticatedUser, user1)).thenReturn(true)
+        whenever(userService.canDeleteUser(authenticatedUser, user2)).thenReturn(false)
 
         // When
-        val result = userApplicationService.getUsers()
+        val result = userApplicationService.getUsers(authenticatedUser.username)
 
         // Then
-        assertThat(result).isEqualTo(listOf(UserDto(user1), UserDto(user2)))
+        assertThat(result).isEqualTo(listOf(UserDto(user1, true), UserDto(user2, false)))
+    }
+
+    @Test
+    fun ensureGetUsersThrowsExceptionIfAuthenticatedUserCanNotBeFound() {
+        // Given
+        val authenticatedUserUsername = "admin"
+
+        whenever(userRepository.findByUsername(authenticatedUserUsername)).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            userApplicationService.getUsers(authenticatedUserUsername)
+        }
     }
 
     @Test
@@ -196,5 +226,80 @@ class UserApplicationServiceTest {
                 command,
             )
         }
+    }
+
+    @Test
+    fun ensureDeleteUserWorksProperly() {
+        // Given
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
+        val user =
+            User(
+                username = "John.Doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        val command = DeleteUserCommand(user.userId.token)
+
+        whenever(userRepository.findByUsername(authenticatedUser.username)).thenReturn(authenticatedUser)
+        whenever(userRepository.findByUserId(user.userId)).thenReturn(user)
+
+        // When
+        userApplicationService.deleteUser(authenticatedUser.username, command)
+
+        // Then
+        verify(userService).deleteUser(authenticatedUser = authenticatedUser, user = user)
+    }
+
+    @Test
+    fun ensureDeleteUserThrowsExceptionIfAuthenticatedUserCanNotBeFound() {
+        // Given
+        val authenticatedUserUsername = "admin"
+        val command = DeleteUserCommand(UserId().token)
+
+        whenever(userRepository.findByUsername(authenticatedUserUsername)).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            userApplicationService.deleteUser(
+                authenticatedUserUsername,
+                command,
+            )
+        }
+    }
+
+    @Test
+    fun ensureDeleteUserReturnsWhenUserCanNotBeFound() {
+        // Given
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
+        val userId = UserId()
+        val command = DeleteUserCommand(userId.token)
+
+        whenever(userRepository.findByUsername(authenticatedUser.username)).thenReturn(authenticatedUser)
+        whenever(userRepository.findByUserId(userId)).thenReturn(null)
+
+        // When
+        userApplicationService.deleteUser(authenticatedUser.username, command)
+
+        // Then
+        verify(userService, never()).deleteUser(any(), any())
     }
 }

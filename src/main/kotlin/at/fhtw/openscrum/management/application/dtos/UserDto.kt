@@ -11,8 +11,9 @@ data class UserDto(
     val lastName: String,
     val fullName: String,
     val role: RoleDto,
+    val deletable: Boolean = false,
 ) {
-    constructor(user: User) : this(
+    constructor(user: User, deletable: Boolean = false) : this(
         user.userId.token,
         user.username,
         user.emailAddress.emailAddress,
@@ -20,5 +21,6 @@ data class UserDto(
         user.fullName.lastName,
         user.fullName.fullName,
         RoleDto.Companion.fromRole(user.role),
+        deletable,
     )
 }

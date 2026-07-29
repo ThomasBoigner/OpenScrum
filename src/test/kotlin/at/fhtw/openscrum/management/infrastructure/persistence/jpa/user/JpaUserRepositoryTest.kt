@@ -107,4 +107,24 @@ class JpaUserRepositoryTest {
         assertThat(savedUser).isNotNull()
         assertThat(savedUser).isEqualTo(user)
     }
+
+    @Test
+    fun ensureDeleteWorksProperly() {
+        // Given
+        val user =
+            User(
+                username = "john.doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+        userRepository.save(user)
+
+        // When
+        userRepository.delete(user.userId)
+
+        // Then
+        assertThat(userRepository.findByUserId(user.userId)).isNull()
+    }
 }

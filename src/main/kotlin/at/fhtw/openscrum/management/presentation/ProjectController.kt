@@ -63,10 +63,13 @@ class ProjectController(
     }
 
     @GetMapping(value = [ROUTE_CREATE])
-    fun showCreationForm(model: Model): String {
+    fun showCreationForm(
+        principal: Principal,
+        model: Model,
+    ): String {
         log.debug("Serving create project page")
         model.addAttribute("createProjectForm", CreateProjectForm())
-        model.addAttribute("users", userApplicationService.getUsers())
+        model.addAttribute("users", userApplicationService.getUsers(principal.name))
         return "pages/create-project"
     }
 
@@ -80,7 +83,7 @@ class ProjectController(
         log.debug("Received http POST request to create project with form {}", form)
         if (brCreateProjectForm.hasErrors()) {
             log.warn("Create project form {} has validation errors", form)
-            model.addAttribute("users", userApplicationService.getUsers())
+            model.addAttribute("users", userApplicationService.getUsers(principal.name))
             return "pages/create-project"
         }
 
@@ -92,7 +95,7 @@ class ProjectController(
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while creating project with message: {}", ex.message)
             model.addAttribute("errorMessage", ex.message)
-            model.addAttribute("users", userApplicationService.getUsers())
+            model.addAttribute("users", userApplicationService.getUsers(principal.name))
             return "pages/create-project"
         }
 
