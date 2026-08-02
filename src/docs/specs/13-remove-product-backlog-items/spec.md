@@ -1,4 +1,4 @@
-# 12. As a product owner I want to remove items from the product backlog, so that I can keep the product backlog organized.
+# 13. As a product owner I want to remove items from the product backlog, so that I can keep the product backlog organized.
 
 ## Test 1
 

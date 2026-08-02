@@ -1,4 +1,4 @@
-# 13. As a scrum master I want to hold a sprint planning, so that I can organize a sprint.
+# 14. As a scrum master I want to hold a sprint planning, so that I can organize a sprint.
 
 ## Test 1
 
