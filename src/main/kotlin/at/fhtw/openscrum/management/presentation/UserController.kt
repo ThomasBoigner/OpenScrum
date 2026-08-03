@@ -2,6 +2,7 @@ package at.fhtw.openscrum.management.presentation
 
 import at.fhtw.openscrum.management.application.UserApplicationService
 import at.fhtw.openscrum.management.application.command.DeleteUserCommand
+import at.fhtw.openscrum.management.application.command.DemoteUserCommand
 import at.fhtw.openscrum.management.application.command.PromoteUserCommand
 import at.fhtw.openscrum.management.application.dtos.UserDto
 import at.fhtw.openscrum.management.presentation.forms.RegisterUserForm
@@ -37,6 +38,7 @@ class UserController(
         const val FRAGMENT_USERS_LIST_ITEM = "/list"
         const val ROUTE_DELETE_USER = "/{userId}/delete"
         const val ROUTE_PROMOTE_USER = "/{userId}/promote"
+        const val ROUTE_DEMOTE_USER = "/{userId}/demote"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -114,6 +116,30 @@ class UserController(
             model.addAttribute("users", listOfNotNull(user))
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while promoting user with message: {}", ex.message)
+            model.addAttribute("users", emptyList<UserDto>())
+            response.setHeader("HX-Reswap", "none")
+        }
+        model.addAttribute(
+            "authenticatedUser",
+            userApplicationService.getUserByUsername(principal.name),
+        )
+        return "fragments/users-list-item"
+    }
+
+    @HxRequest
+    @PostMapping(value = [ROUTE_DEMOTE_USER])
+    fun demoteUser(
+        principal: Principal,
+        @PathVariable userId: UUID,
+        model: Model,
+        response: HttpServletResponse,
+    ): String {
+        log.debug("Received http POST request to demote user with id {}", userId)
+        try {
+            val user = userApplicationService.demoteUser(principal.name, DemoteUserCommand(userId))
+            model.addAttribute("users", listOf(user))
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while demoting user with message: {}", ex.message)
             model.addAttribute("users", emptyList<UserDto>())
             response.setHeader("HX-Reswap", "none")
         }

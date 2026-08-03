@@ -30,6 +30,7 @@ div.users-list-item div.promote-edit-delete-buttons {
 }
 
 div.users-list-item a.promote-button,
+div.users-list-item a.demote-button,
 div.users-list-item a.edit-button,
 div.users-list-item a.delete-button {
     display: flex;
@@ -39,8 +40,13 @@ div.users-list-item a.delete-button {
     padding: 8px;
 }
 
-div.users-list-item a.promote-button {
+div.users-list-item a.promote-button,
+div.users-list-item a.demote-button {
     border: solid 3px var(--primary-color);
+}
+
+div.users-list-item a.demote-button img {
+    transform: rotate(180deg);
 }
 
 div.users-list-item a.edit-button {
@@ -58,6 +64,7 @@ div.users-list-item a.delete-button {
     }
 
     section#users-list div.users-list-item a.promote-button img,
+    section#users-list div.users-list-item a.demote-button img,
     section#users-list div.users-list-item a.edit-button img,
     section#users-list div.users-list-item a.delete-button img {
         height: 24px;

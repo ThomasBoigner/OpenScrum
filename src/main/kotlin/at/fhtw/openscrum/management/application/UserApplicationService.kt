@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.management.application
 
 import at.fhtw.openscrum.management.application.command.DeleteUserCommand
+import at.fhtw.openscrum.management.application.command.DemoteUserCommand
 import at.fhtw.openscrum.management.application.command.PromoteUserCommand
 import at.fhtw.openscrum.management.application.command.RegisterUserCommand
 import at.fhtw.openscrum.management.application.dtos.UserDto
@@ -80,6 +81,27 @@ class UserApplicationService(
         val promotedUser = userRepository.save(user)
         log.info("Promoted user {}", promotedUser)
         return UserDto(promotedUser, userService.canDeleteUser(authenticatedUser, promotedUser))
+    }
+
+    @Transactional(readOnly = false)
+    fun demoteUser(
+        authenticatedUserUsername: String,
+        command: DemoteUserCommand,
+    ): UserDto {
+        log.debug("User {} is trying to demote user with id {}", authenticatedUserUsername, command.userId)
+
+        val authenticatedUser =
+            userRepository.findByUsername(authenticatedUserUsername)
+                ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
+
+        val user =
+            userRepository.findByUserId(UserId(command.userId))
+                ?: throw IllegalArgumentException("Could not find user with id ${command.userId}")
+
+        user.demote(authenticatedUser)
+        val demotedUser = userRepository.save(user)
+        log.info("Demoted user {}", demotedUser)
+        return UserDto(demotedUser, userService.canDeleteUser(authenticatedUser, demotedUser))
     }
 
     @Transactional(readOnly = false)
