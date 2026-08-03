@@ -28,6 +28,11 @@ class User(
         this.username = username
     }
 
+    fun promote(authenticatedUser: User) {
+        require(authenticatedUser.role.isManager) { "You have no permission to promote users!" }
+        role = Role.MANAGER
+    }
+
     override fun toString(): String =
         "User(userId=$userId, username='$username', emailAddress=$emailAddress, fullName=$fullName, role=$role)"
 

@@ -1,4 +1,4 @@
-# 9. As a product owner or scrum master I want to configure the project, so that I can define the way of working.
+# 10. As a product owner or scrum master I want to configure the project, so that I can define the way of working.
 
 ## Test 1
 

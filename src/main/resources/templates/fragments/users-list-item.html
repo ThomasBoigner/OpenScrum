@@ -17,7 +17,12 @@
         </div>
     </div>
     <div class="promote-edit-delete-buttons">
-        <a class="btn promote-button" th:if="${authenticatedUser.role.isManager()}">
+        <a class="btn promote-button"
+                th:if="${authenticatedUser.role.isManager()} and *{!role.isManager()}"
+                hx:post="@{/users/{userId}/promote(userId=*{userId})}"
+                hx-trigger="click"
+                hx-swap="outerHTML"
+                hx:target="|#user-*{userId}|">
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Promote">
         </a>
         <a class="btn edit-button" th:if="${authenticatedUser.role.isManager()}">

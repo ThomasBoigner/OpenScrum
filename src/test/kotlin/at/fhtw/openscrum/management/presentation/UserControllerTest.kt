@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.management.presentation
 
 import at.fhtw.openscrum.createHeadlessChromeDriver
+import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -269,6 +270,59 @@ class UserControllerTest {
         assertThat(error.text).contains("First name")
         assertThat(error.text).contains("Last name")
         assertThat(error.text).contains("Password")
+        webDriver.close()
+    }
+
+    /*
+    Given a manager and a user
+    When the manager clicks the promote user button
+    Then the user should have the role of manager
+     */
+    @Test
+    fun ensurePromoteUserWorksProperly() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val user =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "john.doe",
+                firstName = "John",
+                lastName = "Doe",
+                password = "abc123",
+                email = "john.doe@gmail.com",
+            )
+
+        val webDriver = createHeadlessChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        // login as admin
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        // promote user
+        webDriver.get("http://localhost:8080/users")
+        wait.until(
+            ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#user-${user.userId.token} .promote-button")),
+        )
+        // htmx attaches its listeners in the settle phase after the swap, so the click is dispatched via JavaScript
+        // and retried until the promote button is removed with the re-rendered row.
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(500))
+            .until {
+                webDriver.executeScript("document.querySelector('#user-${user.userId.token} .promote-button')?.click()")
+                webDriver.findElements(By.cssSelector("#user-${user.userId.token} .promote-button")).isEmpty()
+            }
+
+        // Then
+        assertThat(webDriver.findElements(By.cssSelector("#user-${user.userId.token}"))).hasSize(1)
+        assertThat(webDriver.findElement(By.cssSelector("#user-${user.userId.token}")).text).contains("Manager")
+        assertThat(userEntityRepository.findByUserId(user.userId.token)!!.role).isEqualTo(Role.MANAGER)
         webDriver.close()
     }
 

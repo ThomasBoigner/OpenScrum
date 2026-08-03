@@ -1,7 +1,9 @@
 package at.fhtw.openscrum.management.application
 
 import at.fhtw.openscrum.management.application.command.DeleteUserCommand
+import at.fhtw.openscrum.management.application.command.PromoteUserCommand
 import at.fhtw.openscrum.management.application.command.RegisterUserCommand
+import at.fhtw.openscrum.management.application.dtos.RoleDto
 import at.fhtw.openscrum.management.application.dtos.UserDto
 import at.fhtw.openscrum.management.domain.model.user.EmailAddress
 import at.fhtw.openscrum.management.domain.model.user.FullName
@@ -223,6 +225,87 @@ class UserApplicationServiceTest {
         assertThrows<IllegalArgumentException> {
             userApplicationService.registerUser(
                 authenticatedUserUsername,
+                command,
+            )
+        }
+    }
+
+    @Test
+    fun ensurePromoteUserWorksProperly() {
+        // Given
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
+        val user =
+            User(
+                username = "John.Doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        val command = PromoteUserCommand(user.userId.token)
+
+        whenever(userRepository.findByUsername(authenticatedUser.username)).thenReturn(authenticatedUser)
+        whenever(userRepository.findByUserId(user.userId)).thenReturn(user)
+        whenever(userRepository.save(user)).thenReturn(user)
+        whenever(userService.canDeleteUser(authenticatedUser, user)).thenReturn(true)
+
+        // When
+        val result = userApplicationService.promoteUser(authenticatedUser.username, command)
+
+        // Then
+        verify(userRepository).save(user)
+        assertThat(result).isEqualTo(UserDto(user, true))
+        assertThat(result.role).isEqualTo(RoleDto.MANAGER)
+    }
+
+    @Test
+    fun ensurePromoteUserThrowsExceptionIfAuthenticatedUserCanNotBeFound() {
+        // Given
+        val authenticatedUserUsername = "admin"
+        val command = PromoteUserCommand(UserId().token)
+
+        whenever(userRepository.findByUsername(authenticatedUserUsername)).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            userApplicationService.promoteUser(
+                authenticatedUserUsername,
+                command,
+            )
+        }
+    }
+
+    @Test
+    fun ensurePromoteUserThrowsExceptionIfUserCanNotBeFound() {
+        // Given
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
+        val userId = UserId()
+        val command = PromoteUserCommand(userId.token)
+
+        whenever(userRepository.findByUsername(authenticatedUser.username)).thenReturn(authenticatedUser)
+        whenever(userRepository.findByUserId(userId)).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            userApplicationService.promoteUser(
+                authenticatedUser.username,
                 command,
             )
         }

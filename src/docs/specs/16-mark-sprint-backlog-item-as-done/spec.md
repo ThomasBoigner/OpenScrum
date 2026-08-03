@@ -1,4 +1,4 @@
-# 15. As a developer I want to mark a sprint backlog item as done, so that I can track the progress of the sprint.
+# 16. As a developer I want to mark a sprint backlog item as done, so that I can track the progress of the sprint.
 
 ## Test 1
 

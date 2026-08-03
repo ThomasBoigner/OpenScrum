@@ -2,8 +2,11 @@ package at.fhtw.openscrum.management.presentation
 
 import at.fhtw.openscrum.management.application.UserApplicationService
 import at.fhtw.openscrum.management.application.command.DeleteUserCommand
+import at.fhtw.openscrum.management.application.command.PromoteUserCommand
+import at.fhtw.openscrum.management.application.dtos.UserDto
 import at.fhtw.openscrum.management.presentation.forms.RegisterUserForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -33,6 +36,7 @@ class UserController(
         const val ROUTE_REGISTER = "/register"
         const val FRAGMENT_USERS_LIST_ITEM = "/list"
         const val ROUTE_DELETE_USER = "/{userId}/delete"
+        const val ROUTE_PROMOTE_USER = "/{userId}/promote"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -94,6 +98,30 @@ class UserController(
         }
 
         return "redirect:$BASE_URL"
+    }
+
+    @HxRequest
+    @PostMapping(value = [ROUTE_PROMOTE_USER])
+    fun promoteUser(
+        principal: Principal,
+        @PathVariable userId: UUID,
+        model: Model,
+        response: HttpServletResponse,
+    ): String {
+        log.debug("Received http POST request to promote user with id {}", userId)
+        try {
+            val user = userApplicationService.promoteUser(principal.name, PromoteUserCommand(userId))
+            model.addAttribute("users", listOfNotNull(user))
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while promoting user with message: {}", ex.message)
+            model.addAttribute("users", emptyList<UserDto>())
+            response.setHeader("HX-Reswap", "none")
+        }
+        model.addAttribute(
+            "authenticatedUser",
+            userApplicationService.getUserByUsername(principal.name),
+        )
+        return "fragments/users-list-item"
     }
 
     @HxRequest

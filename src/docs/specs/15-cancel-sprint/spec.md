@@ -1,4 +1,4 @@
-# 14. As a product owner I want to cancel a sprint, so that I can stop a sprint that will not produce any value.
+# 15. As a product owner I want to cancel a sprint, so that I can stop a sprint that will not produce any value.
 
 ## Test 1
 
