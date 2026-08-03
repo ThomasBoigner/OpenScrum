@@ -33,6 +33,12 @@ class User(
         role = Role.MANAGER
     }
 
+    fun demote(authenticatedUser: User) {
+        require(authenticatedUser.role.isManager) { "You have no permission to demote users!" }
+        require(authenticatedUser.userId != userId) { "You can not demote your own account!" }
+        role = Role.USER
+    }
+
     override fun toString(): String =
         "User(userId=$userId, username='$username', emailAddress=$emailAddress, fullName=$fullName, role=$role)"
 

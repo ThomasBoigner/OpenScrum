@@ -2,6 +2,7 @@ package at.fhtw.openscrum.management.presentation
 
 import at.fhtw.openscrum.createHeadlessChromeDriver
 import at.fhtw.openscrum.management.domain.model.user.Role
+import at.fhtw.openscrum.management.domain.model.user.UserRepository
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -24,6 +25,9 @@ class UserControllerTest {
 
     @Autowired
     lateinit var userEntityRepository: UserEntityRepository
+
+    @Autowired
+    lateinit var userRepository: UserRepository
 
     @BeforeEach
     fun cleanUp() {
@@ -323,6 +327,64 @@ class UserControllerTest {
         assertThat(webDriver.findElements(By.cssSelector("#user-${user.userId.token}"))).hasSize(1)
         assertThat(webDriver.findElement(By.cssSelector("#user-${user.userId.token}")).text).contains("Manager")
         assertThat(userEntityRepository.findByUserId(user.userId.token)!!.role).isEqualTo(Role.MANAGER)
+        webDriver.close()
+    }
+
+    /*
+    Given a manager and a manager
+    When the manager clicks on the demote user button
+    Then the user should have the role of user
+     */
+    @Test
+    fun ensureDemoteUserWorksProperly() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val user =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "john.doe",
+                firstName = "John",
+                lastName = "Doe",
+                password = "abc123",
+                email = "john.doe@gmail.com",
+            )
+        // reload the persisted user so save performs an update instead of inserting a duplicate
+        val persistedUser = userRepository.findByUserId(user.userId)!!
+        persistedUser.promote(admin)
+        userRepository.save(persistedUser)
+
+        val webDriver = createHeadlessChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        // login as admin
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        // demote user
+        webDriver.get("http://localhost:8080/users")
+        wait.until(
+            ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#user-${user.userId.token} .demote-button")),
+        )
+        // htmx attaches its listeners in the settle phase after the swap, so the click is dispatched via JavaScript
+        // and retried until the demote button is removed with the re-rendered row.
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(500))
+            .until {
+                webDriver.executeScript("document.querySelector('#user-${user.userId.token} .demote-button')?.click()")
+                webDriver.findElements(By.cssSelector("#user-${user.userId.token} .demote-button")).isEmpty()
+            }
+
+        // Then
+        assertThat(webDriver.findElements(By.cssSelector("#user-${user.userId.token}"))).hasSize(1)
+        assertThat(webDriver.findElements(By.cssSelector("#user-${user.userId.token} .promote-button"))).hasSize(1)
+        assertThat(webDriver.findElements(By.cssSelector("#user-${admin.userId.token} .demote-button"))).isEmpty()
+        assertThat(userEntityRepository.findByUserId(user.userId.token)!!.role).isEqualTo(Role.USER)
         webDriver.close()
     }
 
