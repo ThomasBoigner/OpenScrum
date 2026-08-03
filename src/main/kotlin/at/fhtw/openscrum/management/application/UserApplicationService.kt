@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.management.application
 
 import at.fhtw.openscrum.management.application.command.DeleteUserCommand
+import at.fhtw.openscrum.management.application.command.PromoteUserCommand
 import at.fhtw.openscrum.management.application.command.RegisterUserCommand
 import at.fhtw.openscrum.management.application.dtos.UserDto
 import at.fhtw.openscrum.management.domain.model.user.UserId
@@ -58,6 +59,27 @@ class UserApplicationService(
                 password = command.password,
             ),
         )
+    }
+
+    @Transactional(readOnly = false)
+    fun promoteUser(
+        authenticatedUserUsername: String,
+        command: PromoteUserCommand,
+    ): UserDto {
+        log.debug("User {} is trying to promote user with id {}", authenticatedUserUsername, command.userId)
+
+        val authenticatedUser =
+            userRepository.findByUsername(authenticatedUserUsername)
+                ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
+
+        val user =
+            userRepository.findByUserId(UserId(command.userId))
+                ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
+
+        user.promote(authenticatedUser)
+        val promotedUser = userRepository.save(user)
+        log.info("Promoted user {}", promotedUser)
+        return UserDto(promotedUser, userService.canDeleteUser(authenticatedUser, promotedUser))
     }
 
     @Transactional(readOnly = false)
