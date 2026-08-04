@@ -24,11 +24,16 @@ section#hero h1 {
 }
 
 /* Project Form */
+section#project-form {
+    width: 100%;
+}
+
 section#project-form form {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 64px;
+    width: 100%;
 }
 
 div.error-message {
@@ -56,22 +61,73 @@ section#project-form div.input-fields {
     width: 1024px;
 }
 
-section#project-form label {
+section#project-form div.input-fields label {
     display: block;
     margin-bottom: 8px;
 }
 
-section#project-form input,
-section#project-form select {
+section#project-form div.input-fields input,
+section#project-form div.input-fields select {
     border-radius: 8px;
     background-color: var(--black10);
     width: 100%;
     padding: 24px;
 }
 
-section#project-form input:not(:last-child),
-section#project-form select:not(:last-child) {
+section#project-form div.input-fields input:not(:last-child),
+section#project-form div.input-fields select:not(:last-child) {
     margin-bottom: 32px;
+}
+
+/* Developers */
+section#project-form div#developers {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+section#project-form div.developer-item-list {
+    background-color: var(--black5);
+    width: 100%;
+    padding: 64px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+
+section#project-form div.developer-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+    width: 1024px;
+}
+
+section#project-form div.developer-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--black);
+    border-radius: 8px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+section#project-form div.developer-item input[type="checkbox"]:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+section#project-form div.developer-item label {
+    cursor: pointer;
 }
 
 section#project-form button {
@@ -128,9 +184,24 @@ section#project-form button:hover {
         width: 512px;
     }
 
-    section#project-form input:not(:last-child),
-    section#project-form select:not(:last-child) {
+    section#project-form div.input-fields input:not(:last-child),
+    section#project-form div.input-fields select:not(:last-child) {
         margin-bottom: 24px;
+    }
+
+    /* Developers */
+    section#project-form div#developers {
+        gap: 8px;
+    }
+
+    section#project-form div.developer-item-list {
+        padding: 48px 0;
+        gap: 24px;
+    }
+
+    section#project-form div.developer-item {
+        gap: 24px;
+        width: 512px;
     }
 
     section#project-form button {
@@ -147,38 +218,47 @@ section#project-form button:hover {
     /* Container */
     div.container {
         gap: 64px;
-        padding: 32px 16px;
+        padding: 32px 0;
     }
 
     /* Hero */
     section#hero {
         gap: 16px;
+        padding: 0 16px;
+        width: 100%;
     }
 
     /* Project Form */
-    section#project-form {
-        width: 100%;
-    }
-
     section#project-form form {
         gap: 32px;
-        width: 100%;
     }
 
     div.error-message {
-        width: 100%;
+        width: calc(100% - 32px);
     }
 
     section#project-form div.input-fields {
         width: 100%;
+        padding: 0 16px;
     }
 
-    section#project-form input:not(:last-child),
-    section#project-form select:not(:last-child) {
+    section#project-form div.input-fields input:not(:last-child),
+    section#project-form div.input-fields select:not(:last-child) {
         margin-bottom: 16px;
     }
 
-    section#project-form button {
+    /* Developers */
+    section#project-form div.developer-item-list {
+        padding: 32px 16px;
+        gap: 24px;
+    }
+
+    section#project-form div.developer-item {
+        gap: 16px;
         width: 100%;
+    }
+
+    section#project-form button {
+        width: calc(100% - 32px);
     }
 }

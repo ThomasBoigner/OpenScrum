@@ -67,14 +67,15 @@ class ProjectControllerTest {
             password = "abc123",
             email = "scrum.master@gmail.com",
         )
-        userService.registerUser(
-            authenticatedUser = admin,
-            username = "developer",
-            firstName = "Developer",
-            lastName = "User",
-            password = "abc123",
-            email = "developer@gmail.com",
-        )
+        val developer =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "developer",
+                firstName = "Developer",
+                lastName = "User",
+                password = "abc123",
+                email = "developer@gmail.com",
+            )
 
         val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
@@ -92,7 +93,7 @@ class ProjectControllerTest {
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
-        Select(webDriver.findElement(By.cssSelector("select#developers"))).selectByVisibleText("Developer User")
+        webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${developer.userId.token}']")).click()
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
@@ -364,14 +365,15 @@ class ProjectControllerTest {
 
         val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
-        userService.registerUser(
-            authenticatedUser = admin,
-            username = "User",
-            firstName = "Regular",
-            lastName = "User",
-            password = "abc123",
-            email = "user@gmail.com",
-        )
+        val user =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "User",
+                firstName = "Regular",
+                lastName = "User",
+                password = "abc123",
+                email = "user@gmail.com",
+            )
 
         val webDriver = createHeadlessChromeDriver()
         val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
@@ -389,7 +391,7 @@ class ProjectControllerTest {
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Regular User")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Regular User")
-        Select(webDriver.findElement(By.cssSelector("select#developers"))).selectByVisibleText("Regular User")
+        webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${user.userId.token}']")).click()
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then

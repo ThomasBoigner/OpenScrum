@@ -26,6 +26,10 @@ div.product-backlog-item input[type="checkbox"]:checked {
     border-color: var(--primary-color);
 }
 
+div.product-backlog-item h2 label {
+    cursor: pointer;
+}
+
 div.backlog-item-info {
     display: flex;
     flex-direction: column;

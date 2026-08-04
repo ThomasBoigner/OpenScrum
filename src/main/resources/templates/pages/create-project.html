@@ -52,12 +52,17 @@
                             th:value="${user.userId}"
                             th:text="${user.fullName}"></option>
                 </select>
-                <label for="developers">Developers:</label>
-                <select id="developers" th:field="*{developerIds}" multiple>
-                    <option th:each="user : ${users}"
-                            th:value="${user.userId}"
-                            th:text="${user.fullName}"></option>
-                </select>
+            </div>
+            <div id="developers">
+                <h4>Select the Developers:</h4>
+                <div class="developer-item-list">
+                    <div class="developer-item" th:each="user : ${users}">
+                        <input th:id="|select-backlog-item-${user.userId}|" type="checkbox" th:field="*{developerIds}" th:value="${user.userId}">
+                        <h5>
+                            <label th:for="|select-backlog-item-${user.userId}|" th:text="${user.fullName}">Thomas Boigner</label>
+                        </h5>
+                    </div>
+                </div>
             </div>
             <button type="submit">
                 Create Project
