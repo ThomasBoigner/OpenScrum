@@ -23,9 +23,7 @@ class UserApplicationService(
     fun getUsers(authenticatedUserUsername: String): List<UserDto> {
         log.debug("Trying to get all users for user {}", authenticatedUserUsername)
 
-        val authenticatedUser =
-            userRepository.findByUsername(authenticatedUserUsername)
-                ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
+        val authenticatedUser = userRepository.findByUsername(authenticatedUserUsername)
 
         val users = userRepository.findAll()
         log.info("Found all ({}) users", users.size)

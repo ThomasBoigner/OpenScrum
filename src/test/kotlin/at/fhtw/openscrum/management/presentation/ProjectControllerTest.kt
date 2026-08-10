@@ -94,7 +94,12 @@ class ProjectControllerTest {
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
-        webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${developer.userId.token}']")).click()
+        wait
+            .until(
+                ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("input[name='developerIds'][value='${developer.userId.token}']"),
+                ),
+            ).click()
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
@@ -392,7 +397,12 @@ class ProjectControllerTest {
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Regular User")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Regular User")
-        webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${user.userId.token}']")).click()
+        wait
+            .until(
+                ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("input[name='developerIds'][value='${user.userId.token}']"),
+                ),
+            ).click()
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
@@ -494,8 +504,18 @@ class ProjectControllerTest {
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys("OpenScrum 2")
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("New Owner")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("New Master")
-        webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${developer.userId.token}']")).click()
-        webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${newDeveloper.userId.token}']")).click()
+        wait
+            .until(
+                ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("input[name='developerIds'][value='${developer.userId.token}']"),
+                ),
+            ).click()
+        wait
+            .until(
+                ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("input[name='developerIds'][value='${newDeveloper.userId.token}']"),
+                ),
+            ).click()
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then
@@ -945,7 +965,12 @@ class ProjectControllerTest {
         webDriver.get("http://localhost:8080/projects/${project.projectId.token}/update")
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Regular User")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Regular User")
-        webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${user.userId.token}']")).click()
+        wait
+            .until(
+                ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("input[name='developerIds'][value='${user.userId.token}']"),
+                ),
+            ).click()
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
         // Then

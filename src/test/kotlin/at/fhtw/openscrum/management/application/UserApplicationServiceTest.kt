@@ -83,16 +83,38 @@ class UserApplicationServiceTest {
     }
 
     @Test
-    fun ensureGetUsersThrowsExceptionIfAuthenticatedUserCanNotBeFound() {
+    fun ensureGetUsersWorksWhenAuthenticatedUserCanNotBeFound() {
         // Given
         val authenticatedUserUsername = "admin"
 
+        val user1 =
+            User(
+                username = "John.Doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        val user2 =
+            User(
+                username = "Max.Mustermann",
+                emailAddress = EmailAddress("max.mustermann@gmail.com"),
+                fullName = FullName("Max", "Mustermann"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
         whenever(userRepository.findByUsername(authenticatedUserUsername)).thenReturn(null)
+        whenever(userRepository.findAll()).thenReturn(listOf(user1, user2))
+        whenever(userService.canDeleteUser(null, user1)).thenReturn(false)
+        whenever(userService.canDeleteUser(null, user2)).thenReturn(false)
 
         // When
-        assertThrows<IllegalArgumentException> {
-            userApplicationService.getUsers(authenticatedUserUsername)
-        }
+        val result = userApplicationService.getUsers(authenticatedUserUsername)
+
+        // Then
+        assertThat(result).isEqualTo(listOf(UserDto(user1, false), UserDto(user2, false)))
     }
 
     @Test

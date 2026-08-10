@@ -393,6 +393,26 @@ class UserServiceTest {
     }
 
     @Test
+    fun ensureCanDeleteUserReturnsFalseForNoAuthenticatedUser() {
+        // Given
+        val authenticatedUser = null
+
+        val user =
+            User(
+                username = "JohnDoe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+            )
+
+        // When
+        val result = userService.canDeleteUser(authenticatedUser, user)
+
+        // Then
+        assertThat(result).isFalse()
+    }
+
+    @Test
     fun ensureCanDeleteUserReturnsFalseWhenAuthenticatedUserIsNotAManager() {
         // Given
         val authenticatedUser =

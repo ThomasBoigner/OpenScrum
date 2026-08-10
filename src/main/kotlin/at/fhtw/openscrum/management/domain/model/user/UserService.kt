@@ -62,10 +62,11 @@ class UserService(
     }
 
     fun canDeleteUser(
-        authenticatedUser: User,
+        authenticatedUser: User?,
         user: User,
     ): Boolean =
-        authenticatedUser.role.isManager &&
+        authenticatedUser != null &&
+            authenticatedUser.role.isManager &&
             authenticatedUser.userId != user.userId &&
             projectRepository.findProjectsOfUser(user.userId).isEmpty()
 

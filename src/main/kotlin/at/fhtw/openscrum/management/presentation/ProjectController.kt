@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import java.security.Principal
 import java.util.UUID
 
@@ -32,6 +33,7 @@ class ProjectController(
         const val ROUTE_CREATE = "/create"
         const val ROUTE_UPDATE = "/{projectId}/update"
         const val FRAGMENT_PROJECTS_LIST_ITEM = "/list"
+        const val FRAGMENT_DEVELOPERS_LIST_ITEM = "/developer-list"
     }
 
     @GetMapping(value = ["", PATH_INDEX])
@@ -64,6 +66,18 @@ class ProjectController(
             userApplicationService.getUserByUsername(principal.name),
         )
         return "fragments/project-list-item"
+    }
+
+    @HxRequest
+    @GetMapping(value = [FRAGMENT_DEVELOPERS_LIST_ITEM])
+    fun getDeveloperListItems(
+        principal: Principal,
+        @RequestParam(name = "developerIds", required = false) developerIds: Set<UUID>?,
+        model: Model,
+    ): String {
+        model.addAttribute("users", userApplicationService.getUsers(principal.name))
+        model.addAttribute("developerIds", developerIds ?: setOf<UUID>())
+        return "fragments/developer-list-item"
     }
 
     @GetMapping(value = [ROUTE_CREATE])
