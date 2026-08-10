@@ -18,6 +18,11 @@ class JpaProjectRepository(
         return project
     }
 
+    override fun delete(project: Project) {
+        val projectEntity = ProjectEntity(project)
+        projectEntityRepository.delete(projectEntity)
+    }
+
     override fun findProjectsOfUser(userId: UserId): List<Project> =
         projectEntityRepository.findProjectsOfUser(userId.token).map { it.toProject() }
 

@@ -13,4 +13,6 @@ interface SprintRepository {
     fun findSprintsByEndDateBeforeAndStatusInProgressOrStatusNotPlanned(endDate: LocalDate): List<Sprint>
 
     fun countByProjectId(projectId: UUID): Int
+
+    fun deleteByProjectId(projectId: UUID)
 }

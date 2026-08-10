@@ -16,4 +16,6 @@ class JpaProjectRepository(
     }
 
     override fun findByProjectId(projectId: ProjectId): Project? = projectEntityRepository.findByProjectId(projectId.token)?.toProject()
+
+    override fun delete(projectId: ProjectId) = projectEntityRepository.deleteByProjectId(projectId.token)
 }

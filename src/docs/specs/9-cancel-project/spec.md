@@ -16,4 +16,4 @@ Then he receives an error that he has no permission to cancel projects
 
 Given a project
 When the ProjectCanceled event is received
-Then the project should be removed
+Then the project, all sprints of the project and all product backlog items of the project should be removed

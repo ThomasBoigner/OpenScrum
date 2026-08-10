@@ -4,6 +4,7 @@ import at.fhtw.openscrum.management.domain.model.project.DeveloperAssigned
 import at.fhtw.openscrum.management.domain.model.project.DeveloperUnassigned
 import at.fhtw.openscrum.management.domain.model.project.ProductOwnerAssigned
 import at.fhtw.openscrum.management.domain.model.project.ProductOwnerUnassigned
+import at.fhtw.openscrum.management.domain.model.project.ProjectCanceled
 import at.fhtw.openscrum.management.domain.model.project.ProjectCreated
 import at.fhtw.openscrum.management.domain.model.project.ProjectId
 import at.fhtw.openscrum.management.domain.model.project.ProjectInformationChanged
@@ -16,6 +17,7 @@ import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.application.command.AssignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.AssignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.command.CancelProjectCommand
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
@@ -88,6 +90,24 @@ class ManagementEventListenerTest {
             UpdateProjectCommand(
                 projectId = projectId,
                 projectName = projectName,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveProjectCanceledEventWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+
+        val event = ProjectCanceled(projectId = ProjectId(projectId))
+
+        // When
+        managementEventListener.receiveProjectCanceledEvent(event)
+
+        // Then
+        verify(projectApplicationService).cancelProject(
+            CancelProjectCommand(
+                projectId = projectId,
             ),
         )
     }

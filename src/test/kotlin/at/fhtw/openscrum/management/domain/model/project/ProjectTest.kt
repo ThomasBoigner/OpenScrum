@@ -102,6 +102,40 @@ class ProjectTest {
     }
 
     @Test
+    fun ensureCancelPublishesEvents() {
+        // Given
+        val productOwnerId = UserId()
+        val scrumMasterId = UserId()
+        val firstDeveloperId = UserId()
+        val secondDeveloperId = UserId()
+
+        val project =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = productOwnerId,
+                scrumMasterId = scrumMasterId,
+                developerIds = setOf(firstDeveloperId, secondDeveloperId),
+            )
+
+        // When
+        project.cancel()
+
+        // Then
+        assertThat(project.projectCanceledEvents).hasSize(1)
+        assertThat(project.projectCanceledEvents.first().projectId).isEqualTo(project.projectId)
+
+        assertThat(project.productOwnerUnassignedEvents).hasSize(1)
+        assertThat(project.productOwnerUnassignedEvents.first().userId).isEqualTo(productOwnerId)
+
+        assertThat(project.scrumMasterUnassignedEvents).hasSize(1)
+        assertThat(project.scrumMasterUnassignedEvents.first().userId).isEqualTo(scrumMasterId)
+
+        assertThat(project.developerUnassignedEvents).hasSize(2)
+        assertThat(project.developerUnassignedEvents.map { it.userId })
+            .containsExactlyInAnyOrder(firstDeveloperId, secondDeveloperId)
+    }
+
+    @Test
     fun ensureUpdateDoesNotPublishEventsWhenTeamDoesNotChange() {
         // Given
         val productOwner =

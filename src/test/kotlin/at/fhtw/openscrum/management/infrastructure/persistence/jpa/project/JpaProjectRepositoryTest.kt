@@ -71,6 +71,26 @@ class JpaProjectRepositoryTest {
     }
 
     @Test
+    fun ensureDeleteWorksProperly() {
+        // Given
+        val project =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+                developerIds = setOf(UserId()),
+            )
+        projectRepository.save(project)
+
+        // When
+        projectRepository.delete(projectRepository.findByProjectId(project.projectId)!!)
+
+        // Then
+        assertThat(projectRepository.findByProjectId(project.projectId)).isNull()
+        assertThat(projectRepository.findAll()).isEmpty()
+    }
+
+    @Test
     fun ensureFindProjectsOfUserReturnsProjectWhereUserIsProductOwner() {
         // Given
         val userId = UserId()

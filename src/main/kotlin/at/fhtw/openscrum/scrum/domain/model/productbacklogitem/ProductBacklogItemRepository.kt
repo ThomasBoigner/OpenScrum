@@ -15,4 +15,6 @@ interface ProductBacklogItemRepository {
     ): List<ProductBacklogItem>
 
     fun delete(productBacklogItemId: ProductBacklogItemId)
+
+    fun deleteByProjectId(projectId: UUID)
 }

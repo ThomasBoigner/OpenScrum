@@ -41,4 +41,6 @@ class JpaProductBacklogItemRepository(
             productBacklogItemId.productBacklogItemId,
         )
     }
+
+    override fun deleteByProjectId(projectId: UUID) = productBacklogItemEntityRepository.deleteByProjectId(projectId)
 }

@@ -7,6 +7,7 @@ import at.fhtw.openscrum.management.domain.model.user.UserService
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.project.ProjectEntityRepository
 import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
 import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
@@ -977,6 +978,87 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase("multiple roles")
+        webDriver.close()
+    }
+
+    /*
+    Given a manager and a project with a product owner, a scrum master and developers
+    When the manager clicks on the cancel project button
+    Then the project should be removed and ProjectCanceled, ProductOwnerUnassigned, ScrumMasterUnassigned
+    and DeveloperUnassigned events should be published
+     */
+    @Test
+    fun ensureCancelProjectWorksProperly() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+        val developer =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "developer",
+                firstName = "Developer",
+                lastName = "User",
+                password = "abc123",
+                email = "developer@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(developer),
+            )
+
+        val webDriver = createHeadlessChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        // login as admin
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        // cancel the project
+        wait.until(
+            ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("#project-${project.projectId.token} .delete-button"),
+            ),
+        )
+        // The floating create button overlaps the delete button, so the click is dispatched via JavaScript.
+        // htmx attaches its listeners in the settle phase after the swap, so the click is retried until the row is removed.
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(500))
+            .until {
+                webDriver.executeScript("document.querySelector('#project-${project.projectId.token} .delete-button')?.click()")
+                webDriver.findElements(By.cssSelector("#project-${project.projectId.token}")).isEmpty()
+            }
+
+        // Then
+        assertThat(webDriver.findElements(By.cssSelector("#project-${project.projectId.token}"))).isEmpty()
+        assertThat(projectEntityRepository.findByProjectId(project.projectId.token)).isNull()
         webDriver.close()
     }
 }

@@ -4,4 +4,6 @@ interface ProjectRepository {
     fun save(project: Project): Project
 
     fun findByProjectId(projectId: ProjectId): Project?
+
+    fun delete(projectId: ProjectId)
 }
