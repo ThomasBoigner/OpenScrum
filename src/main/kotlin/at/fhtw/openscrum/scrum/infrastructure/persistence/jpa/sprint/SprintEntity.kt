@@ -29,7 +29,11 @@ class SprintEntity(
     @Enumerated(EnumType.STRING)
     var status: SprintStatus,
     var sprintGoal: String?,
-    @OneToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE], fetch = FetchType.EAGER)
+    @OneToMany(
+        cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE],
+        fetch = FetchType.EAGER,
+        orphanRemoval = true,
+    )
     var sprintBacklogItems: MutableSet<SprintBacklogItemEntity> = mutableSetOf(),
 ) : AbstractAggregateRoot<SprintEntity>() {
     constructor(sprint: Sprint) : this(
