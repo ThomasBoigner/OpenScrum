@@ -1,7 +1,6 @@
 package at.fhtw.openscrum.management.presentation.forms
 
 import at.fhtw.openscrum.management.application.command.UpdateProjectCommand
-import at.fhtw.openscrum.management.application.dtos.ProjectDto
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import java.util.UUID

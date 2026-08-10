@@ -4,7 +4,7 @@
 
 Given a manager, an existing project, a new project name, a new product owner, a new scrum master and new developers  
 When the manager enters the information into the update project form  
-Then the project information should be updated and ProductOwnerUnassigned, ProductOwnerAssigned, ScrumMasterUnassigned ScrumMasterAssigned, DeveloperUnassigned, DeveloperAssigned events should be published 
+Then the project information should be updated and ProjectInformationChanged, ProductOwnerUnassigned, ProductOwnerAssigned, ScrumMasterUnassigned ScrumMasterAssigned, DeveloperUnassigned, DeveloperAssigned events should be published 
 
 ## Test 2 - Management context
 
@@ -50,17 +50,23 @@ Then he receives an error one user can not have multiple roles
 
 ## Test 9 - Scrum context
 
+Given a project and a ProjectInformationChanged event
+When the ProjectInformationChanged event is received
+Then the project information should be updated
+
+## Test 10 - Scrum context
+
 Given a project with a product owner and a ProductOwnerUnassigned event  
 When the ProductOwnerUnassigned event is received  
 Then the product owner should be removed
 
-## Test 10 - Scrum context
+## Test 11 - Scrum context
 
 Given a project with a scrum master and a ScrumMasterUnassigned event  
 When the ScrumMasterUnassigned event is received  
 Then the scrum master should be removed
 
-## Test 11 - Scrum context
+## Test 12 - Scrum context
 
 Given a project with a developer and a DeveloperUnassigned event  
 When the DeveloperUnassigned event is received  

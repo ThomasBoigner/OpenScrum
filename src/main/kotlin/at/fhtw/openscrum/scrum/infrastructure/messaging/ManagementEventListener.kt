@@ -5,6 +5,7 @@ import at.fhtw.openscrum.management.domain.model.project.DeveloperUnassigned
 import at.fhtw.openscrum.management.domain.model.project.ProductOwnerAssigned
 import at.fhtw.openscrum.management.domain.model.project.ProductOwnerUnassigned
 import at.fhtw.openscrum.management.domain.model.project.ProjectCreated
+import at.fhtw.openscrum.management.domain.model.project.ProjectInformationChanged
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterAssigned
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterUnassigned
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
@@ -16,6 +17,7 @@ import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateProjectCommand
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.modulith.events.ApplicationModuleListener
@@ -32,6 +34,17 @@ class ManagementEventListener(
         log.trace("Received create project event: {}", event)
         projectApplicationService.createProject(
             CreateProjectCommand(
+                projectId = event.projectId.token,
+                projectName = event.projectName,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveProjectInformationChangedEvent(event: ProjectInformationChanged) {
+        log.trace("Received project information changed event: {}", event)
+        projectApplicationService.updateProject(
+            UpdateProjectCommand(
                 projectId = event.projectId.token,
                 projectName = event.projectName,
             ),

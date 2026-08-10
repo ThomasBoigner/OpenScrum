@@ -11,6 +11,7 @@ class Project(
     scrumMasterId: UserId,
     developerIds: Set<UserId> = setOf(),
     val projectCreatedEvents: MutableList<ProjectCreated> = mutableListOf(ProjectCreated(projectId, projectName)),
+    val projectInformationChangedEvents: MutableList<ProjectInformationChanged> = mutableListOf(),
     val scrumMasterAssignedEvents: MutableList<ScrumMasterAssigned> = mutableListOf(),
     val productOwnerAssignedEvents: MutableList<ProductOwnerAssigned> = mutableListOf(),
     val developerAssignedEvents: MutableList<DeveloperAssigned> = mutableListOf(),
@@ -43,7 +44,10 @@ class Project(
         scrumMaster: User,
         developers: Set<User>,
     ) {
-        this.projectName = projectName
+        if (this.projectName != projectName) {
+            this.projectName = projectName
+            projectInformationChangedEvents.add(ProjectInformationChanged(projectId, projectName))
+        }
 
         if (productOwner.userId != productOwnerId) {
             productOwnerUnassignedEvents.add(ProductOwnerUnassigned(productOwnerId, projectId))

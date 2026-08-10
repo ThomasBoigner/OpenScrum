@@ -194,16 +194,17 @@ class ProjectApplicationServiceTest {
     }
 
     @Test
-    fun ensureGetProjectThrowsExceptionIfProjectCanNotBeFound() {
+    fun ensureGetProjectReturnsNullIfProjectCanNotBeFound() {
         // Given
         val projectId = ProjectId()
 
         whenever(projectRepository.findByProjectId(projectId)).thenReturn(null)
 
-        // When / Then
-        assertThrows<IllegalArgumentException> {
-            projectApplicationService.getProject(projectId.token)
-        }
+        // When
+        val result = projectApplicationService.getProject(projectId.token)
+
+        // Then
+        assertThat(result).isNull()
     }
 
     @Test

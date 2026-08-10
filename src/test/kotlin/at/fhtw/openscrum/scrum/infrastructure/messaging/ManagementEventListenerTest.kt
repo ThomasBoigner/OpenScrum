@@ -6,6 +6,7 @@ import at.fhtw.openscrum.management.domain.model.project.ProductOwnerAssigned
 import at.fhtw.openscrum.management.domain.model.project.ProductOwnerUnassigned
 import at.fhtw.openscrum.management.domain.model.project.ProjectCreated
 import at.fhtw.openscrum.management.domain.model.project.ProjectId
+import at.fhtw.openscrum.management.domain.model.project.ProjectInformationChanged
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterAssigned
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterUnassigned
 import at.fhtw.openscrum.management.domain.model.user.FullName
@@ -19,6 +20,7 @@ import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateProjectCommand
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -60,6 +62,30 @@ class ManagementEventListenerTest {
         // Then
         verify(projectApplicationService).createProject(
             CreateProjectCommand(
+                projectId = projectId,
+                projectName = projectName,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveProjectInformationChangedEventWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val projectName = "OpenScrum 2"
+
+        val event =
+            ProjectInformationChanged(
+                projectId = ProjectId(projectId),
+                projectName = projectName,
+            )
+
+        // When
+        managementEventListener.receiveProjectInformationChangedEvent(event)
+
+        // Then
+        verify(projectApplicationService).updateProject(
+            UpdateProjectCommand(
                 projectId = projectId,
                 projectName = projectName,
             ),

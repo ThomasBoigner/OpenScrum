@@ -82,6 +82,9 @@ class ProjectTest {
         assertThat(project.scrumMasterId).isEqualTo(scrumMaster.userId)
         assertThat(project.developerIds).containsExactly(developer.userId)
 
+        assertThat(project.projectInformationChangedEvents).hasSize(1)
+        assertThat(project.projectInformationChangedEvents.first().projectName).isEqualTo("OpenScrum 2")
+
         assertThat(project.productOwnerUnassignedEvents).hasSize(1)
         assertThat(project.productOwnerUnassignedEvents.first().userId).isEqualTo(oldProductOwnerId)
         assertThat(project.productOwnerAssignedEvents).hasSize(1)
@@ -146,12 +149,55 @@ class ProjectTest {
 
         // Then
         assertThat(project.projectName).isEqualTo("OpenScrum 2")
+        assertThat(project.projectInformationChangedEvents).hasSize(1)
         assertThat(project.productOwnerUnassignedEvents).isEmpty()
         assertThat(project.productOwnerAssignedEvents).isEmpty()
         assertThat(project.scrumMasterUnassignedEvents).isEmpty()
         assertThat(project.scrumMasterAssignedEvents).isEmpty()
         assertThat(project.developerUnassignedEvents).isEmpty()
         assertThat(project.developerAssignedEvents).isEmpty()
+    }
+
+    @Test
+    fun ensureUpdateDoesNotPublishProjectInformationChangedWhenNameIsUnchanged() {
+        // Given
+        val productOwner =
+            User(
+                username = "productOwner",
+                emailAddress = EmailAddress("product.owner@gmail.com"),
+                fullName = FullName("Product", "Owner"),
+                password = "password",
+                role = Role.USER,
+            )
+
+        val scrumMaster =
+            User(
+                username = "scrumMaster",
+                emailAddress = EmailAddress("scrum.master@gmail.com"),
+                fullName = FullName("Scrum", "Master"),
+                password = "password",
+                role = Role.USER,
+            )
+
+        val project =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = productOwner.userId,
+                scrumMasterId = scrumMaster.userId,
+                developerIds = setOf(),
+            )
+
+        // When
+        project.update(
+            projectName = "OpenScrum",
+            productOwner = productOwner,
+            scrumMaster = scrumMaster,
+            developers = setOf(),
+        )
+
+        // Then
+        assertThat(project.projectName).isEqualTo("OpenScrum")
+        assertThat(project.projectInformationChangedEvents).isEmpty()
     }
 
     @Test

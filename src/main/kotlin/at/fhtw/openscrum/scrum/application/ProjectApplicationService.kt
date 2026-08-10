@@ -5,6 +5,7 @@ import at.fhtw.openscrum.scrum.application.command.DefineDefinitionOfDoneCommand
 import at.fhtw.openscrum.scrum.application.command.DefineProductGoalCommand
 import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
 import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateProjectCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProjectDto
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
@@ -43,6 +44,22 @@ class ProjectApplicationService(
             )
 
         log.info("Created project {}", project)
+        return ProjectDto(projectRepository.save(project))
+    }
+
+    @Transactional(readOnly = false)
+    fun updateProject(command: UpdateProjectCommand): ProjectDto? {
+        log.debug("Trying to update project with command: {}", command)
+
+        val project = projectRepository.findByProjectId(ProjectId(command.projectId))
+
+        if (project == null) {
+            log.error("Cannot update project, project with projectId {} does not exist", command.projectId)
+            return null
+        }
+
+        project.updateProjectInformation(command.projectName)
+        log.info("Updated project {}", project)
         return ProjectDto(projectRepository.save(project))
     }
 
