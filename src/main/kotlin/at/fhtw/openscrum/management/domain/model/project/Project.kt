@@ -18,6 +18,7 @@ class Project(
     val scrumMasterUnassignedEvents: MutableList<ScrumMasterUnassigned> = mutableListOf(),
     val productOwnerUnassignedEvents: MutableList<ProductOwnerUnassigned> = mutableListOf(),
     val developerUnassignedEvents: MutableList<DeveloperUnassigned> = mutableListOf(),
+    val projectCanceledEvents: MutableList<ProjectCanceled> = mutableListOf(),
 ) {
     var projectName: String = ""
         private set(value) {
@@ -73,6 +74,13 @@ class Project(
             .filter { it.userId !in developerIds }
             .forEach { developerAssignedEvents.add(DeveloperAssigned(it.userId, projectId, it.username, it.fullName)) }
         developerIds = newDeveloperIds
+    }
+
+    fun cancel() {
+        projectCanceledEvents.add(ProjectCanceled(projectId))
+        productOwnerUnassignedEvents.add(ProductOwnerUnassigned(productOwnerId, projectId))
+        scrumMasterUnassignedEvents.add(ScrumMasterUnassigned(scrumMasterId, projectId))
+        developerIds.forEach { developerUnassignedEvents.add(DeveloperUnassigned(it, projectId)) }
     }
 
     override fun toString(): String =

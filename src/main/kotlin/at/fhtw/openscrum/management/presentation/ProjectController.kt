@@ -2,21 +2,25 @@ package at.fhtw.openscrum.management.presentation
 
 import at.fhtw.openscrum.management.application.ProjectApplicationService
 import at.fhtw.openscrum.management.application.UserApplicationService
+import at.fhtw.openscrum.management.application.command.CancelProjectCommand
 import at.fhtw.openscrum.management.presentation.forms.CreateProjectForm
 import at.fhtw.openscrum.management.presentation.forms.UpdateProjectForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
 import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
 import java.security.Principal
 import java.util.UUID
 
@@ -32,6 +36,7 @@ class ProjectController(
         const val PATH_INDEX = "/"
         const val ROUTE_CREATE = "/create"
         const val ROUTE_UPDATE = "/{projectId}/update"
+        const val ROUTE_CANCEL = "/{projectId}/cancel"
         const val FRAGMENT_PROJECTS_LIST_ITEM = "/list"
         const val FRAGMENT_DEVELOPERS_LIST_ITEM = "/developer-list"
     }
@@ -171,5 +176,23 @@ class ProjectController(
         }
 
         return "redirect:$BASE_URL"
+    }
+
+    @HxRequest
+    @DeleteMapping(value = [ROUTE_CANCEL])
+    @ResponseStatus(value = HttpStatus.OK)
+    fun cancelProject(
+        principal: Principal,
+        @PathVariable projectId: UUID,
+    ) {
+        log.debug("Received http DELETE request to cancel project with id {}", projectId)
+        try {
+            projectApplicationService.cancelProject(
+                principal.name,
+                CancelProjectCommand(projectId),
+            )
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while cancelling project with message: {}", ex.message)
+        }
     }
 }

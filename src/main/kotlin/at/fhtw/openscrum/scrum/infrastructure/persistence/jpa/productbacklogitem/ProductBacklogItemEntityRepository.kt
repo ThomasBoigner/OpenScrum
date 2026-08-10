@@ -22,4 +22,7 @@ interface ProductBacklogItemEntityRepository : JpaRepository<ProductBacklogItemE
         projectId: UUID,
         productBacklogItemId: UUID,
     )
+
+    @Transactional
+    fun deleteByProjectId(projectId: UUID)
 }

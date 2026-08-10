@@ -31,6 +31,7 @@ class ProjectEntity(
     ) {
         project.projectCreatedEvents.forEach { this.registerEvent(it) }
         project.projectInformationChangedEvents.forEach { this.registerEvent(it) }
+        project.projectCanceledEvents.forEach { this.registerEvent(it) }
         project.scrumMasterAssignedEvents.forEach { this.registerEvent(it) }
         project.productOwnerAssignedEvents.forEach { this.registerEvent(it) }
         project.developerAssignedEvents.forEach { this.registerEvent(it) }

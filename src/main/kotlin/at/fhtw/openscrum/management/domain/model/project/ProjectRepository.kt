@@ -11,5 +11,7 @@ interface ProjectRepository {
 
     fun save(project: Project): Project
 
+    fun delete(project: Project)
+
     fun existsByProjectName(projectName: String): Boolean
 }

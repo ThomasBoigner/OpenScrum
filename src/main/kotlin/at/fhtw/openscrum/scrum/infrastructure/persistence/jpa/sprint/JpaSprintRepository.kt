@@ -26,4 +26,6 @@ class JpaSprintRepository(
             .map { it.toSprint() }
 
     override fun countByProjectId(projectId: UUID): Int = sprintEntityRepository.countByProjectId(projectId)
+
+    override fun deleteByProjectId(projectId: UUID) = sprintEntityRepository.deleteAll(sprintEntityRepository.findByProjectId(projectId))
 }

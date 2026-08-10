@@ -49,6 +49,26 @@ class JpaProjectRepositoryTest {
     }
 
     @Test
+    fun ensureDeleteWorksProperly() {
+        // Given
+        val project =
+            Project(
+                projectId = ProjectId(UUID.randomUUID()),
+                projectName = "OpenScrum",
+                sprintLength = SprintLength(3),
+                definitionOfDone = "All tests pass",
+                productGoal = "Deliver MVP",
+            )
+        projectRepository.save(project)
+
+        // When
+        projectRepository.delete(project.projectId)
+
+        // Then
+        assertThat(projectRepository.findByProjectId(project.projectId)).isNull()
+    }
+
+    @Test
     fun ensureFindByProjectIdWorksProperly() {
         // Given
         val project =

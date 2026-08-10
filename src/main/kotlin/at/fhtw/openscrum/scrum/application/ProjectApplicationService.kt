@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.scrum.application
 
+import at.fhtw.openscrum.scrum.application.command.CancelProjectCommand
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
 import at.fhtw.openscrum.scrum.application.command.DefineDefinitionOfDoneCommand
 import at.fhtw.openscrum.scrum.application.command.DefineProductGoalCommand
@@ -7,9 +8,11 @@ import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
 import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
 import at.fhtw.openscrum.scrum.application.command.UpdateProjectCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProjectDto
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectRepository
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import org.slf4j.Logger
@@ -24,6 +27,8 @@ class ProjectApplicationService(
     private val projectRepository: ProjectRepository,
     private val scrumMasterRepository: ScrumMasterRepository,
     private val productOwnerRepository: ProductOwnerRepository,
+    private val sprintRepository: SprintRepository,
+    private val productBacklogItemRepository: ProductBacklogItemRepository,
     private val log: Logger = LoggerFactory.getLogger(ProjectApplicationService::class.java),
 ) {
     fun getProject(projectId: UUID): ProjectDto? {
@@ -61,6 +66,17 @@ class ProjectApplicationService(
         project.updateProjectInformation(command.projectName)
         log.info("Updated project {}", project)
         return ProjectDto(projectRepository.save(project))
+    }
+
+    @Transactional(readOnly = false)
+    fun cancelProject(command: CancelProjectCommand) {
+        log.debug("Trying to cancel project with command: {}", command)
+
+        sprintRepository.deleteByProjectId(command.projectId)
+        productBacklogItemRepository.deleteByProjectId(command.projectId)
+        projectRepository.delete(ProjectId(command.projectId))
+
+        log.info("Canceled project with id {}", command.projectId)
     }
 
     @Transactional(readOnly = false)

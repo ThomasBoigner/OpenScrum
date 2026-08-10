@@ -1,14 +1,17 @@
 package at.fhtw.openscrum.scrum.application
 
+import at.fhtw.openscrum.scrum.application.command.CancelProjectCommand
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
 import at.fhtw.openscrum.scrum.application.command.DefineDefinitionOfDoneCommand
 import at.fhtw.openscrum.scrum.application.command.DefineProductGoalCommand
 import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
 import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
 import at.fhtw.openscrum.scrum.application.command.UpdateProjectCommand
+import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectRepository
+import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
@@ -23,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.UUID
 
@@ -39,9 +43,37 @@ class ProjectApplicationServiceTest {
     @Mock
     lateinit var productOwnerRepository: ProductOwnerRepository
 
+    @Mock
+    lateinit var sprintRepository: SprintRepository
+
+    @Mock
+    lateinit var productBacklogItemRepository: ProductBacklogItemRepository
+
     @BeforeEach
     fun setUp() {
-        projectApplicationService = ProjectApplicationService(projectRepository, scrumMasterRepository, productOwnerRepository)
+        projectApplicationService =
+            ProjectApplicationService(
+                projectRepository,
+                scrumMasterRepository,
+                productOwnerRepository,
+                sprintRepository,
+                productBacklogItemRepository,
+            )
+    }
+
+    @Test
+    fun ensureCancelProjectWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val command = CancelProjectCommand(projectId = projectId)
+
+        // When
+        projectApplicationService.cancelProject(command)
+
+        // Then
+        verify(sprintRepository).deleteByProjectId(projectId)
+        verify(productBacklogItemRepository).deleteByProjectId(projectId)
+        verify(projectRepository).delete(ProjectId(projectId))
     }
 
     @Test

@@ -4,6 +4,7 @@ import at.fhtw.openscrum.management.domain.model.project.DeveloperAssigned
 import at.fhtw.openscrum.management.domain.model.project.DeveloperUnassigned
 import at.fhtw.openscrum.management.domain.model.project.ProductOwnerAssigned
 import at.fhtw.openscrum.management.domain.model.project.ProductOwnerUnassigned
+import at.fhtw.openscrum.management.domain.model.project.ProjectCanceled
 import at.fhtw.openscrum.management.domain.model.project.ProjectCreated
 import at.fhtw.openscrum.management.domain.model.project.ProjectInformationChanged
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterAssigned
@@ -13,6 +14,7 @@ import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.application.command.AssignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.AssignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.command.CancelProjectCommand
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
@@ -47,6 +49,16 @@ class ManagementEventListener(
             UpdateProjectCommand(
                 projectId = event.projectId.token,
                 projectName = event.projectName,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveProjectCanceledEvent(event: ProjectCanceled) {
+        log.trace("Received project canceled event: {}", event)
+        projectApplicationService.cancelProject(
+            CancelProjectCommand(
+                projectId = event.projectId.token,
             ),
         )
     }

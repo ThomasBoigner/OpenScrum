@@ -105,4 +105,17 @@ class ProjectService(
         log.info("Updated Project {}", project)
         return projectRepository.save(project)
     }
+
+    fun cancelProject(
+        authenticatedUser: User,
+        projectId: ProjectId,
+    ) {
+        log.debug("Trying to cancel project {}", projectId)
+        require(authenticatedUser.role.isManager) { "You have no permission to cancel projects!" }
+        val project = projectRepository.findByProjectId(projectId) ?: return
+
+        project.cancel()
+        projectRepository.delete(project)
+        log.info("Canceled Project {}", project)
+    }
 }

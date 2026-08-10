@@ -844,4 +844,84 @@ class ProjectServiceTest {
             )
         }
     }
+
+    @Test
+    fun ensureCancelProjectWorksProperly() {
+        // Given
+        val manager =
+            User(
+                username = "manager",
+                emailAddress = EmailAddress("manager@gmail.com"),
+                fullName = FullName("Manager", "User"),
+                password = "password",
+                role = Role.MANAGER,
+            )
+
+        val developerId = UserId()
+        val project =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+                developerIds = setOf(developerId),
+            )
+
+        whenever(projectRepository.findByProjectId(project.projectId)).thenReturn(project)
+
+        // When
+        projectService.cancelProject(authenticatedUser = manager, projectId = project.projectId)
+
+        // Then
+        verify(projectRepository).delete(project)
+        assertThat(project.projectCanceledEvents).hasSize(1)
+        assertThat(project.productOwnerUnassignedEvents).hasSize(1)
+        assertThat(project.scrumMasterUnassignedEvents).hasSize(1)
+        assertThat(project.developerUnassignedEvents).hasSize(1)
+    }
+
+    @Test
+    fun ensureCancelProjectThrowsExceptionWhenUserIsNotAManager() {
+        // Given
+        val user =
+            User(
+                username = "user",
+                emailAddress = EmailAddress("user@gmail.com"),
+                fullName = FullName("Regular", "User"),
+                password = "password",
+                role = Role.USER,
+            )
+
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                projectService.cancelProject(authenticatedUser = user, projectId = ProjectId())
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("You have no permission to cancel projects!")
+        verify(projectRepository, never()).delete(any())
+    }
+
+    @Test
+    fun ensureCancelProjectDoesNotThrowExceptionWhenProjectDoesNotExist() {
+        // Given
+        val projectId = ProjectId()
+
+        val manager =
+            User(
+                username = "manager",
+                emailAddress = EmailAddress("manager@gmail.com"),
+                fullName = FullName("Manager", "User"),
+                password = "password",
+                role = Role.MANAGER,
+            )
+
+        whenever(projectRepository.findByProjectId(projectId)).thenReturn(null)
+
+        // When
+        projectService.cancelProject(authenticatedUser = manager, projectId = projectId)
+
+        // Then
+        verify(projectRepository, never()).delete(any())
+    }
 }

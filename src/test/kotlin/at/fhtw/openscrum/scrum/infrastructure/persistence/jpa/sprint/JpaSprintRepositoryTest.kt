@@ -9,6 +9,7 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
+import jakarta.persistence.EntityManager
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -26,6 +27,9 @@ class JpaSprintRepositoryTest {
 
     @Autowired
     lateinit var sprintEntityRepository: SprintEntityRepository
+
+    @Autowired
+    lateinit var entityManager: EntityManager
 
     @BeforeEach
     fun cleanUp() {
@@ -73,6 +77,55 @@ class JpaSprintRepositoryTest {
         assertThat(
             savedItem.sprintBacklogItemId.productBacklogItemId,
         ).isEqualTo(productBacklogItem.productBacklogItemId.productBacklogItemId)
+    }
+
+    @Test
+    fun ensureDeleteByProjectIdWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement login",
+                description = "As a user I want to log in",
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintNumber = 1,
+                startDate = LocalDate.of(2025, 1, 6),
+                sprintLength = 2,
+            )
+        val scrumMaster =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "john.doe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        sprint.planSprint(scrumMaster, "Sprint Goal", setOf(productBacklogItem))
+        sprintRepository.save(sprint)
+
+        val sprintOfAnotherProject =
+            Sprint(
+                sprintId = SprintId(projectId = UUID.randomUUID()),
+                sprintNumber = 1,
+                startDate = LocalDate.of(2025, 1, 6),
+                sprintLength = 2,
+            )
+        sprintRepository.save(sprintOfAnotherProject)
+
+        // When
+        sprintRepository.deleteByProjectId(projectId)
+
+        // Then
+        assertThat(sprintRepository.findSprintsByProjectId(projectId)).isEmpty()
+        assertThat(sprintRepository.findSprintsByProjectId(sprintOfAnotherProject.sprintId.projectId)).hasSize(1)
+        // the sprint backlog items are removed together with their sprint
+        val remainingSprintBacklogItems =
+            entityManager
+                .createQuery("SELECT COUNT(item) FROM SprintBacklogItemEntity item", Long::class.javaObjectType)
+                .singleResult
+        assertThat(remainingSprintBacklogItems).isZero()
     }
 
     @Test

@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.management.application
 
+import at.fhtw.openscrum.management.application.command.CancelProjectCommand
 import at.fhtw.openscrum.management.application.command.CreateProjectCommand
 import at.fhtw.openscrum.management.application.command.UpdateProjectCommand
 import at.fhtw.openscrum.management.application.dtos.ProjectDto
@@ -97,6 +98,23 @@ class ProjectApplicationService(
                 scrumMaster = scrumMaster,
                 developers = developers,
             ),
+        )
+    }
+
+    @Transactional(readOnly = false)
+    fun cancelProject(
+        authenticatedUserUsername: String,
+        command: CancelProjectCommand,
+    ) {
+        log.debug("User {} is trying to cancel project with id {}", authenticatedUserUsername, command.projectId)
+
+        val authenticatedUser =
+            userRepository.findByUsername(authenticatedUserUsername)
+                ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
+
+        projectService.cancelProject(
+            authenticatedUser = authenticatedUser,
+            projectId = ProjectId(command.projectId),
         )
     }
 }

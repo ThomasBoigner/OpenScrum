@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.management.application
 
+import at.fhtw.openscrum.management.application.command.CancelProjectCommand
 import at.fhtw.openscrum.management.application.command.CreateProjectCommand
 import at.fhtw.openscrum.management.application.command.UpdateProjectCommand
 import at.fhtw.openscrum.management.application.dtos.ProjectDto
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExtendWith(MockitoExtension::class)
@@ -283,6 +285,47 @@ class ProjectApplicationServiceTest {
 
         // Then
         assertThat(projectDto).isEqualTo(ProjectDto(expectedProject))
+    }
+
+    @Test
+    fun ensureCancelProjectWorksProperly() {
+        // Given
+        val manager =
+            User(
+                username = "manager",
+                emailAddress = EmailAddress("manager@gmail.com"),
+                fullName = FullName("Manager", "User"),
+                password = "abc123",
+                role = Role.MANAGER,
+            )
+
+        val command = CancelProjectCommand(projectId = ProjectId().token)
+
+        whenever(userRepository.findByUsername(manager.username)).thenReturn(manager)
+
+        // When
+        projectApplicationService.cancelProject(manager.username, command)
+
+        // Then
+        verify(projectService).cancelProject(
+            authenticatedUser = manager,
+            projectId = ProjectId(command.projectId),
+        )
+    }
+
+    @Test
+    fun ensureCancelProjectThrowsExceptionIfAuthenticatedUserCanNotBeFound() {
+        // Given
+        val authenticatedUserUsername = "manager"
+
+        val command = CancelProjectCommand(projectId = ProjectId().token)
+
+        whenever(userRepository.findByUsername(authenticatedUserUsername)).thenReturn(null)
+
+        // When / Then
+        assertThrows<IllegalArgumentException> {
+            projectApplicationService.cancelProject(authenticatedUserUsername, command)
+        }
     }
 
     @Test
