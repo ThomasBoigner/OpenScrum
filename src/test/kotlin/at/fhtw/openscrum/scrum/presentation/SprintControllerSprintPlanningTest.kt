@@ -779,6 +779,15 @@ class SprintControllerSprintPlanningTest {
         // Then
         assertThat(webDriver.pageSource).contains("Sprint goal must not be blank!")
 
+        // the previously selected product backlog items stay selected
+        val reloadedCheckbox =
+            wait.until(
+                ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("input[name='productBacklogIds'][value='${productBacklogItem.productBacklogItemId}']"),
+                ),
+            )
+        assertThat(reloadedCheckbox.isSelected).isTrue()
+
         webDriver.close()
     }
 
