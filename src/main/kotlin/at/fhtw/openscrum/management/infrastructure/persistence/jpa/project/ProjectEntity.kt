@@ -33,6 +33,9 @@ class ProjectEntity(
         project.scrumMasterAssignedEvents.forEach { this.registerEvent(it) }
         project.productOwnerAssignedEvents.forEach { this.registerEvent(it) }
         project.developerAssignedEvents.forEach { this.registerEvent(it) }
+        project.scrumMasterUnassignedEvents.forEach { this.registerEvent(it) }
+        project.productOwnerUnassignedEvents.forEach { this.registerEvent(it) }
+        project.developerUnassignedEvents.forEach { this.registerEvent(it) }
     }
 
     fun toProject(): Project =

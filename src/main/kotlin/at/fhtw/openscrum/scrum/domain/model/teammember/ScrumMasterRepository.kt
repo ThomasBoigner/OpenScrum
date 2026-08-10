@@ -11,4 +11,6 @@ interface ScrumMasterRepository {
         projectId: UUID,
         username: String,
     ): ScrumMaster?
+
+    fun delete(teamMemberId: TeamMemberId)
 }

@@ -1,10 +1,13 @@
 package at.fhtw.openscrum.scrum.infrastructure.messaging
 
 import at.fhtw.openscrum.management.domain.model.project.DeveloperAssigned
+import at.fhtw.openscrum.management.domain.model.project.DeveloperUnassigned
 import at.fhtw.openscrum.management.domain.model.project.ProductOwnerAssigned
+import at.fhtw.openscrum.management.domain.model.project.ProductOwnerUnassigned
 import at.fhtw.openscrum.management.domain.model.project.ProjectCreated
 import at.fhtw.openscrum.management.domain.model.project.ProjectId
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterAssigned
+import at.fhtw.openscrum.management.domain.model.project.ScrumMasterUnassigned
 import at.fhtw.openscrum.management.domain.model.user.FullName
 import at.fhtw.openscrum.management.domain.model.user.UserId
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
@@ -13,6 +16,9 @@ import at.fhtw.openscrum.scrum.application.command.AssignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.AssignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -140,6 +146,75 @@ class ManagementEventListenerTest {
                 username = "jsmith",
                 firstName = "Jane",
                 lastName = "Smith",
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveProductOwnerUnassignedEventWorksProperly() {
+        // Given
+        val userId = UUID.randomUUID()
+        val projectId = UUID.randomUUID()
+        val event =
+            ProductOwnerUnassigned(
+                userId = UserId(userId),
+                projectId = ProjectId(projectId),
+            )
+
+        // When
+        managementEventListener.receiveProductOwnerUnassignedEvent(event)
+
+        // Then
+        verify(teamMemberApplicationService).unassignProductOwner(
+            UnassignProductOwnerCommand(
+                userId = userId,
+                projectId = projectId,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveScrumMasterUnassignedEventWorksProperly() {
+        // Given
+        val userId = UUID.randomUUID()
+        val projectId = UUID.randomUUID()
+        val event =
+            ScrumMasterUnassigned(
+                userId = UserId(userId),
+                projectId = ProjectId(projectId),
+            )
+
+        // When
+        managementEventListener.receiveScrumMasterUnassignedEvent(event)
+
+        // Then
+        verify(teamMemberApplicationService).unassignScrumMaster(
+            UnassignScrumMasterCommand(
+                userId = userId,
+                projectId = projectId,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveDeveloperUnassignedEventWorksProperly() {
+        // Given
+        val userId = UUID.randomUUID()
+        val projectId = UUID.randomUUID()
+        val event =
+            DeveloperUnassigned(
+                userId = UserId(userId),
+                projectId = ProjectId(projectId),
+            )
+
+        // When
+        managementEventListener.receiveDeveloperUnassignedEvent(event)
+
+        // Then
+        verify(teamMemberApplicationService).unassignDeveloper(
+            UnassignDeveloperCommand(
+                userId = userId,
+                projectId = projectId,
             ),
         )
     }

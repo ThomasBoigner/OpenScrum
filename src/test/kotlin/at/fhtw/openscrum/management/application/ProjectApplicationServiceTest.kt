@@ -1,8 +1,11 @@
 package at.fhtw.openscrum.management.application
 
 import at.fhtw.openscrum.management.application.command.CreateProjectCommand
+import at.fhtw.openscrum.management.application.command.UpdateProjectCommand
 import at.fhtw.openscrum.management.application.dtos.ProjectDto
 import at.fhtw.openscrum.management.domain.model.project.Project
+import at.fhtw.openscrum.management.domain.model.project.ProjectId
+import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import at.fhtw.openscrum.management.domain.model.project.ProjectService
 import at.fhtw.openscrum.management.domain.model.user.EmailAddress
 import at.fhtw.openscrum.management.domain.model.user.FullName
@@ -27,11 +30,14 @@ class ProjectApplicationServiceTest {
     lateinit var projectService: ProjectService
 
     @Mock
+    lateinit var projectRepository: ProjectRepository
+
+    @Mock
     lateinit var userRepository: UserRepository
 
     @BeforeEach
     fun setUp() {
-        projectApplicationService = ProjectApplicationService(projectService, userRepository)
+        projectApplicationService = ProjectApplicationService(projectService, projectRepository, userRepository)
     }
 
     @Test
@@ -165,6 +171,138 @@ class ProjectApplicationServiceTest {
         // When / Then
         assertThrows<IllegalArgumentException> {
             projectApplicationService.createProject(authenticatedUserUsername, command)
+        }
+    }
+
+    @Test
+    fun ensureGetProjectWorksProperly() {
+        // Given
+        val project =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+
+        whenever(projectRepository.findByProjectId(project.projectId)).thenReturn(project)
+
+        // When
+        val result = projectApplicationService.getProject(project.projectId.token)
+
+        // Then
+        assertThat(result).isEqualTo(ProjectDto(project))
+    }
+
+    @Test
+    fun ensureGetProjectThrowsExceptionIfProjectCanNotBeFound() {
+        // Given
+        val projectId = ProjectId()
+
+        whenever(projectRepository.findByProjectId(projectId)).thenReturn(null)
+
+        // When / Then
+        assertThrows<IllegalArgumentException> {
+            projectApplicationService.getProject(projectId.token)
+        }
+    }
+
+    @Test
+    fun ensureUpdateProjectWorksProperly() {
+        // Given
+        val manager =
+            User(
+                username = "manager",
+                emailAddress = EmailAddress("manager@gmail.com"),
+                fullName = FullName("Manager", "User"),
+                password = "abc123",
+                role = Role.MANAGER,
+            )
+
+        val productOwner =
+            User(
+                username = "product.owner",
+                emailAddress = EmailAddress("product.owner@gmail.com"),
+                fullName = FullName("Product", "Owner"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        val scrumMaster =
+            User(
+                username = "scrum.master",
+                emailAddress = EmailAddress("scrum.master@gmail.com"),
+                fullName = FullName("Scrum", "Master"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        val developer =
+            User(
+                username = "developer",
+                emailAddress = EmailAddress("developer@gmail.com"),
+                fullName = FullName("Developer", "User"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        val expectedProject =
+            Project(
+                projectName = "OpenScrum 2",
+                productOwnerId = productOwner.userId,
+                scrumMasterId = scrumMaster.userId,
+                developerIds = setOf(developer.userId),
+            )
+
+        val command =
+            UpdateProjectCommand(
+                projectId = expectedProject.projectId.token,
+                projectName = expectedProject.projectName,
+                productOwnerId = productOwner.userId.token,
+                scrumMasterId = scrumMaster.userId.token,
+                developerIds = setOf(developer.userId.token),
+            )
+
+        whenever(userRepository.findByUsername(manager.username)).thenReturn(manager)
+        whenever(userRepository.findByUserId(productOwner.userId)).thenReturn(productOwner)
+        whenever(userRepository.findByUserId(scrumMaster.userId)).thenReturn(scrumMaster)
+        whenever(userRepository.findByUserId(developer.userId)).thenReturn(developer)
+        whenever(
+            projectService.updateProject(
+                authenticatedUser = manager,
+                projectId = expectedProject.projectId,
+                projectName = command.projectName,
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(developer),
+            ),
+        ).thenReturn(expectedProject)
+
+        // When
+        val projectDto = projectApplicationService.updateProject(manager.username, command)
+
+        // Then
+        assertThat(projectDto).isEqualTo(ProjectDto(expectedProject))
+    }
+
+    @Test
+    fun ensureUpdateProjectThrowsExceptionIfAuthenticatedUserCanNotBeFound() {
+        // Given
+        val authenticatedUserUsername = "manager"
+
+        val command =
+            UpdateProjectCommand(
+                projectId = ProjectId().token,
+                projectName = "OpenScrum",
+                productOwnerId = UserId().token,
+                scrumMasterId = UserId().token,
+                developerIds = setOf(),
+            )
+
+        whenever(userRepository.findByUsername(authenticatedUserUsername)).thenReturn(null)
+
+        // When / Then
+        assertThrows<IllegalArgumentException> {
+            projectApplicationService.updateProject(authenticatedUserUsername, command)
         }
     }
 }

@@ -116,4 +116,23 @@ class JpaDeveloperRepositoryTest {
         assertThat(result!!.teamMemberId.projectId).isEqualTo(projectId)
         assertThat(result.username).isEqualTo("jdoe")
     }
+
+    @Test
+    fun ensureDeleteWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val developer =
+            Developer(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jdoe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        developerRepository.save(developer)
+
+        // When
+        developerRepository.delete(developer.teamMemberId)
+
+        // Then
+        assertThat(developerRepository.findByProjectId(projectId)).isEmpty()
+    }
 }

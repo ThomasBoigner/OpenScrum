@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember
 
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
@@ -21,4 +22,7 @@ class JpaProductOwnerRepository(
         projectId: UUID,
         username: String,
     ): ProductOwner? = productOwnerEntityRepository.findByProjectIdAndUsername(projectId, username)?.toProductOwner()
+
+    override fun delete(teamMemberId: TeamMemberId) =
+        productOwnerEntityRepository.deleteByUserIdAndProjectId(teamMemberId.userId, teamMemberId.projectId)
 }

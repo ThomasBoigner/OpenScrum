@@ -61,6 +61,7 @@ class ProductBacklogItemApplicationService(
             productBacklogItemRepository.findProductBacklogItemByProductBacklogItemId(
                 ProductBacklogItemId(projectId = projectId, productBacklogItemId = productBacklogItemId),
             ) ?: return null
+        log.info("Found product backlog item {}", productBacklogItemId)
         return ProductBacklogItemDto(productBacklogItem)
     }
 

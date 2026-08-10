@@ -86,4 +86,23 @@ class JpaScrumMasterRepositoryTest {
         assertThat(result).isNotNull
         assertThat(result).isEqualTo(scrumMaster)
     }
+
+    @Test
+    fun ensureDeleteWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val scrumMaster =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "mmueller",
+                fullName = FullName(firstName = "Max", lastName = "Mueller"),
+            )
+        scrumMasterRepository.save(scrumMaster)
+
+        // When
+        scrumMasterRepository.delete(scrumMaster.teamMemberId)
+
+        // Then
+        assertThat(scrumMasterRepository.findByProjectId(projectId)).isNull()
+    }
 }

@@ -24,6 +24,7 @@ class SpringSecurityConfiguration {
                 authorize("/js/**", permitAll)
                 authorize("/users/register", hasRole("MANAGER"))
                 authorize("/projects/create", hasRole("MANAGER"))
+                authorize("/projects/*/update", hasRole("MANAGER"))
                 authorize(anyRequest, authenticated)
             }
             formLogin {

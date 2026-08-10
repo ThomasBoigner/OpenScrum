@@ -3,6 +3,9 @@ package at.fhtw.openscrum.scrum.application
 import at.fhtw.openscrum.scrum.application.command.AssignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.AssignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.dtos.DeveloperDto
 import at.fhtw.openscrum.scrum.application.dtos.ProductOwnerDto
 import at.fhtw.openscrum.scrum.application.dtos.ScrumMasterDto
@@ -114,5 +117,26 @@ class TeamMemberApplicationService(
 
         log.info("Assigned product owner {}", productOwner)
         return ProductOwnerDto(productOwnerRepository.save(productOwner))
+    }
+
+    @Transactional(readOnly = false)
+    fun unassignDeveloper(command: UnassignDeveloperCommand) {
+        log.debug("Trying to unassign developer with command: {}", command)
+        developerRepository.delete(TeamMemberId(userId = command.userId, projectId = command.projectId))
+        log.info("Unassigned developer with user id {} from project with id {}", command.userId, command.projectId)
+    }
+
+    @Transactional(readOnly = false)
+    fun unassignScrumMaster(command: UnassignScrumMasterCommand) {
+        log.debug("Trying to unassign scrum master with command: {}", command)
+        scrumMasterRepository.delete(TeamMemberId(userId = command.userId, projectId = command.projectId))
+        log.info("Unassigned scrum master with user id {} from project with id {}", command.userId, command.projectId)
+    }
+
+    @Transactional(readOnly = false)
+    fun unassignProductOwner(command: UnassignProductOwnerCommand) {
+        log.debug("Trying to unassign product owner with command: {}", command)
+        productOwnerRepository.delete(TeamMemberId(userId = command.userId, projectId = command.projectId))
+        log.info("Unassigned product owner with user id {} from project with id {}", command.userId, command.projectId)
     }
 }

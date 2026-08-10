@@ -86,4 +86,23 @@ class JpaProductOwnerRepositoryTest {
         assertThat(result).isNotNull
         assertThat(result).isEqualTo(productOwner)
     }
+
+    @Test
+    fun ensureDeleteWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "jsmith",
+                fullName = FullName(firstName = "Jane", lastName = "Smith"),
+            )
+        productOwnerRepository.save(productOwner)
+
+        // When
+        productOwnerRepository.delete(productOwner.teamMemberId)
+
+        // Then
+        assertThat(productOwnerRepository.findByProjectId(projectId)).isNull()
+    }
 }

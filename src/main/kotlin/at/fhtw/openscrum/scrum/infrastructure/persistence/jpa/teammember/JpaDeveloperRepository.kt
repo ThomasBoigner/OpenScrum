@@ -26,4 +26,7 @@ class JpaDeveloperRepository(
         projectId: UUID,
         username: String,
     ): Developer? = developerEntityRepository.findByProjectIdAndUsername(projectId, username)?.toDeveloper()
+
+    override fun delete(teamMemberId: TeamMemberId) =
+        developerEntityRepository.deleteByUserIdAndProjectId(teamMemberId.userId, teamMemberId.projectId)
 }
