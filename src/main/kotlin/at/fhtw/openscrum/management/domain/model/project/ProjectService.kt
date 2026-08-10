@@ -69,4 +69,40 @@ class ProjectService(
         log.info("Created Project {}", project)
         return projectRepository.save(project)
     }
+
+    fun updateProject(
+        authenticatedUser: User,
+        projectId: ProjectId,
+        projectName: String,
+        productOwner: User?,
+        scrumMaster: User?,
+        developers: Set<User>,
+    ): Project {
+        log.debug("Trying to update project {}", projectId)
+        require(authenticatedUser.role.isManager) { "Management permissions are needed!" }
+        val project = projectRepository.findByProjectId(projectId)
+        require(project != null) { "Project does not exist!" }
+        require(productOwner != null) { "Product owner does not exist!" }
+        require(scrumMaster != null) { "Scrum master does not exist!" }
+        require(project.projectName == projectName || !projectRepository.existsByProjectName(projectName)) {
+            "Project with name $projectName already exists!"
+        }
+
+        val developerIds = developers.map { it.userId }.toSet()
+        require(
+            productOwner.userId !in developerIds &&
+                scrumMaster.userId !in developerIds &&
+                productOwner.userId != scrumMaster.userId,
+        ) { "A user cannot have multiple roles in the same project!" }
+
+        project.update(
+            projectName = projectName,
+            productOwner = productOwner,
+            scrumMaster = scrumMaster,
+            developers = developers,
+        )
+
+        log.info("Updated Project {}", project)
+        return projectRepository.save(project)
+    }
 }

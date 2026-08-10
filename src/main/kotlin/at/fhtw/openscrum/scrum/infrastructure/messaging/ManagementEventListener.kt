@@ -1,15 +1,23 @@
 package at.fhtw.openscrum.scrum.infrastructure.messaging
 
 import at.fhtw.openscrum.management.domain.model.project.DeveloperAssigned
+import at.fhtw.openscrum.management.domain.model.project.DeveloperUnassigned
 import at.fhtw.openscrum.management.domain.model.project.ProductOwnerAssigned
+import at.fhtw.openscrum.management.domain.model.project.ProductOwnerUnassigned
 import at.fhtw.openscrum.management.domain.model.project.ProjectCreated
+import at.fhtw.openscrum.management.domain.model.project.ProjectInformationChanged
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterAssigned
+import at.fhtw.openscrum.management.domain.model.project.ScrumMasterUnassigned
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.application.command.AssignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.AssignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.command.CreateProjectCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateProjectCommand
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.modulith.events.ApplicationModuleListener
@@ -26,6 +34,17 @@ class ManagementEventListener(
         log.trace("Received create project event: {}", event)
         projectApplicationService.createProject(
             CreateProjectCommand(
+                projectId = event.projectId.token,
+                projectName = event.projectName,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveProjectInformationChangedEvent(event: ProjectInformationChanged) {
+        log.trace("Received project information changed event: {}", event)
+        projectApplicationService.updateProject(
+            UpdateProjectCommand(
                 projectId = event.projectId.token,
                 projectName = event.projectName,
             ),
@@ -70,6 +89,39 @@ class ManagementEventListener(
                 username = event.username,
                 firstName = event.fullName.firstName,
                 lastName = event.fullName.lastName,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveDeveloperUnassignedEvent(event: DeveloperUnassigned) {
+        log.trace("Received developer unassigned event: {}", event)
+        teamMemberApplicationService.unassignDeveloper(
+            UnassignDeveloperCommand(
+                userId = event.userId.token,
+                projectId = event.projectId.token,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveScrumMasterUnassignedEvent(event: ScrumMasterUnassigned) {
+        log.trace("Received scrum master unassigned event: {}", event)
+        teamMemberApplicationService.unassignScrumMaster(
+            UnassignScrumMasterCommand(
+                userId = event.userId.token,
+                projectId = event.projectId.token,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveProductOwnerUnassignedEvent(event: ProductOwnerUnassigned) {
+        log.trace("Received product owner unassigned event: {}", event)
+        teamMemberApplicationService.unassignProductOwner(
+            UnassignProductOwnerCommand(
+                userId = event.userId.token,
+                projectId = event.projectId.token,
             ),
         )
     }

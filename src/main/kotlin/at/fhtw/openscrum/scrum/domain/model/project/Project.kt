@@ -6,18 +6,24 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 class Project(
     val id: Long? = null,
     val projectId: ProjectId,
-    val projectName: String,
+    projectName: String,
     sprintLength: SprintLength = SprintLength(2),
     productGoal: String? = null,
     definitionOfDone: String? = null,
     val sprintScheduledEvents: MutableList<SprintScheduled> = mutableListOf(SprintScheduled(projectId, sprintLength)),
 ) {
+    var projectName: String = projectName
+        private set
     var sprintLength: SprintLength = sprintLength
         private set
     var productGoal: String? = productGoal
         private set
     var definitionOfDone: String? = definitionOfDone
         private set
+
+    fun updateProjectInformation(projectName: String) {
+        this.projectName = projectName
+    }
 
     fun defineSprintLength(
         scrumMaster: ScrumMaster?,

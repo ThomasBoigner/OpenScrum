@@ -3,6 +3,9 @@ package at.fhtw.openscrum.scrum.application
 import at.fhtw.openscrum.scrum.application.command.AssignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.AssignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
+import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.dtos.DeveloperDto
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
@@ -20,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.UUID
 
@@ -283,5 +287,53 @@ class TeamMemberApplicationServiceTest {
         assertThat(result.firstName).isEqualTo(command.firstName)
         assertThat(result.lastName).isEqualTo(command.lastName)
         assertThat(result.fullName).isEqualTo("${command.firstName} ${command.lastName}")
+    }
+
+    @Test
+    fun ensureUnassignDeveloperWorksProperly() {
+        // Given
+        val command =
+            UnassignDeveloperCommand(
+                userId = UUID.randomUUID(),
+                projectId = UUID.randomUUID(),
+            )
+
+        // When
+        teamMemberApplicationService.unassignDeveloper(command)
+
+        // Then
+        verify(developerRepository).delete(TeamMemberId(userId = command.userId, projectId = command.projectId))
+    }
+
+    @Test
+    fun ensureUnassignScrumMasterWorksProperly() {
+        // Given
+        val command =
+            UnassignScrumMasterCommand(
+                userId = UUID.randomUUID(),
+                projectId = UUID.randomUUID(),
+            )
+
+        // When
+        teamMemberApplicationService.unassignScrumMaster(command)
+
+        // Then
+        verify(scrumMasterRepository).delete(TeamMemberId(userId = command.userId, projectId = command.projectId))
+    }
+
+    @Test
+    fun ensureUnassignProductOwnerWorksProperly() {
+        // Given
+        val command =
+            UnassignProductOwnerCommand(
+                userId = UUID.randomUUID(),
+                projectId = UUID.randomUUID(),
+            )
+
+        // When
+        teamMemberApplicationService.unassignProductOwner(command)
+
+        // Then
+        verify(productOwnerRepository).delete(TeamMemberId(userId = command.userId, projectId = command.projectId))
     }
 }

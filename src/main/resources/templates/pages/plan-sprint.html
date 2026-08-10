@@ -42,12 +42,12 @@
 
             <div id="input-fields">
                 <div id="sprint-goal">
-                    <label for="sprint-goal-input">Sprint Goal</label>
+                    <label for="sprint-goal-input">Sprint Goal:</label>
                     <textarea id="sprint-goal-input" th:field="*{sprintGoal}"
                               placeholder="Describe the goal of this sprint!"></textarea>
                 </div>
                 <div id="sprint-backlog-items">
-                    <p hx:get="@{/projects/{projectId}/backlog/sprint-planning-list(projectId=${sprint.projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog items!</p>
+                    <p hx:get="@{/projects/{projectId}/backlog/sprint-planning-list(projectId=${sprint.projectId}, productBacklogIds=*{productBacklogIds})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog items!</p>
                 </div>
             </div>
             <div class="submit-go-back">

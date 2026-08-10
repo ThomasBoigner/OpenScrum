@@ -5,6 +5,7 @@ import at.fhtw.openscrum.scrum.application.command.DefineDefinitionOfDoneCommand
 import at.fhtw.openscrum.scrum.application.command.DefineProductGoalCommand
 import at.fhtw.openscrum.scrum.application.command.DefineSprintLengthCommand
 import at.fhtw.openscrum.scrum.application.command.ScheduleSprintCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateProjectCommand
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectRepository
@@ -95,6 +96,49 @@ class ProjectApplicationServiceTest {
         // Then
         assertThat(result.projectId).isEqualTo(command.projectId)
         assertThat(result.projectName).isEqualTo(command.projectName)
+    }
+
+    @Test
+    fun ensureUpdateProjectWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val command =
+            UpdateProjectCommand(
+                projectId = projectId,
+                projectName = "Updated Project",
+            )
+        val project = Project(projectId = ProjectId(projectId), projectName = "Test Project")
+
+        whenever(projectRepository.findByProjectId(ProjectId(projectId))).thenReturn(project)
+        whenever(projectRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = projectApplicationService.updateProject(command)
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result!!.projectId).isEqualTo(projectId)
+        assertThat(result.projectName).isEqualTo(command.projectName)
+        assertThat(project.projectName).isEqualTo(command.projectName)
+    }
+
+    @Test
+    fun ensureUpdateProjectReturnsNullWhenProjectDoesNotExist() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val command =
+            UpdateProjectCommand(
+                projectId = projectId,
+                projectName = "Updated Project",
+            )
+
+        whenever(projectRepository.findByProjectId(ProjectId(projectId))).thenReturn(null)
+
+        // When
+        val result = projectApplicationService.updateProject(command)
+
+        // Then
+        assertThat(result).isNull()
     }
 
     @Test

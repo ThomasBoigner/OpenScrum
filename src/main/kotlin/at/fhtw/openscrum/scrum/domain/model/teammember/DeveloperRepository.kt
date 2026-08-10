@@ -13,4 +13,6 @@ interface DeveloperRepository {
         projectId: UUID,
         username: String,
     ): Developer?
+
+    fun delete(teamMemberId: TeamMemberId)
 }

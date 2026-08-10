@@ -9,6 +9,8 @@ import java.util.UUID
 interface ProjectEntityRepository : JpaRepository<ProjectEntity, Long> {
     fun existsByProjectName(projectName: String): Boolean
 
+    fun findByProjectId(projectId: UUID): ProjectEntity?
+
     @Query(
         value =
             "SELECT * " +

@@ -1,0 +1,11 @@
+<p th:if="${#lists.isEmpty(users)}">No users found!</p>
+<div class="developer-item" th:each="user : ${users}" th:object="${user}">
+    <input th:id="|select-developer-*{userId}|"
+           type="checkbox"
+           name="developerIds"
+           th:value="*{userId}"
+           th:checked="${#sets.contains(developerIds, user.userId)}">
+    <h5>
+        <label th:for="|select-developer-*{userId}|" th:text="*{fullName}">Thomas Boigner</label>
+    </h5>
+</div>

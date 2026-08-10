@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember
 
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
@@ -21,4 +22,7 @@ class JpaScrumMasterRepository(
         projectId: UUID,
         username: String,
     ): ScrumMaster? = scrumMasterEntityRepository.findByProjectIdAndUsername(projectId, username)?.toScrumMaster()
+
+    override fun delete(teamMemberId: TeamMemberId) =
+        scrumMasterEntityRepository.deleteByUserIdAndProjectId(teamMemberId.userId, teamMemberId.projectId)
 }

@@ -11,4 +11,6 @@ interface ProductOwnerRepository {
         projectId: UUID,
         username: String,
     ): ProductOwner?
+
+    fun delete(teamMemberId: TeamMemberId)
 }

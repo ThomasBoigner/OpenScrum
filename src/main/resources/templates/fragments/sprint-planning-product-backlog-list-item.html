@@ -3,7 +3,8 @@
     <input th:id="|select-backlog-item-*{productBacklogItemId}|"
            type="checkbox"
            name="productBacklogIds"
-           th:value="*{productBacklogItemId}">
+           th:value="*{productBacklogItemId}"
+           th:checked="${#sets.contains(productBacklogIds, productBacklogItem.productBacklogItemId)}">
     <div class="backlog-item-info">
         <h2>
             <label th:for="|select-backlog-item-*{productBacklogItemId}|" th:text="*{title}">Item Title</label>

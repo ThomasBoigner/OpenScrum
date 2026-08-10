@@ -7,6 +7,8 @@ interface ProjectRepository {
 
     fun findProjectsOfUser(userId: UserId): List<Project>
 
+    fun findByProjectId(projectId: ProjectId): Project?
+
     fun save(project: Project): Project
 
     fun existsByProjectName(projectName: String): Boolean

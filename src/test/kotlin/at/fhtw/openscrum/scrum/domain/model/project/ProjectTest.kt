@@ -11,6 +11,18 @@ import java.util.UUID
 
 class ProjectTest {
     @Test
+    fun ensureUpdateProjectInformationWorksProperly() {
+        // Given
+        val project = Project(projectId = ProjectId(UUID.randomUUID()), projectName = "Test Project")
+
+        // When
+        project.updateProjectInformation("Updated Project")
+
+        // Then
+        assertThat(project.projectName).isEqualTo("Updated Project")
+    }
+
+    @Test
     fun ensureDefineSprintLengthWorksProperly() {
         // Given
         val projectId = ProjectId(UUID.randomUUID())

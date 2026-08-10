@@ -1,4 +1,4 @@
-div.product-backlog-item {
+div.developer-item {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -10,7 +10,7 @@ div.product-backlog-item {
     width: 1024px;
 }
 
-div.product-backlog-item input[type="checkbox"] {
+div.developer-item input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
     width: 24px;
@@ -21,47 +21,27 @@ div.product-backlog-item input[type="checkbox"] {
     cursor: pointer;
 }
 
-div.product-backlog-item input[type="checkbox"]:checked {
+div.developer-item input[type="checkbox"]:checked {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
 }
 
-div.product-backlog-item h2 label {
+div.developer-item label {
     cursor: pointer;
-}
-
-div.backlog-item-info {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    flex: 1;
-}
-
-div.info-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
 }
 
 /* 1200px - 600px */
 @media screen and (max-width: 1200px) {
-    div.product-backlog-item {
+    div.developer-item {
         gap: 24px;
         width: 512px;
     }
-
-    div.backlog-item-info {
-        gap: 24px;
-    }
 }
+
 /* < 600px */
 @media screen and (max-width: 600px) {
-    div.product-backlog-item {
+    div.developer-item {
         gap: 16px;
         width: 100%;
-    }
-
-    div.backlog-item-info {
-        gap: 16px;
     }
 }

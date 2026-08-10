@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Repository
@@ -17,4 +18,10 @@ interface DeveloperEntityRepository : JpaRepository<DeveloperEntity, Long> {
         projectId: UUID,
         username: String,
     ): DeveloperEntity?
+
+    @Transactional
+    fun deleteByUserIdAndProjectId(
+        userId: UUID,
+        projectId: UUID,
+    )
 }
