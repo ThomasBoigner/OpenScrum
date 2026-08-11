@@ -108,6 +108,81 @@ class UserTest {
     }
 
     @Test
+    fun ensureUpdateKeepsPasswordWhenPasswordIsNull() {
+        // Given
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
+        val user =
+            User(
+                username = "John.Doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        // When
+        user.update(
+            authenticatedUser = authenticatedUser,
+            username = "Jane.Doe",
+            emailAddress = EmailAddress("jane.doe@gmail.com"),
+            fullName = FullName("Jane", "Doe"),
+            password = null,
+        )
+
+        // Then
+        assertThat(user.username).isEqualTo("Jane.Doe")
+        assertThat(user.emailAddress).isEqualTo(EmailAddress("jane.doe@gmail.com"))
+        assertThat(user.fullName).isEqualTo(FullName("Jane", "Doe"))
+        assertThat(user.password).isEqualTo("abc123")
+        assertThat(user.userInformationChangedEvents).hasSize(1)
+    }
+
+    @Test
+    fun ensureUpdateThrowsExceptionWhenPasswordIsBlank() {
+        // Given
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
+        val user =
+            User(
+                username = "John.Doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                user.update(
+                    authenticatedUser = authenticatedUser,
+                    username = "Jane.Doe",
+                    emailAddress = EmailAddress("jane.doe@gmail.com"),
+                    fullName = FullName("Jane", "Doe"),
+                    password = "",
+                )
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Password must not be blank!")
+    }
+
+    @Test
     fun ensureUpdateThrowsExceptionWhenUpdatingAnotherUserWithoutManagerRole() {
         // Given
         val authenticatedUser =

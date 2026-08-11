@@ -60,9 +60,10 @@ class UserService(
 
         val hashedPassword =
             if (password.isBlank()) {
-                user.password
+                null
             } else {
-                encryptionService.hashPassword(password) ?: throw IllegalStateException("Password must not be null!")
+                encryptionService.hashPassword(password)
+                    ?: throw IllegalStateException("Password must not be null!")
             }
 
         user.update(

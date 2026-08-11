@@ -41,7 +41,7 @@ class User(
         username: String,
         emailAddress: EmailAddress,
         fullName: FullName,
-        password: String,
+        password: String?,
     ) {
         require(authenticatedUser.role.isManager || authenticatedUser.userId == userId) {
             "You have no permission to update other users!"
@@ -49,7 +49,7 @@ class User(
         this.username = username
         this.emailAddress = emailAddress
         this.fullName = fullName
-        this.password = password
+        password?.let {  this.password = password }
         userInformationChangedEvents.add(UserInformationChanged(userId, username, emailAddress, fullName))
     }
 
