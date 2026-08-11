@@ -38,6 +38,42 @@ class UserService(
         return userRepository.save(user)
     }
 
+    fun updateUser(
+        authenticatedUser: User,
+        userId: UserId,
+        username: String,
+        email: String,
+        firstName: String,
+        lastName: String,
+        password: String,
+    ): User {
+        log.debug("Trying to update user with id {}", userId)
+        require(password.isNotBlank()) { "Password must not be blank!" }
+
+        val user = userRepository.findByUserId(userId)
+        require(user != null) { "User does not exist!" }
+        require(user.emailAddress.emailAddress == email || !userRepository.existsByEmailAddress(email)) {
+            "User with email $email already exists!"
+        }
+        require(user.username == username || !userRepository.existsByUsername(username)) {
+            "User with username $username already exists!"
+        }
+
+        val hashedPassword =
+            encryptionService.hashPassword(password) ?: throw IllegalStateException("Password must not be null!")
+
+        user.update(
+            authenticatedUser = authenticatedUser,
+            username = username,
+            emailAddress = EmailAddress(email),
+            fullName = FullName(firstName, lastName),
+            password = hashedPassword,
+        )
+
+        log.info("Updated user {}", user)
+        return userRepository.save(user)
+    }
+
     fun registerAdmin(): User {
         val existingAdmin = userRepository.findByUsername("admin")
 

@@ -108,4 +108,70 @@ class JpaTeamMemberRepositoryTest {
         // Then
         assertThat(result).isNull()
     }
+
+    @Test
+    fun ensureFindAllByUserIdReturnsTeamMembersOfAllRolesAcrossProjects() {
+        // Given
+        val userId = UUID.randomUUID()
+        val otherUserId = UUID.randomUUID()
+
+        teamMemberEntityRepository.save(
+            DeveloperEntity(
+                Developer(
+                    teamMemberId = TeamMemberId(userId = userId, projectId = UUID.randomUUID()),
+                    username = "jdoe",
+                    fullName = FullName(firstName = "John", lastName = "Doe"),
+                ),
+            ),
+        )
+        teamMemberEntityRepository.save(
+            ScrumMasterEntity(
+                ScrumMaster(
+                    teamMemberId = TeamMemberId(userId = userId, projectId = UUID.randomUUID()),
+                    username = "jdoe",
+                    fullName = FullName(firstName = "John", lastName = "Doe"),
+                ),
+            ),
+        )
+        teamMemberEntityRepository.save(
+            ProductOwnerEntity(
+                ProductOwner(
+                    teamMemberId = TeamMemberId(userId = userId, projectId = UUID.randomUUID()),
+                    username = "jdoe",
+                    fullName = FullName(firstName = "John", lastName = "Doe"),
+                ),
+            ),
+        )
+        teamMemberEntityRepository.save(
+            DeveloperEntity(
+                Developer(
+                    teamMemberId = TeamMemberId(userId = otherUserId, projectId = UUID.randomUUID()),
+                    username = "asmith",
+                    fullName = FullName(firstName = "Alice", lastName = "Smith"),
+                ),
+            ),
+        )
+
+        // When
+        val result = teamMemberRepository.findAllByUserId(userId)
+
+        // Then
+        assertThat(result).hasSize(3)
+        assertThat(result).allMatch { it.teamMemberId.userId == userId }
+        assertThat(result.filterIsInstance<Developer>()).hasSize(1)
+        assertThat(result.filterIsInstance<ScrumMaster>()).hasSize(1)
+        assertThat(result.filterIsInstance<ProductOwner>()).hasSize(1)
+    }
+
+    @Test
+    fun ensureFindAllByUserIdReturnsEmptyListWhenUserIsNoTeamMember() {
+        // Given
+        val userId = UUID.randomUUID()
+
+        // When
+        val result = teamMemberRepository.findAllByUserId(userId)
+
+        // Then
+        assertThat(result).isEmpty()
+    }
 }

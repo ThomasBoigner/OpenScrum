@@ -6,8 +6,9 @@ class User(
     username: String,
     emailAddress: EmailAddress,
     fullName: FullName,
-    val password: String,
+    password: String,
     role: Role = Role.USER,
+    val userInformationChangedEvents: MutableList<UserInformationChanged> = mutableListOf(),
 ) {
     var username: String = ""
         private set(value) {
@@ -21,11 +22,35 @@ class User(
     var fullName: FullName = fullName
         private set
 
+    var password: String = ""
+        private set(value) {
+            require(value.isNotBlank()) { "Password must not be blank!" }
+            field = value
+        }
+
     var role: Role = role
         private set
 
     init {
         this.username = username
+        this.password = password
+    }
+
+    fun update(
+        authenticatedUser: User,
+        username: String,
+        emailAddress: EmailAddress,
+        fullName: FullName,
+        password: String,
+    ) {
+        require(authenticatedUser.role.isManager || authenticatedUser.userId == userId) {
+            "You have no permission to update other users!"
+        }
+        this.username = username
+        this.emailAddress = emailAddress
+        this.fullName = fullName
+        this.password = password
+        userInformationChangedEvents.add(UserInformationChanged(userId, username, emailAddress, fullName))
     }
 
     fun promote(authenticatedUser: User) {

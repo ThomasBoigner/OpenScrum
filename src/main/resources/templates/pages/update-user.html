@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Update a user</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/pages/update-user.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <section id="hero">
+        <a th:href="@{/projects}">
+            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+        </a>
+        <h1>Update the User!</h1>
+    </section>
+    <section id="update-user-form">
+        <form method="post" th:action="@{/users/{userId}/update(userId=${userId})}" th:object="${updateUserForm}">
+            <div th:if="${#fields.hasErrors() || errorMessage != null}" class="error-message">
+                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+                <p th:if="${errorMessage}" th:text="${errorMessage}">Error while updating user!</p>
+                <div th:if="${#fields.hasErrors()}">
+                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}">Validation error while updating user!</p>
+                </div>
+            </div>
+            <div class="input-fields">
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="Update the username!" th:field="*{username}">
+                <label for="first-name">First name:</label>
+                <input type="text" id="first-name" placeholder="Update the first name!" th:field="*{firstName}">
+                <label for="last-name">Last name:</label>
+                <input type="text" id="last-name" placeholder="Update the last name!" th:field="*{lastName}">
+                <label for="email-address">Email address:</label>
+                <input type="text" id="email-address" placeholder="Update the email address!" th:field="*{email}">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Update the password!" th:field="*{password}">
+            </div>
+            <button type="submit">
+                Update the User
+                <img th:src="@{/assets/svg/check-white.svg}" alt="check">
+            </button>
+        </form>
+    </section>
+</div>
+</body>
+</html>

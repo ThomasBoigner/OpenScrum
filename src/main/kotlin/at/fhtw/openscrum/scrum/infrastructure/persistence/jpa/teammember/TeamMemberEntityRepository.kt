@@ -10,4 +10,6 @@ interface TeamMemberEntityRepository : JpaRepository<TeamMemberEntity, Long> {
         projectId: UUID,
         username: String,
     ): TeamMemberEntity?
+
+    fun findAllByUserId(userId: UUID): List<TeamMemberEntity>
 }

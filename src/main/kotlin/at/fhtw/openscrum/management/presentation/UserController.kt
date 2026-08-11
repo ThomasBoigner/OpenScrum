@@ -6,7 +6,9 @@ import at.fhtw.openscrum.management.application.command.DemoteUserCommand
 import at.fhtw.openscrum.management.application.command.PromoteUserCommand
 import at.fhtw.openscrum.management.application.dtos.UserDto
 import at.fhtw.openscrum.management.presentation.forms.RegisterUserForm
+import at.fhtw.openscrum.management.presentation.forms.UpdateUserForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.slf4j.Logger
@@ -36,6 +38,7 @@ class UserController(
         const val PATH_INDEX = "/"
         const val ROUTE_REGISTER = "/register"
         const val FRAGMENT_USERS_LIST_ITEM = "/list"
+        const val ROUTE_UPDATE_USER = "/{userId}/update"
         const val ROUTE_DELETE_USER = "/{userId}/delete"
         const val ROUTE_PROMOTE_USER = "/{userId}/promote"
         const val ROUTE_DEMOTE_USER = "/{userId}/demote"
@@ -97,6 +100,68 @@ class UserController(
             log.warn("Error while registering user with message: {}", ex.message)
             model.addAttribute("errorMessage", ex.message)
             return "pages/register-user"
+        }
+
+        return "redirect:$BASE_URL"
+    }
+
+    @GetMapping(value = [ROUTE_UPDATE_USER])
+    fun showUpdateUserForm(
+        @PathVariable userId: UUID,
+        model: Model,
+    ): String {
+        log.debug("Serving update user page for user with id {}", userId)
+        val user = userApplicationService.getUserByUserId(userId) ?: return "error/404"
+        val userUpdateForm =
+            UpdateUserForm(
+                username = user.username,
+                email = user.emailAddress,
+                firstName = user.firstName,
+                lastName = user.lastName,
+                password = "",
+            )
+        model.addAttribute(
+            "updateUserForm",
+            userUpdateForm,
+        )
+        model.addAttribute("userId", userId)
+        return "pages/update-user"
+    }
+
+    @PostMapping(value = [ROUTE_UPDATE_USER])
+    fun handleUpdateUserForm(
+        principal: Principal,
+        @PathVariable userId: UUID,
+        @Valid @ModelAttribute(name = "updateUserForm") form: UpdateUserForm,
+        brUpdateUserForm: BindingResult,
+        model: Model,
+        request: HttpServletRequest,
+    ): String {
+        log.debug("Received http POST request to update user with id {} with form {}", userId, form)
+        if (brUpdateUserForm.hasErrors()) {
+            log.warn("Update user form {} has validation errors", form)
+            model.addAttribute("userId", userId)
+            return "pages/update-user"
+        }
+
+        val authenticatedUser = userApplicationService.getUserByUsername(principal.name)
+
+        try {
+            userApplicationService.updateUser(
+                principal.name,
+                form.toUpdateUserCommand(userId),
+            )
+        } catch (ex: IllegalArgumentException) {
+            log.warn("Error while updating user with message: {}", ex.message)
+            model.addAttribute("errorMessage", ex.message)
+            model.addAttribute("userId", userId)
+            return "pages/update-user"
+        }
+
+        if (authenticatedUser?.userId == userId) {
+            log.debug("User {} updated their own account, logging out", principal.name)
+            request.logout()
+            return "redirect:/login"
         }
 
         return "redirect:$BASE_URL"

@@ -6,6 +6,7 @@ import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateTeamMemberInformationCommand
 import at.fhtw.openscrum.scrum.application.dtos.DeveloperDto
 import at.fhtw.openscrum.scrum.application.dtos.ProductOwnerDto
 import at.fhtw.openscrum.scrum.application.dtos.ScrumMasterDto
@@ -117,6 +118,38 @@ class TeamMemberApplicationService(
 
         log.info("Assigned product owner {}", productOwner)
         return ProductOwnerDto(productOwnerRepository.save(productOwner))
+    }
+
+    @Transactional(readOnly = false)
+    fun updateTeamMemberInformation(command: UpdateTeamMemberInformationCommand) {
+        log.debug("Trying to update team member information with command: {}", command)
+
+        val teamMembers = teamMemberRepository.findAllByUserId(command.userId)
+        val fullName = FullName(firstName = command.firstName, lastName = command.lastName)
+
+        teamMembers.forEach { teamMember ->
+            when {
+                teamMember.isDeveloper() -> {
+                    developerRepository.save(
+                        Developer(teamMember.id, teamMember.teamMemberId, command.username, fullName),
+                    )
+                }
+
+                teamMember.isScrumMaster() -> {
+                    scrumMasterRepository.save(
+                        ScrumMaster(teamMember.id, teamMember.teamMemberId, command.username, fullName),
+                    )
+                }
+
+                teamMember.isProductOwner() -> {
+                    productOwnerRepository.save(
+                        ProductOwner(teamMember.id, teamMember.teamMemberId, command.username, fullName),
+                    )
+                }
+            }
+        }
+
+        log.info("Updated information of {} team members of user with id {}", teamMembers.size, command.userId)
     }
 
     @Transactional(readOnly = false)

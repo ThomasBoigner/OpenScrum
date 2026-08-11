@@ -10,8 +10,10 @@ import at.fhtw.openscrum.management.domain.model.project.ProjectId
 import at.fhtw.openscrum.management.domain.model.project.ProjectInformationChanged
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterAssigned
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterUnassigned
+import at.fhtw.openscrum.management.domain.model.user.EmailAddress
 import at.fhtw.openscrum.management.domain.model.user.FullName
 import at.fhtw.openscrum.management.domain.model.user.UserId
+import at.fhtw.openscrum.management.domain.model.user.UserInformationChanged
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.application.command.AssignDeveloperCommand
@@ -23,6 +25,7 @@ import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.command.UpdateProjectCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateTeamMemberInformationCommand
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -238,6 +241,37 @@ class ManagementEventListenerTest {
             UnassignScrumMasterCommand(
                 userId = userId,
                 projectId = projectId,
+            ),
+        )
+    }
+
+    @Test
+    fun ensureReceiveUserInformationChangedEventWorksProperly() {
+        // Given
+        val userId = UUID.randomUUID()
+        val username = "jane.doe"
+        val emailAddress = "jane.doe@gmail.com"
+        val firstName = "Jane"
+        val lastName = "Doe"
+
+        val event =
+            UserInformationChanged(
+                userId = UserId(userId),
+                username = username,
+                emailAddress = EmailAddress(emailAddress),
+                fullName = FullName(firstName, lastName),
+            )
+
+        // When
+        managementEventListener.receiveUserInformationChangedEvent(event)
+
+        // Then
+        verify(teamMemberApplicationService).updateTeamMemberInformation(
+            UpdateTeamMemberInformationCommand(
+                userId = userId,
+                username = username,
+                firstName = firstName,
+                lastName = lastName,
             ),
         )
     }

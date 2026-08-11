@@ -1,0 +1,30 @@
+package at.fhtw.openscrum.management.presentation.forms
+
+import at.fhtw.openscrum.management.application.command.UpdateUserCommand
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotBlank
+import java.util.UUID
+
+data class UpdateUserForm(
+    @NotBlank(message = "Username must not be blank!")
+    var username: String = "",
+    @NotBlank(message = "Email address must not be blank!")
+    @Email(message = "Email address must be valid!")
+    var email: String = "",
+    @NotBlank(message = "First name must not be blank!")
+    var firstName: String = "",
+    @NotBlank(message = "Last name must not be blank!")
+    var lastName: String = "",
+    @NotBlank(message = "Password must not be blank!")
+    var password: String = "",
+) {
+    fun toUpdateUserCommand(userId: UUID): UpdateUserCommand =
+        UpdateUserCommand(
+            userId = userId,
+            username = username,
+            email = email,
+            firstName = firstName,
+            lastName = lastName,
+            password = password,
+        )
+}
