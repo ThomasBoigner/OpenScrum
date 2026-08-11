@@ -600,21 +600,74 @@ class UserServiceTest {
                 password = "abc123",
             )
 
+        whenever(userRepository.findByUserId(user.userId)).thenReturn(user)
+        whenever(userRepository.existsByEmailAddress("")).thenReturn(false)
+        whenever(userRepository.existsByUsername("")).thenReturn(false)
+        whenever(encryptionService.hashPassword("def456")).thenAnswer { it.arguments[0] }
+
         // When
-        assertThrows<IllegalArgumentException> {
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                userService.updateUser(
+                    authenticatedUser,
+                    user.userId,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "def456",
+                )
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Email address must not be blank!")
+        verify(userRepository, never()).save(any())
+    }
+
+    @Test
+    fun ensureUpdateUserKeepsPasswordWhenPasswordIsBlank() {
+        // Given
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
+        val user =
+            User(
+                username = "JohnDoe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "hashedAbc123",
+            )
+
+        whenever(userRepository.findByUserId(user.userId)).thenReturn(user)
+        whenever(userRepository.existsByEmailAddress("jane.doe@gmail.com")).thenReturn(false)
+        whenever(userRepository.existsByUsername("JaneDoe")).thenReturn(false)
+        whenever(userRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val updatedUser =
             userService.updateUser(
                 authenticatedUser,
                 user.userId,
-                "",
-                "",
-                "",
-                "",
+                "JaneDoe",
+                "jane.doe@gmail.com",
+                "Jane",
+                "Doe",
                 "",
             )
-        }
 
         // Then
-        verify(userRepository, never()).save(any())
+        assertThat(updatedUser.username).isEqualTo("JaneDoe")
+        assertThat(updatedUser.emailAddress.emailAddress).isEqualTo("jane.doe@gmail.com")
+        assertThat(updatedUser.fullName).isEqualTo(FullName("Jane", "Doe"))
+        assertThat(updatedUser.password).isEqualTo("hashedAbc123")
+        assertThat(updatedUser.userInformationChangedEvents).hasSize(1)
+        verify(encryptionService, never()).hashPassword(any())
     }
 
     @Test

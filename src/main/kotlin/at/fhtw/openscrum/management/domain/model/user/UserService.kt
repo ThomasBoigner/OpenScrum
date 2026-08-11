@@ -48,7 +48,6 @@ class UserService(
         password: String,
     ): User {
         log.debug("Trying to update user with id {}", userId)
-        require(password.isNotBlank()) { "Password must not be blank!" }
 
         val user = userRepository.findByUserId(userId)
         require(user != null) { "User does not exist!" }
@@ -60,7 +59,11 @@ class UserService(
         }
 
         val hashedPassword =
-            encryptionService.hashPassword(password) ?: throw IllegalStateException("Password must not be null!")
+            if (password.isBlank()) {
+                user.password
+            } else {
+                encryptionService.hashPassword(password) ?: throw IllegalStateException("Password must not be null!")
+            }
 
         user.update(
             authenticatedUser = authenticatedUser,

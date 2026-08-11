@@ -56,11 +56,17 @@ Then he receives an error that the email address does not have the right format
 
 ## Test 10 - Management context
 
-Given a manager and an existing user, a new blank username, a new blank first name, a new blank last name, a new blank email address and a new blank password  
+Given a manager and an existing user, a new blank username, a new blank first name, a new blank last name and a new blank email address  
 When the manager enters the information into the update user form  
 Then he receives an error that the information is invalid
 
-## Test 11 - Scrum context
+## Test 11 - Management context
+
+Given a manager and an existing user, a new username, a new first name, a new last name, a new email address and a blank password  
+When the manager enters the information into the update user form  
+Then the user information should be updated, the password should stay unchanged and a UserInformationChanged event should be published
+
+## Test 12 - Scrum context
 
 Given a teammember and a UserInformationChanged event  
 When the UserInformationChanged event is received  

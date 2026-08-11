@@ -819,7 +819,7 @@ class UserControllerTest {
     }
 
     /*
-    Given a manager and an existing user, a new blank username, a new blank first name, a new blank last name, a new blank email address and a new blank password
+    Given a manager and an existing user, a new blank username, a new blank first name, a new blank last name and a new blank email address
     When the manager enters the information into the update user form
     Then he receives an error that the information is invalid
      */
@@ -865,8 +865,70 @@ class UserControllerTest {
         assertThat(error.text).contains("Email address")
         assertThat(error.text).contains("First name")
         assertThat(error.text).contains("Last name")
-        assertThat(error.text).contains("Password")
         assertThat(userEntityRepository.findByUserId(user.userId.token)!!.username).isEqualTo("john.doe")
+        webDriver.close()
+    }
+
+    /*
+    Given a manager and an existing user, a new username, a new first name, a new last name, a new email address and a blank password
+    When the manager enters the information into the update user form
+    Then the user information should be updated, the password should stay unchanged and a UserInformationChanged event should be published
+     */
+    @Test
+    fun ensureUpdateUserKeepsPasswordWhenPasswordIsBlank() {
+        // Given
+        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
+
+        val user =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "john.doe",
+                firstName = "John",
+                lastName = "Doe",
+                password = "abc123",
+                email = "john.doe@gmail.com",
+            )
+        val passwordBeforeUpdate = userEntityRepository.findByUserId(user.userId.token)!!.password
+
+        val webDriver = createHeadlessChromeDriver()
+        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
+
+        // When
+        // login as admin
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
+
+        // update user leaving the password blank
+        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.findElement(By.cssSelector("input#username")).clear()
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys("jane.doe")
+        webDriver.findElement(By.cssSelector("input#first-name")).clear()
+        webDriver.findElement(By.cssSelector("input#first-name")).sendKeys("Jane")
+        webDriver.findElement(By.cssSelector("input#last-name")).clear()
+        webDriver.findElement(By.cssSelector("input#last-name")).sendKeys("Doe")
+        webDriver.findElement(By.cssSelector("input#email-address")).clear()
+        webDriver.findElement(By.cssSelector("input#email-address")).sendKeys("jane.doe@gmail.com")
+        webDriver.findElement(By.cssSelector("input#password")).clear()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-user-form button"))).click()
+        wait.until(ExpectedConditions.urlToBe("http://localhost:8080/users"))
+
+        // Then
+        val updatedUser = userEntityRepository.findByUserId(user.userId.token)!!
+        assertThat(updatedUser.username).isEqualTo("jane.doe")
+        assertThat(updatedUser.emailAddress).isEqualTo("jane.doe@gmail.com")
+        assertThat(updatedUser.fullName.firstName).isEqualTo("Jane")
+        assertThat(updatedUser.password).isEqualTo(passwordBeforeUpdate)
+
+        // the old password still works
+        webDriver.manage().deleteAllCookies()
+        webDriver.get("http://localhost:8080")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys("jane.doe")
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys("abc123")
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/projects"))
         webDriver.close()
     }
 

@@ -15,7 +15,6 @@ data class UpdateUserForm(
     var firstName: String = "",
     @NotBlank(message = "Last name must not be blank!")
     var lastName: String = "",
-    @NotBlank(message = "Password must not be blank!")
     var password: String = "",
 ) {
     fun toUpdateUserCommand(userId: UUID): UpdateUserCommand =
