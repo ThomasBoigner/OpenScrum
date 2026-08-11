@@ -546,15 +546,12 @@ class UserControllerTest {
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
-        // update the admin user
+        // open the update user page of the admin user
         webDriver.get("http://localhost:8080/users/${admin.userId.token}/update")
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys("def456")
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-user-form button"))).click()
 
         // Then
-        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
-        assertThat(error).isNotNull
-        assertThat(error.text).contains("You have no permission to update other users!")
+        assertThat(webDriver.pageSource).contains("403")
+        assertThat(webDriver.findElements(By.cssSelector("section#update-user-form"))).isEmpty()
         assertThat(userEntityRepository.findByUserId(admin.userId.token)!!.username).isEqualTo("admin")
         webDriver.close()
     }

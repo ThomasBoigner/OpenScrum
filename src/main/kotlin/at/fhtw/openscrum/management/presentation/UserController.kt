@@ -107,10 +107,15 @@ class UserController(
 
     @GetMapping(value = [ROUTE_UPDATE_USER])
     fun showUpdateUserForm(
+        principal: Principal,
         @PathVariable userId: UUID,
         model: Model,
     ): String {
         log.debug("Serving update user page for user with id {}", userId)
+
+        val authenticatedUser = userApplicationService.getUserByUsername(principal.name)
+        if (authenticatedUser?.role?.isManager == false && authenticatedUser.userId != userId) return "error/403"
+
         val user = userApplicationService.getUserByUserId(userId) ?: return "error/404"
         val userUpdateForm =
             UpdateUserForm(

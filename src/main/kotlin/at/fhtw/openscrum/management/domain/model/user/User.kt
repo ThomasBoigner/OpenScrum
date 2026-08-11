@@ -49,7 +49,7 @@ class User(
         this.username = username
         this.emailAddress = emailAddress
         this.fullName = fullName
-        password?.let {  this.password = password }
+        password?.let { this.password = password }
         userInformationChangedEvents.add(UserInformationChanged(userId, username, emailAddress, fullName))
     }
 
