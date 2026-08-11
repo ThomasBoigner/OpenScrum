@@ -38,17 +38,29 @@ Then he receives an error that the email address is already taken
 
 ## Test 7 - Management context
 
+Given a manager and an existing user, the user's own current username, a new first name, a new last name, a new email address and a new password  
+When the manager enters the information into the update user form  
+Then the user information should be updated and a UserInformationChanged event should be published
+
+## Test 8 - Management context
+
+Given a manager and an existing user, a new username, a new first name, a new last name, the user's own current email address and a new password  
+When the manager enters the information into the update user form  
+Then the user information should be updated and a UserInformationChanged event should be published
+
+## Test 9 - Management context
+
 Given a manager and an existing user, a new username, a new first name, a new last name, a new email address that does not have the right format and a new password  
 When the manager enters the information into the update user form  
 Then he receives an error that the email address does not have the right format
 
-## Test 8 - Management context
+## Test 10 - Management context
 
 Given a manager and an existing user, a new blank username, a new blank first name, a new blank last name, a new blank email address and a new blank password  
 When the manager enters the information into the update user form  
 Then he receives an error that the information is invalid
 
-## Test 9 - Scrum context
+## Test 11 - Scrum context
 
 Given a teammember and a UserInformationChanged event  
 When the UserInformationChanged event is received  
