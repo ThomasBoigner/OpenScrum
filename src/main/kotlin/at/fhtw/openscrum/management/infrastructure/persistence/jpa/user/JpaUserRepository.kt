@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.management.infrastructure.persistence.jpa.user
 
+import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.User
 import at.fhtw.openscrum.management.domain.model.user.UserId
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
@@ -20,6 +21,8 @@ class JpaUserRepository(
     override fun existsByUsername(username: String): Boolean = userEntityRepository.existsByUsername(username)
 
     override fun existsByEmailAddress(email: String): Boolean = userEntityRepository.existsByEmailAddress(email)
+
+    override fun existsByRole(role: Role): Boolean = userEntityRepository.existsByRole(role)
 
     override fun findByUsername(username: String): User? = userEntityRepository.findByUsername(username)?.toUser()
 

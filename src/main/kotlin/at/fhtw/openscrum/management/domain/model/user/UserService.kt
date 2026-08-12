@@ -78,11 +78,10 @@ class UserService(
         return userRepository.save(user)
     }
 
-    fun registerAdmin(): User {
-        val existingAdmin = userRepository.findByUsername("admin")
-
-        if (existingAdmin != null) {
-            return existingAdmin
+    fun registerAdmin(): User? {
+        if (userRepository.existsByRole(Role.MANAGER)) {
+            log.debug("Skipped admin registration because a manager already exists")
+            return null
         }
 
         val hashedPassword =

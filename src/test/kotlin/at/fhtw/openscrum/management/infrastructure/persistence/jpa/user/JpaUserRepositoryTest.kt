@@ -88,6 +88,28 @@ class JpaUserRepositoryTest {
     }
 
     @Test
+    fun ensureExistsByRoleWorksProperly() {
+        // Given
+        val user =
+            User(
+                username = "john.doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+        userRepository.save(user)
+
+        // When
+        val resultForUser = userRepository.existsByRole(Role.USER)
+        val resultForManager = userRepository.existsByRole(Role.MANAGER)
+
+        // Then
+        assertThat(resultForUser).isTrue()
+        assertThat(resultForManager).isFalse()
+    }
+
+    @Test
     fun ensureFindByUsernameWorksProperly() {
         // Given
         val user =

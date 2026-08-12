@@ -671,30 +671,23 @@ class UserServiceTest {
     }
 
     @Test
-    fun ensureRegisterAdminReturnsExistingAdminWhenAdminAlreadyExists() {
+    fun ensureRegisterAdminDoesNothingWhenAManagerAlreadyExists() {
         // Given
-        val existingAdmin =
-            User(
-                username = "admin",
-                emailAddress = EmailAddress("admin@gmail.com"),
-                fullName = FullName("admin", "admin"),
-                password = "hashedAdmin",
-                role = Role.MANAGER,
-            )
-
-        whenever(userRepository.findByUsername("admin")).thenReturn(existingAdmin)
+        whenever(userRepository.existsByRole(Role.MANAGER)).thenReturn(true)
 
         // When
         val result = userService.registerAdmin()
 
         // Then
-        assertThat(result).isEqualTo(existingAdmin)
+        assertThat(result).isNull()
+        verify(userRepository, never()).save(any())
+        verify(encryptionService, never()).hashPassword(any())
     }
 
     @Test
-    fun ensureRegisterAdminCreatesAndSavesAdminWhenNoAdminExists() {
+    fun ensureRegisterAdminCreatesAndSavesAdminWhenNoManagerExists() {
         // Given
-        whenever(userRepository.findByUsername("admin")).thenReturn(null)
+        whenever(userRepository.existsByRole(Role.MANAGER)).thenReturn(false)
         whenever(encryptionService.hashPassword("admin")).thenAnswer { it.arguments[0] }
         whenever(userRepository.save(any())).thenAnswer { it.arguments[0] }
 
@@ -702,7 +695,8 @@ class UserServiceTest {
         val result = userService.registerAdmin()
 
         // Then
-        assertThat(result.username).isEqualTo("admin")
+        assertThat(result).isNotNull
+        assertThat(result!!.username).isEqualTo("admin")
         assertThat(result.emailAddress.emailAddress).isEqualTo("admin@gmail.com")
         assertThat(result.role).isEqualTo(Role.MANAGER)
     }

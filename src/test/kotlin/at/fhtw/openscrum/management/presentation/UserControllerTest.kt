@@ -474,7 +474,7 @@ class UserControllerTest {
                 username = "john.doe",
                 firstName = "John",
                 lastName = "Doe",
-                password = "abc123",
+                password = "I64zxHkMVRP8K6",
                 email = "john.doe@gmail.com",
             )
 
@@ -485,7 +485,7 @@ class UserControllerTest {
         // login as the user
         webDriver.get("http://localhost:8080")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys("john.doe")
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys("abc123")
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys("I64zxHkMVRP8K6")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
 
@@ -499,7 +499,7 @@ class UserControllerTest {
         webDriver.findElement(By.cssSelector("input#last-name")).sendKeys("Doe")
         webDriver.findElement(By.cssSelector("input#email-address")).clear()
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys("jane.doe@gmail.com")
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys("def456")
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys("IMIQbfkfz5Js5D")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-user-form button"))).click()
 
         // Then
@@ -509,7 +509,7 @@ class UserControllerTest {
 
         // login with the new credentials
         webDriver.findElement(By.cssSelector("input#username")).sendKeys("jane.doe")
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys("def456")
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys("IMIQbfkfz5Js5D")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
         webDriver.close()
