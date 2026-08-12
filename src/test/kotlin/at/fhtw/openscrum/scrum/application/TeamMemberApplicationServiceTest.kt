@@ -17,6 +17,7 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,8 +25,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.UUID
@@ -33,6 +32,9 @@ import java.util.UUID
 @ExtendWith(MockitoExtension::class)
 class TeamMemberApplicationServiceTest {
     lateinit var teamMemberApplicationService: TeamMemberApplicationService
+
+    @Mock
+    lateinit var teamMemberService: TeamMemberService
 
     @Mock
     lateinit var teamMemberRepository: TeamMemberRepository
@@ -49,7 +51,13 @@ class TeamMemberApplicationServiceTest {
     @BeforeEach
     fun setUp() {
         teamMemberApplicationService =
-            TeamMemberApplicationService(teamMemberRepository, developerRepository, scrumMasterRepository, productOwnerRepository)
+            TeamMemberApplicationService(
+                teamMemberService,
+                teamMemberRepository,
+                developerRepository,
+                scrumMasterRepository,
+                productOwnerRepository,
+            )
     }
 
     @Test
@@ -295,39 +303,9 @@ class TeamMemberApplicationServiceTest {
     @Test
     fun ensureUpdateTeamMemberInformationWorksProperly() {
         // Given
-        val userId = UUID.randomUUID()
-        val developerProjectId = UUID.randomUUID()
-        val scrumMasterProjectId = UUID.randomUUID()
-        val productOwnerProjectId = UUID.randomUUID()
-
-        val developer =
-            Developer(
-                id = 1,
-                teamMemberId = TeamMemberId(userId = userId, projectId = developerProjectId),
-                username = "jdoe",
-                fullName = FullName(firstName = "John", lastName = "Doe"),
-            )
-        val scrumMaster =
-            ScrumMaster(
-                id = 2,
-                teamMemberId = TeamMemberId(userId = userId, projectId = scrumMasterProjectId),
-                username = "jdoe",
-                fullName = FullName(firstName = "John", lastName = "Doe"),
-            )
-        val productOwner =
-            ProductOwner(
-                id = 3,
-                teamMemberId = TeamMemberId(userId = userId, projectId = productOwnerProjectId),
-                username = "jdoe",
-                fullName = FullName(firstName = "John", lastName = "Doe"),
-            )
-
-        whenever(teamMemberRepository.findAllByUserId(userId))
-            .thenReturn(listOf(developer, scrumMaster, productOwner))
-
         val command =
             UpdateTeamMemberInformationCommand(
-                userId = userId,
+                userId = UUID.randomUUID(),
                 username = "jane.doe",
                 firstName = "Jane",
                 lastName = "Doe",
@@ -337,50 +315,12 @@ class TeamMemberApplicationServiceTest {
         teamMemberApplicationService.updateTeamMemberInformation(command)
 
         // Then
-        val developerCaptor = argumentCaptor<Developer>()
-        verify(developerRepository).save(developerCaptor.capture())
-        assertThat(developerCaptor.firstValue.id).isEqualTo(developer.id)
-        assertThat(developerCaptor.firstValue.teamMemberId).isEqualTo(developer.teamMemberId)
-        assertThat(developerCaptor.firstValue.username).isEqualTo("jane.doe")
-        assertThat(developerCaptor.firstValue.fullName).isEqualTo(FullName(firstName = "Jane", lastName = "Doe"))
-
-        val scrumMasterCaptor = argumentCaptor<ScrumMaster>()
-        verify(scrumMasterRepository).save(scrumMasterCaptor.capture())
-        assertThat(scrumMasterCaptor.firstValue.id).isEqualTo(scrumMaster.id)
-        assertThat(scrumMasterCaptor.firstValue.teamMemberId).isEqualTo(scrumMaster.teamMemberId)
-        assertThat(scrumMasterCaptor.firstValue.username).isEqualTo("jane.doe")
-        assertThat(scrumMasterCaptor.firstValue.fullName).isEqualTo(FullName(firstName = "Jane", lastName = "Doe"))
-
-        val productOwnerCaptor = argumentCaptor<ProductOwner>()
-        verify(productOwnerRepository).save(productOwnerCaptor.capture())
-        assertThat(productOwnerCaptor.firstValue.id).isEqualTo(productOwner.id)
-        assertThat(productOwnerCaptor.firstValue.teamMemberId).isEqualTo(productOwner.teamMemberId)
-        assertThat(productOwnerCaptor.firstValue.username).isEqualTo("jane.doe")
-        assertThat(productOwnerCaptor.firstValue.fullName).isEqualTo(FullName(firstName = "Jane", lastName = "Doe"))
-    }
-
-    @Test
-    fun ensureUpdateTeamMemberInformationDoesNothingWhenUserIsNoTeamMember() {
-        // Given
-        val userId = UUID.randomUUID()
-
-        whenever(teamMemberRepository.findAllByUserId(userId)).thenReturn(emptyList())
-
-        val command =
-            UpdateTeamMemberInformationCommand(
-                userId = userId,
-                username = "jane.doe",
-                firstName = "Jane",
-                lastName = "Doe",
-            )
-
-        // When
-        teamMemberApplicationService.updateTeamMemberInformation(command)
-
-        // Then
-        verify(developerRepository, never()).save(any())
-        verify(scrumMasterRepository, never()).save(any())
-        verify(productOwnerRepository, never()).save(any())
+        verify(teamMemberService).updateTeamMemberInformation(
+            userId = command.userId,
+            username = command.username,
+            firstName = command.firstName,
+            lastName = command.lastName,
+        )
     }
 
     @Test

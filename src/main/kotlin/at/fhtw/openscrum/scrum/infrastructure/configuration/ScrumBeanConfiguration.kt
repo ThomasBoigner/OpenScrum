@@ -4,6 +4,11 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemService
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintService
+import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberService
 import at.fhtw.openscrum.scrum.infrastructure.messaging.ScrumApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -18,4 +23,12 @@ class ScrumBeanConfiguration {
 
     @Bean
     fun sprintService(sprintRepository: SprintRepository): SprintService = SprintService(sprintRepository)
+
+    @Bean
+    fun teamMemberService(
+        teamMemberRepository: TeamMemberRepository,
+        developerRepository: DeveloperRepository,
+        scrumMasterRepository: ScrumMasterRepository,
+        productOwnerRepository: ProductOwnerRepository,
+    ): TeamMemberService = TeamMemberService(teamMemberRepository, developerRepository, scrumMasterRepository, productOwnerRepository)
 }

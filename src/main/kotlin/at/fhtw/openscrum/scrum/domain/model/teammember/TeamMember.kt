@@ -3,9 +3,23 @@ package at.fhtw.openscrum.scrum.domain.model.teammember
 abstract class TeamMember(
     val id: Long? = null,
     val teamMemberId: TeamMemberId,
-    val username: String,
-    val fullName: FullName,
+    username: String,
+    fullName: FullName,
 ) {
+    var username: String = username
+        private set
+
+    var fullName: FullName = fullName
+        private set
+
+    fun updateInformation(
+        username: String,
+        fullName: FullName,
+    ) {
+        this.username = username
+        this.fullName = fullName
+    }
+
     abstract fun isDeveloper(): Boolean
 
     abstract fun isScrumMaster(): Boolean
