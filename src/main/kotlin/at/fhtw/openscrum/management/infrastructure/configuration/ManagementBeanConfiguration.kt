@@ -3,6 +3,7 @@ package at.fhtw.openscrum.management.infrastructure.configuration
 import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import at.fhtw.openscrum.management.domain.model.project.ProjectService
 import at.fhtw.openscrum.management.domain.model.user.EncryptionService
+import at.fhtw.openscrum.management.domain.model.user.PasswordGenerator
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
 import at.fhtw.openscrum.management.domain.model.user.UserService
 import org.springframework.context.annotation.Bean
@@ -13,10 +14,11 @@ class ManagementBeanConfiguration {
     @Bean
     fun userService(
         encryptionService: EncryptionService,
+        passwordGenerator: PasswordGenerator,
         userRepository: UserRepository,
         projectRepository: ProjectRepository,
     ): UserService {
-        val userService = UserService(encryptionService, userRepository, projectRepository)
+        val userService = UserService(encryptionService, passwordGenerator, userRepository, projectRepository)
         userService.registerAdmin()
         return userService
     }

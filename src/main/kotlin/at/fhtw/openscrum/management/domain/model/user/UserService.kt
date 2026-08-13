@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 
 class UserService(
     private val encryptionService: EncryptionService,
+    private val passwordGenerator: PasswordGenerator,
     private val userRepository: UserRepository,
     private val projectRepository: ProjectRepository,
     private val log: Logger = LoggerFactory.getLogger(UserService::class.java),
@@ -78,14 +79,15 @@ class UserService(
         return userRepository.save(user)
     }
 
-    fun registerAdmin(): User? {
+    fun registerAdmin(password: String? = null): User? {
         if (userRepository.existsByRole(Role.MANAGER)) {
             log.debug("Skipped admin registration because a manager already exists")
             return null
         }
 
+        val plainPassword = password ?: passwordGenerator.generatePassword()
         val hashedPassword =
-            encryptionService.hashPassword("admin") ?: throw IllegalStateException("Password must not be null!")
+            encryptionService.hashPassword(plainPassword) ?: throw IllegalStateException("Password must not be null!")
 
         val admin =
             User(
@@ -96,7 +98,7 @@ class UserService(
                 role = Role.MANAGER,
             )
 
-        log.info("Registered admin {}", admin)
+        log.info("Generated admin user '{}' with password {}", admin.username, plainPassword)
         return userRepository.save(admin)
     }
 

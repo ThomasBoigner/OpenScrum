@@ -1,50 +1,20 @@
 package at.fhtw.openscrum.management.presentation
 
-import at.fhtw.openscrum.createHeadlessChromeDriver
+import at.fhtw.openscrum.E2ETest
 import at.fhtw.openscrum.management.domain.model.user.Role
-import at.fhtw.openscrum.management.domain.model.user.UserRepository
-import at.fhtw.openscrum.management.domain.model.user.UserService
-import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember.DeveloperEntity
-import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember.TeamMemberEntityRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.WebDriverWait
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import java.time.Duration
 import java.util.UUID
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("postgres")
-class UserControllerTest {
-    @Autowired
-    lateinit var userService: UserService
-
-    @Autowired
-    lateinit var userEntityRepository: UserEntityRepository
-
-    @Autowired
-    lateinit var userRepository: UserRepository
-
-    @Autowired
-    lateinit var teamMemberEntityRepository: TeamMemberEntityRepository
-
-    @BeforeEach
-    fun cleanUp() {
-        teamMemberEntityRepository.deleteAll()
-        userEntityRepository.deleteAll()
-        userService.registerAdmin()
-    }
-
+class UserControllerTest : E2ETest() {
     /*
     Given a manager, a username, a first name, a last name, an email address and a password
     When the manager enters the information
@@ -59,21 +29,11 @@ class UserControllerTest {
         val email = "john.doe@gmail.com"
         val password = "abc123"
 
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // register user
-        webDriver.get("http://localhost:8080/users/register")
+        webDriver.get("$baseUrl/users/register")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
         webDriver.findElement(By.cssSelector("input#first-name")).sendKeys(firstName)
         webDriver.findElement(By.cssSelector("input#last-name")).sendKeys(lastName)
@@ -85,12 +45,11 @@ class UserControllerTest {
         // Then
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".users-list-item")))
         val pageSource = webDriver.pageSource
-        assertThat(webDriver.currentUrl).isEqualTo("http://localhost:8080/users")
+        assertThat(webDriver.currentUrl).isEqualTo("$baseUrl/users")
         assertThat(pageSource).contains(username)
         assertThat(pageSource).contains(firstName)
         assertThat(pageSource).contains(lastName)
         assertThat(pageSource).contains(email)
-        webDriver.close()
     }
 
     /*
@@ -104,8 +63,6 @@ class UserControllerTest {
         val username = "john.doe"
         val password = "abc123"
 
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         userService.registerUser(
             authenticatedUser = admin,
             username = username,
@@ -115,22 +72,14 @@ class UserControllerTest {
             email = "john.doe@gmail.com",
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(username, password)
 
-        webDriver.get("http://localhost:8080/users/register")
+        webDriver.get("$baseUrl/users/register")
 
         // Then
         val pageSource = webDriver.pageSource
         assertThat(pageSource).contains("403")
-        webDriver.close()
     }
 
     /*
@@ -147,8 +96,6 @@ class UserControllerTest {
         val email = "john.doe@gmail.com"
         val password = "abc123"
 
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         userService.registerUser(
             authenticatedUser = admin,
             username = username,
@@ -158,19 +105,11 @@ class UserControllerTest {
             email = "john.doe2@gmail.com",
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // register user
-        webDriver.get("http://localhost:8080/users/register")
+        webDriver.get("$baseUrl/users/register")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
         webDriver.findElement(By.cssSelector("input#first-name")).sendKeys(firstName)
         webDriver.findElement(By.cssSelector("input#last-name")).sendKeys(lastName)
@@ -183,7 +122,6 @@ class UserControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).contains("username")
-        webDriver.close()
     }
 
     /*
@@ -200,8 +138,6 @@ class UserControllerTest {
         val email = "john.doe@gmail.com"
         val password = "abc123"
 
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         userService.registerUser(
             authenticatedUser = admin,
             username = "john.doe2",
@@ -211,19 +147,11 @@ class UserControllerTest {
             email = email,
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // register user
-        webDriver.get("http://localhost:8080/users/register")
+        webDriver.get("$baseUrl/users/register")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
         webDriver.findElement(By.cssSelector("input#first-name")).sendKeys(firstName)
         webDriver.findElement(By.cssSelector("input#last-name")).sendKeys(lastName)
@@ -236,7 +164,6 @@ class UserControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).contains("email")
-        webDriver.close()
     }
 
     /*
@@ -253,21 +180,11 @@ class UserControllerTest {
         val email = ""
         val password = ""
 
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // register user
-        webDriver.get("http://localhost:8080/users/register")
+        webDriver.get("$baseUrl/users/register")
         webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
         webDriver.findElement(By.cssSelector("input#first-name")).sendKeys(firstName)
         webDriver.findElement(By.cssSelector("input#last-name")).sendKeys(lastName)
@@ -284,7 +201,6 @@ class UserControllerTest {
         assertThat(error.text).contains("First name")
         assertThat(error.text).contains("Last name")
         assertThat(error.text).contains("Password")
-        webDriver.close()
     }
 
     /*
@@ -295,8 +211,6 @@ class UserControllerTest {
     @Test
     fun ensurePromoteUserWorksProperly() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -307,19 +221,11 @@ class UserControllerTest {
                 email = "john.doe@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // promote user
-        webDriver.get("http://localhost:8080/users")
+        webDriver.get("$baseUrl/users")
         wait.until(
             ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#user-${user.userId.token} .promote-button")),
         )
@@ -337,7 +243,6 @@ class UserControllerTest {
         assertThat(webDriver.findElements(By.cssSelector("#user-${user.userId.token}"))).hasSize(1)
         assertThat(webDriver.findElement(By.cssSelector("#user-${user.userId.token}")).text).contains("Manager")
         assertThat(userEntityRepository.findByUserId(user.userId.token)!!.role).isEqualTo(Role.MANAGER)
-        webDriver.close()
     }
 
     /*
@@ -348,8 +253,6 @@ class UserControllerTest {
     @Test
     fun ensureDemoteUserWorksProperly() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -364,19 +267,11 @@ class UserControllerTest {
         persistedUser.promote(admin)
         userRepository.save(persistedUser)
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // demote user
-        webDriver.get("http://localhost:8080/users")
+        webDriver.get("$baseUrl/users")
         wait.until(
             ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#user-${user.userId.token} .demote-button")),
         )
@@ -395,7 +290,6 @@ class UserControllerTest {
         assertThat(webDriver.findElements(By.cssSelector("#user-${user.userId.token} .promote-button"))).hasSize(1)
         assertThat(webDriver.findElements(By.cssSelector("#user-${admin.userId.token} .demote-button"))).isEmpty()
         assertThat(userEntityRepository.findByUserId(user.userId.token)!!.role).isEqualTo(Role.USER)
-        webDriver.close()
     }
 
     /*
@@ -406,8 +300,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserWorksProperly() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -418,19 +310,11 @@ class UserControllerTest {
                 email = "john.doe@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // update user
-        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
         webDriver.findElement(By.cssSelector("input#username")).clear()
         webDriver.findElement(By.cssSelector("input#username")).sendKeys("jane.doe")
         webDriver.findElement(By.cssSelector("input#first-name")).clear()
@@ -441,7 +325,7 @@ class UserControllerTest {
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys("jane.doe@gmail.com")
         webDriver.findElement(By.cssSelector("input#password")).sendKeys("def456")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-user-form button"))).click()
-        wait.until(ExpectedConditions.urlToBe("http://localhost:8080/users"))
+        wait.until(ExpectedConditions.urlToBe("$baseUrl/users"))
 
         // Then
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".users-list-item")))
@@ -455,7 +339,6 @@ class UserControllerTest {
         assertThat(updatedUser.emailAddress).isEqualTo("jane.doe@gmail.com")
         assertThat(updatedUser.fullName.firstName).isEqualTo("Jane")
         assertThat(updatedUser.fullName.lastName).isEqualTo("Doe")
-        webDriver.close()
     }
 
     /*
@@ -466,8 +349,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserWorksForOwnUser() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -478,19 +359,11 @@ class UserControllerTest {
                 email = "john.doe@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as the user
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys("john.doe")
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys("I64zxHkMVRP8K6")
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login("john.doe", "I64zxHkMVRP8K6")
 
         // update own user
-        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
         webDriver.findElement(By.cssSelector("input#username")).clear()
         webDriver.findElement(By.cssSelector("input#username")).sendKeys("jane.doe")
         webDriver.findElement(By.cssSelector("input#first-name")).clear()
@@ -512,7 +385,6 @@ class UserControllerTest {
         webDriver.findElement(By.cssSelector("input#password")).sendKeys("IMIQbfkfz5Js5D")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
         wait.until(ExpectedConditions.urlContains("/projects"))
-        webDriver.close()
     }
 
     /*
@@ -523,8 +395,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserDoesNotWorkForOtherUsersWithUserPermissions() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         userService.registerUser(
             authenticatedUser = admin,
             username = "john.doe",
@@ -534,25 +404,16 @@ class UserControllerTest {
             email = "john.doe@gmail.com",
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as the user
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys("john.doe")
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys("abc123")
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login("john.doe", "abc123")
 
         // open the update user page of the admin user
-        webDriver.get("http://localhost:8080/users/${admin.userId.token}/update")
+        webDriver.get("$baseUrl/users/${admin.userId.token}/update")
 
         // Then
         assertThat(webDriver.pageSource).contains("403")
         assertThat(webDriver.findElements(By.cssSelector("section#update-user-form"))).isEmpty()
         assertThat(userEntityRepository.findByUserId(admin.userId.token)!!.username).isEqualTo("admin")
-        webDriver.close()
     }
 
     /*
@@ -563,26 +424,16 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserDoesNotWorkForNonExistingUser() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
         val nonExistingUserId = UUID.randomUUID()
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // open the update user page of a user that does not exist
-        webDriver.get("http://localhost:8080/users/$nonExistingUserId/update")
+        webDriver.get("$baseUrl/users/$nonExistingUserId/update")
 
         // Then
         assertThat(webDriver.pageSource).contains("404")
-        webDriver.close()
     }
 
     /*
@@ -593,8 +444,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserDoesNotWorkWithTakenUsername() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -605,19 +454,11 @@ class UserControllerTest {
                 email = "john.doe@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // update user with the taken username of the admin
-        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
         webDriver.findElement(By.cssSelector("input#username")).clear()
         webDriver.findElement(By.cssSelector("input#username")).sendKeys("admin")
         webDriver.findElement(By.cssSelector("input#password")).sendKeys("def456")
@@ -628,7 +469,6 @@ class UserControllerTest {
         assertThat(error).isNotNull
         assertThat(error.text).contains("username")
         assertThat(userEntityRepository.findByUserId(user.userId.token)!!.username).isEqualTo("john.doe")
-        webDriver.close()
     }
 
     /*
@@ -639,8 +479,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserDoesNotWorkWithTakenEmailAddress() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -651,19 +489,11 @@ class UserControllerTest {
                 email = "john.doe@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // update user with the taken email address of the admin
-        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
         webDriver.findElement(By.cssSelector("input#email-address")).clear()
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys("admin@gmail.com")
         webDriver.findElement(By.cssSelector("input#password")).sendKeys("def456")
@@ -674,7 +504,6 @@ class UserControllerTest {
         assertThat(error).isNotNull
         assertThat(error.text).contains("email")
         assertThat(userEntityRepository.findByUserId(user.userId.token)!!.emailAddress).isEqualTo("john.doe@gmail.com")
-        webDriver.close()
     }
 
     /*
@@ -685,8 +514,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserWorksWithOwnCurrentUsername() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -697,30 +524,21 @@ class UserControllerTest {
                 email = "john.doe@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // update user keeping the current username
-        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
         webDriver.findElement(By.cssSelector("input#email-address")).clear()
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys("jane.doe@gmail.com")
         webDriver.findElement(By.cssSelector("input#password")).sendKeys("def456")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-user-form button"))).click()
-        wait.until(ExpectedConditions.urlToBe("http://localhost:8080/users"))
+        wait.until(ExpectedConditions.urlToBe("$baseUrl/users"))
 
         // Then
         val updatedUser = userEntityRepository.findByUserId(user.userId.token)!!
         assertThat(updatedUser.username).isEqualTo("john.doe")
         assertThat(updatedUser.emailAddress).isEqualTo("jane.doe@gmail.com")
-        webDriver.close()
     }
 
     /*
@@ -731,8 +549,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserWorksWithOwnCurrentEmailAddress() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -743,30 +559,21 @@ class UserControllerTest {
                 email = "john.doe@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // update user keeping the current email address
-        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
         webDriver.findElement(By.cssSelector("input#username")).clear()
         webDriver.findElement(By.cssSelector("input#username")).sendKeys("jane.doe")
         webDriver.findElement(By.cssSelector("input#password")).sendKeys("def456")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-user-form button"))).click()
-        wait.until(ExpectedConditions.urlToBe("http://localhost:8080/users"))
+        wait.until(ExpectedConditions.urlToBe("$baseUrl/users"))
 
         // Then
         val updatedUser = userEntityRepository.findByUserId(user.userId.token)!!
         assertThat(updatedUser.username).isEqualTo("jane.doe")
         assertThat(updatedUser.emailAddress).isEqualTo("john.doe@gmail.com")
-        webDriver.close()
     }
 
     /*
@@ -777,8 +584,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserDoesNotWorkWithInvalidEmailAddress() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -789,19 +594,11 @@ class UserControllerTest {
                 email = "john.doe@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // update user with an invalid email address
-        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
         webDriver.findElement(By.cssSelector("input#email-address")).clear()
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys("invalid-email")
         webDriver.findElement(By.cssSelector("input#password")).sendKeys("def456")
@@ -812,7 +609,6 @@ class UserControllerTest {
         assertThat(error).isNotNull
         assertThat(error.text).contains("Email address must be valid!")
         assertThat(userEntityRepository.findByUserId(user.userId.token)!!.emailAddress).isEqualTo("john.doe@gmail.com")
-        webDriver.close()
     }
 
     /*
@@ -823,8 +619,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserDoesNotWorkWithInvalidInformation() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -835,19 +629,11 @@ class UserControllerTest {
                 email = "john.doe@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // update user with blank information
-        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
         webDriver.findElement(By.cssSelector("input#username")).clear()
         webDriver.findElement(By.cssSelector("input#first-name")).clear()
         webDriver.findElement(By.cssSelector("input#last-name")).clear()
@@ -863,7 +649,6 @@ class UserControllerTest {
         assertThat(error.text).contains("First name")
         assertThat(error.text).contains("Last name")
         assertThat(userEntityRepository.findByUserId(user.userId.token)!!.username).isEqualTo("john.doe")
-        webDriver.close()
     }
 
     /*
@@ -874,8 +659,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserKeepsPasswordWhenPasswordIsBlank() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -887,19 +670,11 @@ class UserControllerTest {
             )
         val passwordBeforeUpdate = userEntityRepository.findByUserId(user.userId.token)!!.password
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // update user leaving the password blank
-        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
         webDriver.findElement(By.cssSelector("input#username")).clear()
         webDriver.findElement(By.cssSelector("input#username")).sendKeys("jane.doe")
         webDriver.findElement(By.cssSelector("input#first-name")).clear()
@@ -910,7 +685,7 @@ class UserControllerTest {
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys("jane.doe@gmail.com")
         webDriver.findElement(By.cssSelector("input#password")).clear()
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-user-form button"))).click()
-        wait.until(ExpectedConditions.urlToBe("http://localhost:8080/users"))
+        wait.until(ExpectedConditions.urlToBe("$baseUrl/users"))
 
         // Then
         val updatedUser = userEntityRepository.findByUserId(user.userId.token)!!
@@ -921,12 +696,7 @@ class UserControllerTest {
 
         // the old password still works
         webDriver.manage().deleteAllCookies()
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys("jane.doe")
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys("abc123")
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
-        webDriver.close()
+        login("jane.doe", "abc123")
     }
 
     /*
@@ -937,8 +707,6 @@ class UserControllerTest {
     @Test
     fun ensureUpdateUserUpdatesTeamMemberInformation() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -959,19 +727,11 @@ class UserControllerTest {
             ),
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // update user
-        webDriver.get("http://localhost:8080/users/${user.userId.token}/update")
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
         webDriver.findElement(By.cssSelector("input#username")).clear()
         webDriver.findElement(By.cssSelector("input#username")).sendKeys("jane.doe")
         webDriver.findElement(By.cssSelector("input#first-name")).clear()
@@ -982,7 +742,7 @@ class UserControllerTest {
         webDriver.findElement(By.cssSelector("input#email-address")).sendKeys("jane.doe@gmail.com")
         webDriver.findElement(By.cssSelector("input#password")).sendKeys("def456")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-user-form button"))).click()
-        wait.until(ExpectedConditions.urlToBe("http://localhost:8080/users"))
+        wait.until(ExpectedConditions.urlToBe("$baseUrl/users"))
 
         // Then
         // the UserInformationChanged event is processed asynchronously by the scrum context
@@ -996,7 +756,6 @@ class UserControllerTest {
                 assertThat(teamMembers.first().firstName).isEqualTo("Jane")
                 assertThat(teamMembers.first().lastName).isEqualTo("Doe")
             }
-        webDriver.close()
     }
 
     /*
@@ -1007,8 +766,6 @@ class UserControllerTest {
     @Test
     fun ensureDeleteUserWorksProperly() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -1019,19 +776,11 @@ class UserControllerTest {
                 email = "john.doe@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // delete user
-        webDriver.get("http://localhost:8080/users")
+        webDriver.get("$baseUrl/users")
         wait.until(
             ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#user-${user.userId.token} .delete-button")),
         )
@@ -1049,6 +798,5 @@ class UserControllerTest {
         assertThat(webDriver.findElements(By.cssSelector("#user-${user.userId.token}"))).isEmpty()
         assertThat(webDriver.findElements(By.cssSelector(".users-list-item"))).hasSize(1)
         assertThat(userEntityRepository.findByUserId(user.userId.token)).isNull()
-        webDriver.close()
     }
 }

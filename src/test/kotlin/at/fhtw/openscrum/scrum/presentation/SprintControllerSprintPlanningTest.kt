@@ -1,85 +1,19 @@
 package at.fhtw.openscrum.scrum.presentation
 
-import at.fhtw.openscrum.createHeadlessChromeDriver
-import at.fhtw.openscrum.management.domain.model.project.ProjectService
-import at.fhtw.openscrum.management.domain.model.user.UserService
-import at.fhtw.openscrum.management.infrastructure.persistence.jpa.project.ProjectEntityRepository
-import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
-import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
-import at.fhtw.openscrum.scrum.application.SprintApplicationService
-import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.E2ETest
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
-import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.productbacklogitem.ProductBacklogItemEntityRepository
-import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.sprint.SprintEntityRepository
-import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember.TeamMemberEntityRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.WebDriverWait
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import java.time.Duration
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("postgres")
-class SprintControllerSprintPlanningTest {
-    @Autowired
-    lateinit var userService: UserService
-
-    @Autowired
-    lateinit var projectService: ProjectService
-
-    @Autowired
-    lateinit var sprintApplicationService: SprintApplicationService
-
-    @Autowired
-    lateinit var productBacklogItemApplicationService: ProductBacklogItemApplicationService
-
-    @Autowired
-    lateinit var teamMemberApplicationService: TeamMemberApplicationService
-
-    @Autowired
-    lateinit var userEntityRepository: UserEntityRepository
-
-    @Autowired
-    @Qualifier("managementProjectEntityRepository")
-    lateinit var managementProjectEntityRepository: ProjectEntityRepository
-
-    @Autowired
-    @Qualifier("scrumProjectEntityRepository")
-    lateinit var scrumProjectEntityRepository: at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.project.ProjectEntityRepository
-
-    @Autowired
-    lateinit var teamMemberEntityRepository: TeamMemberEntityRepository
-
-    @Autowired
-    lateinit var sprintEntityRepository: SprintEntityRepository
-
-    @Autowired
-    lateinit var productBacklogItemEntityRepository: ProductBacklogItemEntityRepository
-
-    @BeforeEach
-    fun cleanUp() {
-        sprintEntityRepository.deleteAll()
-        productBacklogItemEntityRepository.deleteAll()
-        teamMemberEntityRepository.deleteAll()
-        scrumProjectEntityRepository.deleteAll()
-        managementProjectEntityRepository.deleteAll()
-        userEntityRepository.deleteAll()
-        userService.registerAdmin()
-    }
-
+class SprintControllerSprintPlanningTest : E2ETest() {
     @Test
     fun ensureListSprintsShowsSprintWorksProperly() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -124,25 +58,16 @@ class SprintControllerSprintPlanningTest {
             ),
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(scrumMaster.username, scrumMasterPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints")
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.sprint-list-item")))
 
         // Then
         val pageSource = webDriver.pageSource
         assertThat(pageSource).contains("Sprint 1")
         assertThat(pageSource).contains("Not Planned")
-
-        webDriver.close()
     }
 
     /*
@@ -156,8 +81,6 @@ class SprintControllerSprintPlanningTest {
         val sprintGoal = "Deliver the login feature"
         val itemTitle = "Item Title"
         val itemDescription = "As a user, I want to log in to the application."
-
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         val productOwner =
             userService.registerUser(
@@ -214,17 +137,10 @@ class SprintControllerSprintPlanningTest {
                 ),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(scrumMaster.username, scrumMasterPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
         webDriver.findElement(By.cssSelector("textarea#sprint-goal-input")).sendKeys(sprintGoal)
 
         val checkbox =
@@ -236,29 +152,27 @@ class SprintControllerSprintPlanningTest {
         checkbox.click()
 
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#plan-sprint-form button"))).click()
-        wait.until(ExpectedConditions.urlToBe("http://localhost:8080/projects/${sprint.projectId}/sprints/${sprint.sprintId}"))
+        wait.until(ExpectedConditions.urlToBe("$baseUrl/projects/${sprint.projectId}/sprints/${sprint.sprintId}"))
 
         // Then
         val pageSource = webDriver.pageSource
         assertThat(pageSource).contains(sprintGoal)
         assertThat(pageSource).contains("In Progress")
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.sprint-backlog-item")))
 
         val kanbanPageSource = webDriver.pageSource
         assertThat(kanbanPageSource).contains(itemTitle)
         assertThat(kanbanPageSource).contains(itemDescription)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/backlog")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/backlog")
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".product-backlog-list-item")))
 
         val productBacklogPageSource = webDriver.pageSource
         assertThat(productBacklogPageSource).contains(itemTitle)
         assertThat(productBacklogPageSource).contains(itemDescription)
         assertThat(productBacklogPageSource).contains("Committed to sprint")
-
-        webDriver.close()
     }
 
     /*
@@ -269,8 +183,6 @@ class SprintControllerSprintPlanningTest {
     @Test
     fun ensurePlanSprintDoesNotWorkWhenUserIsNotScrumMasterOfThisProject() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -326,22 +238,13 @@ class SprintControllerSprintPlanningTest {
                 email = "scrum.master.other@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster2.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMaster2Password)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(scrumMaster2.username, scrumMaster2Password)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
 
         // Then
         assertThat(webDriver.pageSource).contains("404")
-
-        webDriver.close()
     }
 
     /*
@@ -352,8 +255,6 @@ class SprintControllerSprintPlanningTest {
     @Test
     fun ensurePlanSprintDoesNotWorkWhenUserIsProductOwner() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwnerPassword = "abc123"
         val productOwner =
             userService.registerUser(
@@ -399,22 +300,13 @@ class SprintControllerSprintPlanningTest {
                 ),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(productOwner.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(productOwnerPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(productOwner.username, productOwnerPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
 
         // Then
         assertThat(webDriver.pageSource).contains("403")
-
-        webDriver.close()
     }
 
     /*
@@ -425,8 +317,6 @@ class SprintControllerSprintPlanningTest {
     @Test
     fun ensurePlanSprintDoesNotWorkWhenUserIsDeveloper() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -482,22 +372,13 @@ class SprintControllerSprintPlanningTest {
                 ),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(developer.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(developerPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(developer.username, developerPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
 
         // Then
         assertThat(webDriver.pageSource).contains("403")
-
-        webDriver.close()
     }
 
     /*
@@ -508,8 +389,6 @@ class SprintControllerSprintPlanningTest {
     @Test
     fun ensurePlanSprintDoesNotWorkWhenSprintIsAlreadyPlanned() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -576,22 +455,13 @@ class SprintControllerSprintPlanningTest {
             ),
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(scrumMaster.username, scrumMasterPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
 
         // Then
         assertThat(webDriver.pageSource).contains("400")
-
-        webDriver.close()
     }
 
     /*
@@ -603,8 +473,6 @@ class SprintControllerSprintPlanningTest {
     fun ensurePlanSprintDoesNotWorkWhenNoProductBacklogItemsAreInBacklog() {
         // Given
         val productBacklogItemTitle = "Implement Login"
-
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         val productOwner =
             userService.registerUser(
@@ -668,23 +536,14 @@ class SprintControllerSprintPlanningTest {
                 ),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(scrumMaster.username, scrumMasterPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
         wait.until(ExpectedConditions.visibilityOfElementLocated((By.cssSelector("p.no-product-backlog-item"))))
 
         // Then
         assertThat(webDriver.pageSource).doesNotContain(productBacklogItemTitle)
-
-        webDriver.close()
     }
 
     /*
@@ -695,8 +554,6 @@ class SprintControllerSprintPlanningTest {
     @Test
     fun ensurePlanSprintDoesNotWorkWhenSprintGoalIsBlank() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -753,17 +610,10 @@ class SprintControllerSprintPlanningTest {
                 ),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(scrumMaster.username, scrumMasterPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
 
         val checkbox =
             wait.until(
@@ -787,8 +637,6 @@ class SprintControllerSprintPlanningTest {
                 ),
             )
         assertThat(reloadedCheckbox.isSelected).isTrue()
-
-        webDriver.close()
     }
 
     /*
@@ -799,8 +647,6 @@ class SprintControllerSprintPlanningTest {
     @Test
     fun ensurePlanSprintDoesNotWorkWhenNoProductBacklogItemsAreSelected() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -856,17 +702,10 @@ class SprintControllerSprintPlanningTest {
                 ),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(scrumMaster.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(scrumMasterPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(scrumMaster.username, scrumMasterPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("input[name='productBacklogIds']")))
 
         webDriver.findElement(By.cssSelector("textarea#sprint-goal-input")).sendKeys("Deliver the login feature")
@@ -876,7 +715,5 @@ class SprintControllerSprintPlanningTest {
 
         // Then
         assertThat(webDriver.pageSource).contains("At least one product backlog item must be selected!")
-
-        webDriver.close()
     }
 }

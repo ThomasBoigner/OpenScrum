@@ -25,11 +25,14 @@ class UserServiceTest {
     lateinit var encryptionService: EncryptionService
 
     @Mock
+    lateinit var passwordGenerator: PasswordGenerator
+
+    @Mock
     lateinit var projectRepository: ProjectRepository
 
     @BeforeEach
     fun setUp() {
-        userService = UserService(encryptionService, userRepository, projectRepository)
+        userService = UserService(encryptionService, passwordGenerator, userRepository, projectRepository)
     }
 
     @Test
@@ -682,6 +685,7 @@ class UserServiceTest {
         assertThat(result).isNull()
         verify(userRepository, never()).save(any())
         verify(encryptionService, never()).hashPassword(any())
+        verify(passwordGenerator, never()).generatePassword()
     }
 
     @Test
@@ -692,13 +696,34 @@ class UserServiceTest {
         whenever(userRepository.save(any())).thenAnswer { it.arguments[0] }
 
         // When
-        val result = userService.registerAdmin()
+        val result = userService.registerAdmin("admin")
 
         // Then
         assertThat(result).isNotNull
         assertThat(result!!.username).isEqualTo("admin")
         assertThat(result.emailAddress.emailAddress).isEqualTo("admin@gmail.com")
         assertThat(result.role).isEqualTo(Role.MANAGER)
+        assertThat(result.password).isEqualTo("admin")
+        verify(passwordGenerator, never()).generatePassword()
+    }
+
+    @Test
+    fun ensureRegisterAdminGeneratesARandomPasswordWhenNoneIsGiven() {
+        // Given
+        whenever(userRepository.existsByRole(Role.MANAGER)).thenReturn(false)
+        whenever(passwordGenerator.generatePassword()).thenReturn("generated-password")
+        whenever(encryptionService.hashPassword("generated-password")).thenAnswer { it.arguments[0] }
+        whenever(userRepository.save(any())).thenAnswer { it.arguments[0] }
+
+        // When
+        val result = userService.registerAdmin()
+
+        // Then
+        assertThat(result).isNotNull
+        assertThat(result!!.username).isEqualTo("admin")
+        assertThat(result.password).isEqualTo("generated-password")
+        verify(passwordGenerator).generatePassword()
+        verify(encryptionService).hashPassword("generated-password")
     }
 
     @Test
