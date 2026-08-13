@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 
 class UserService(
     private val encryptionService: EncryptionService,
+    private val passwordGenerator: PasswordGenerator,
     private val userRepository: UserRepository,
     private val projectRepository: ProjectRepository,
     private val log: Logger = LoggerFactory.getLogger(UserService::class.java),
@@ -38,15 +39,55 @@ class UserService(
         return userRepository.save(user)
     }
 
-    fun registerAdmin(): User {
-        val existingAdmin = userRepository.findByUsername("admin")
+    fun updateUser(
+        authenticatedUser: User,
+        userId: UserId,
+        username: String,
+        email: String,
+        firstName: String,
+        lastName: String,
+        password: String,
+    ): User {
+        log.debug("Trying to update user with id {}", userId)
 
-        if (existingAdmin != null) {
-            return existingAdmin
+        val user = userRepository.findByUserId(userId)
+        require(user != null) { "User does not exist!" }
+        require(user.emailAddress.emailAddress == email || !userRepository.existsByEmailAddress(email)) {
+            "User with email $email already exists!"
+        }
+        require(user.username == username || !userRepository.existsByUsername(username)) {
+            "User with username $username already exists!"
         }
 
         val hashedPassword =
-            encryptionService.hashPassword("admin") ?: throw IllegalStateException("Password must not be null!")
+            if (password.isBlank()) {
+                null
+            } else {
+                encryptionService.hashPassword(password)
+                    ?: throw IllegalStateException("Password must not be null!")
+            }
+
+        user.update(
+            authenticatedUser = authenticatedUser,
+            username = username,
+            emailAddress = EmailAddress(email),
+            fullName = FullName(firstName, lastName),
+            password = hashedPassword,
+        )
+
+        log.info("Updated user {}", user)
+        return userRepository.save(user)
+    }
+
+    fun registerAdmin(password: String? = null): User? {
+        if (userRepository.existsByRole(Role.MANAGER)) {
+            log.debug("Skipped admin registration because a manager already exists")
+            return null
+        }
+
+        val plainPassword = password ?: passwordGenerator.generatePassword()
+        val hashedPassword =
+            encryptionService.hashPassword(plainPassword) ?: throw IllegalStateException("Password must not be null!")
 
         val admin =
             User(
@@ -57,7 +98,7 @@ class UserService(
                 role = Role.MANAGER,
             )
 
-        log.info("Registered admin {}", admin)
+        log.info("Generated admin user '{}' with password {}", admin.username, plainPassword)
         return userRepository.save(admin)
     }
 

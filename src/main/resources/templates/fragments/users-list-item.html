@@ -33,7 +33,9 @@
                 hx:target="|#user-*{userId}|">
             <img th:src="@{/assets/svg/arrow-primary.svg}" alt="Demote">
         </a>
-        <a class="btn edit-button" th:if="${authenticatedUser.role.isManager()}">
+        <a class="btn edit-button"
+                th:if="${authenticatedUser.role.isManager()} or ${authenticatedUser.userId} == *{userId}"
+                th:href="@{/users/{userId}/update(userId=*{userId})}">
             <img th:src="@{/assets/svg/edit.svg}" alt="Edit">
         </a>
         <a class="btn delete-button"

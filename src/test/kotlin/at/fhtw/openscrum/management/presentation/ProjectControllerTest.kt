@@ -1,46 +1,16 @@
 package at.fhtw.openscrum.management.presentation
 
-import at.fhtw.openscrum.createHeadlessChromeDriver
+import at.fhtw.openscrum.E2ETest
 import at.fhtw.openscrum.management.domain.model.project.ProjectId
-import at.fhtw.openscrum.management.domain.model.project.ProjectService
-import at.fhtw.openscrum.management.domain.model.user.UserService
-import at.fhtw.openscrum.management.infrastructure.persistence.jpa.project.ProjectEntityRepository
-import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
-import org.openqa.selenium.support.ui.WebDriverWait
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import java.time.Duration
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("postgres")
-class ProjectControllerTest {
-    @Autowired
-    lateinit var projectService: ProjectService
-
-    @Autowired
-    lateinit var userService: UserService
-
-    @Autowired
-    lateinit var userEntityRepository: UserEntityRepository
-
-    @Autowired
-    lateinit var projectEntityRepository: ProjectEntityRepository
-
-    @BeforeEach
-    fun cleanUp() {
-        projectEntityRepository.deleteAll()
-        userEntityRepository.deleteAll()
-        userService.registerAdmin()
-    }
-
+class ProjectControllerTest : E2ETest() {
     /*
     Given a manager, a project name, a product owner, a scrum master and developers
     When the manager enters the information into the create project form
@@ -50,8 +20,6 @@ class ProjectControllerTest {
     fun ensureCreateProjectWorksProperly() {
         // Given
         val projectName = "OpenScrum"
-
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         userService.registerUser(
             authenticatedUser = admin,
@@ -79,19 +47,11 @@ class ProjectControllerTest {
                 email = "developer@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in create project form
-        webDriver.get("http://localhost:8080/projects/create")
+        webDriver.get("$baseUrl/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
@@ -107,9 +67,8 @@ class ProjectControllerTest {
         // Then
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".projects-list-item")))
         val pageSource = webDriver.pageSource
-        assertThat(webDriver.currentUrl).isEqualTo("http://localhost:8080/projects")
+        assertThat(webDriver.currentUrl).isEqualTo("$baseUrl/projects")
         assertThat(pageSource).contains(projectName)
-        webDriver.close()
     }
 
     /*
@@ -123,8 +82,6 @@ class ProjectControllerTest {
         val username = "john.doe"
         val password = "abc123"
 
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         userService.registerUser(
             authenticatedUser = admin,
             username = username,
@@ -134,22 +91,14 @@ class ProjectControllerTest {
             email = "user@gmail.com",
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(username, password)
 
-        webDriver.get("http://localhost:8080/users/register")
+        webDriver.get("$baseUrl/users/register")
 
         // Then
         val pageSource = webDriver.pageSource
         assertThat(pageSource).contains("403")
-        webDriver.close()
     }
 
     /*
@@ -162,8 +111,6 @@ class ProjectControllerTest {
         // Given
         val projectName = "OpenScrum"
 
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         userService.registerUser(
             authenticatedUser = admin,
             username = "scrum.master",
@@ -173,19 +120,11 @@ class ProjectControllerTest {
             email = "scrum.master@gmail.com",
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in create project form without product owner
-        webDriver.get("http://localhost:8080/projects/create")
+        webDriver.get("$baseUrl/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
@@ -194,7 +133,6 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase("product owner")
-        webDriver.close()
     }
 
     /*
@@ -207,8 +145,6 @@ class ProjectControllerTest {
         // Given
         val projectName = "OpenScrum"
 
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         userService.registerUser(
             authenticatedUser = admin,
             username = "product.owner",
@@ -218,19 +154,11 @@ class ProjectControllerTest {
             email = "product.owner@gmail.com",
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in create project form without scrum master
-        webDriver.get("http://localhost:8080/projects/create")
+        webDriver.get("$baseUrl/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
@@ -239,7 +167,6 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase("scrum master")
-        webDriver.close()
     }
 
     /*
@@ -253,8 +180,6 @@ class ProjectControllerTest {
         val projectName = "OpenScrum"
         val productOwnerUsername = "product.owner"
         val scrumMasterUsername = "scrum.master"
-
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         userService.registerUser(
             authenticatedUser = admin,
@@ -284,19 +209,11 @@ class ProjectControllerTest {
             developers = setOf(),
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in create project form with already taken project name
-        webDriver.get("http://localhost:8080/projects/create")
+        webDriver.get("$baseUrl/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText(productOwner.fullName.fullName)
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText(scrumMaster.fullName.fullName)
@@ -306,7 +223,6 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase(projectName)
-        webDriver.close()
     }
 
     /*
@@ -317,8 +233,6 @@ class ProjectControllerTest {
     @Test
     fun ensureCreateProjectDoesNotWorkWithBlankProjectName() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         userService.registerUser(
             authenticatedUser = admin,
             username = "product.owner",
@@ -336,19 +250,11 @@ class ProjectControllerTest {
             email = "scrum.master@gmail.com",
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in create project form with blank project name
-        webDriver.get("http://localhost:8080/projects/create")
+        webDriver.get("$baseUrl/projects/create")
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
@@ -357,7 +263,6 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase("project name")
-        webDriver.close()
     }
 
     /*
@@ -370,8 +275,6 @@ class ProjectControllerTest {
         // Given
         val projectName = "OpenScrum"
 
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val user =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -382,19 +285,11 @@ class ProjectControllerTest {
                 email = "user@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in create project form with the same user in all roles
-        webDriver.get("http://localhost:8080/projects/create")
+        webDriver.get("$baseUrl/projects/create")
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Regular User")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Regular User")
@@ -410,7 +305,6 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase("multiple roles")
-        webDriver.close()
     }
 
     /*
@@ -422,8 +316,6 @@ class ProjectControllerTest {
     @Test
     fun ensureUpdateProjectWorksProperly() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -488,19 +380,11 @@ class ProjectControllerTest {
                 developers = setOf(developer),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in update project form
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/update")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/update")
         webDriver.findElement(By.cssSelector("input#project-name")).clear()
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys("OpenScrum 2")
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("New Owner")
@@ -521,15 +405,14 @@ class ProjectControllerTest {
 
         // Then
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".projects-list-item")))
-        assertThat(webDriver.currentUrl).isEqualTo("http://localhost:8080/projects")
+        assertThat(webDriver.currentUrl).isEqualTo("$baseUrl/projects")
         assertThat(webDriver.pageSource).contains("OpenScrum 2")
 
-        val updatedProject = projectEntityRepository.findByProjectId(project.projectId.token)!!
+        val updatedProject = managementProjectEntityRepository.findByProjectId(project.projectId.token)!!
         assertThat(updatedProject.projectName).isEqualTo("OpenScrum 2")
         assertThat(updatedProject.productOwnerId).isEqualTo(newProductOwner.userId.token)
         assertThat(updatedProject.scrumMasterId).isEqualTo(newScrumMaster.userId.token)
         assertThat(updatedProject.developerIds).containsExactly(newDeveloper.userId.token)
-        webDriver.close()
     }
 
     /*
@@ -542,8 +425,6 @@ class ProjectControllerTest {
         // Given
         val username = "john.doe"
         val password = "abc123"
-
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         userService.registerUser(
             authenticatedUser = admin,
@@ -581,22 +462,14 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(username, password)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/update")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/update")
 
         // Then
         val pageSource = webDriver.pageSource
         assertThat(pageSource).contains("403")
-        webDriver.close()
     }
 
     /*
@@ -607,8 +480,6 @@ class ProjectControllerTest {
     @Test
     fun ensureUpdateProjectDoesNotWorkWhenProjectDoesNotExist() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -630,24 +501,15 @@ class ProjectControllerTest {
 
         val projectId = ProjectId()
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // open the update project form
-        webDriver.get("http://localhost:8080/projects/${projectId.token}/update")
+        webDriver.get("$baseUrl/projects/${projectId.token}/update")
 
         // Then
         val pageSource = webDriver.pageSource
         assertThat(pageSource).contains("404")
-        webDriver.close()
     }
 
     /*
@@ -658,8 +520,6 @@ class ProjectControllerTest {
     @Test
     fun ensureUpdateProjectDoesNotWorkWithMissingProductOwner() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -688,19 +548,11 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in update project form without product owner
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/update")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/update")
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByIndex(0)
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
@@ -708,7 +560,6 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase("product owner")
-        webDriver.close()
     }
 
     /*
@@ -719,8 +570,6 @@ class ProjectControllerTest {
     @Test
     fun ensureUpdateProjectDoesNotWorkWithMissingScrumMaster() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -749,19 +598,11 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in update project form without scrum master
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/update")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/update")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByIndex(0)
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
@@ -769,7 +610,6 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase("scrum master")
-        webDriver.close()
     }
 
     /*
@@ -781,8 +621,6 @@ class ProjectControllerTest {
     fun ensureUpdateProjectDoesNotWorkWithTakenProjectName() {
         // Given
         val takenProjectName = "Taken name"
-
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         val productOwner =
             userService.registerUser(
@@ -819,19 +657,11 @@ class ProjectControllerTest {
             developers = setOf(),
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in update project form with already taken project name
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/update")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/update")
         webDriver.findElement(By.cssSelector("input#project-name")).clear()
         webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(takenProjectName)
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
@@ -840,7 +670,6 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase(takenProjectName)
-        webDriver.close()
     }
 
     /*
@@ -851,8 +680,6 @@ class ProjectControllerTest {
     @Test
     fun ensureUpdateProjectDoesNotWorkWithBlankProjectName() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -881,19 +708,11 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in update project form with blank project name
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/update")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/update")
         webDriver.findElement(By.cssSelector("input#project-name")).clear()
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
 
@@ -901,7 +720,6 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase("project name")
-        webDriver.close()
     }
 
     /*
@@ -912,8 +730,6 @@ class ProjectControllerTest {
     @Test
     fun ensureUpdateProjectDoesNotWorkWhenOneUserHasMultipleRoles() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -951,19 +767,11 @@ class ProjectControllerTest {
                 developers = setOf(),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // fill in update project form with the same user in all roles
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/update")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/update")
         Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Regular User")
         Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Regular User")
         wait
@@ -978,7 +786,6 @@ class ProjectControllerTest {
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error).isNotNull
         assertThat(error.text).containsIgnoringCase("multiple roles")
-        webDriver.close()
     }
 
     /*
@@ -990,8 +797,6 @@ class ProjectControllerTest {
     @Test
     fun ensureCancelProjectWorksProperly() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -1029,16 +834,8 @@ class ProjectControllerTest {
                 developers = setOf(developer),
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        // login as admin
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(admin.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(admin.username)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        loginAsAdmin()
 
         // cancel the project
         wait.until(
@@ -1058,7 +855,6 @@ class ProjectControllerTest {
 
         // Then
         assertThat(webDriver.findElements(By.cssSelector("#project-${project.projectId.token}"))).isEmpty()
-        assertThat(projectEntityRepository.findByProjectId(project.projectId.token)).isNull()
-        webDriver.close()
+        assertThat(managementProjectEntityRepository.findByProjectId(project.projectId.token)).isNull()
     }
 }

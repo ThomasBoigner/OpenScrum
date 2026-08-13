@@ -1,83 +1,19 @@
 package at.fhtw.openscrum.scrum.presentation
 
-import at.fhtw.openscrum.createHeadlessChromeDriver
-import at.fhtw.openscrum.management.domain.model.project.ProjectService
-import at.fhtw.openscrum.management.domain.model.user.UserService
-import at.fhtw.openscrum.management.infrastructure.persistence.jpa.project.ProjectEntityRepository
-import at.fhtw.openscrum.management.infrastructure.persistence.jpa.user.UserEntityRepository
-import at.fhtw.openscrum.scrum.application.ProductBacklogItemApplicationService
-import at.fhtw.openscrum.scrum.application.SprintApplicationService
-import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
+import at.fhtw.openscrum.E2ETest
 import at.fhtw.openscrum.scrum.application.command.DefineProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.InitializeSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.domain.model.sprint.MoveDirection
-import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.productbacklogitem.ProductBacklogItemEntityRepository
-import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.sprint.SprintEntityRepository
-import at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.teammember.TeamMemberEntityRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.WebDriverWait
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import java.time.Duration
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@ActiveProfiles("postgres")
-class SprintControllerKanbanBoardTest {
-    @Autowired
-    lateinit var userService: UserService
-
-    @Autowired
-    lateinit var projectService: ProjectService
-
-    @Autowired
-    lateinit var sprintApplicationService: SprintApplicationService
-
-    @Autowired
-    lateinit var productBacklogItemApplicationService: ProductBacklogItemApplicationService
-
-    @Autowired
-    lateinit var teamMemberApplicationService: TeamMemberApplicationService
-
-    @Autowired
-    lateinit var userEntityRepository: UserEntityRepository
-
-    @Autowired
-    @Qualifier("managementProjectEntityRepository")
-    lateinit var managementProjectEntityRepository: ProjectEntityRepository
-
-    @Autowired
-    @Qualifier("scrumProjectEntityRepository")
-    lateinit var scrumProjectEntityRepository: at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.project.ProjectEntityRepository
-
-    @Autowired
-    lateinit var teamMemberEntityRepository: TeamMemberEntityRepository
-
-    @Autowired
-    lateinit var sprintEntityRepository: SprintEntityRepository
-
-    @Autowired
-    lateinit var productBacklogItemEntityRepository: ProductBacklogItemEntityRepository
-
-    @BeforeEach
-    fun cleanUp() {
-        sprintEntityRepository.deleteAll()
-        productBacklogItemEntityRepository.deleteAll()
-        teamMemberEntityRepository.deleteAll()
-        scrumProjectEntityRepository.deleteAll()
-        managementProjectEntityRepository.deleteAll()
-        userEntityRepository.deleteAll()
-        userService.registerAdmin()
-    }
-
+class SprintControllerKanbanBoardTest : E2ETest() {
     /*
     Given a developer, a sprint with status "in progress" and a sprint backlog item with status "To-Do"
     When the sprint backlog item gets moved right
@@ -88,8 +24,6 @@ class SprintControllerKanbanBoardTest {
         // Given
         val itemTitle = "Implement Login"
         val itemDescription = "As a user, I want to log in to the application."
-
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         val productOwner =
             userService.registerUser(
@@ -171,17 +105,10 @@ class SprintControllerKanbanBoardTest {
             ),
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(developer.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(developerPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(developer.username, developerPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
         val moveRightButton =
             wait.until(
                 ExpectedConditions.elementToBeClickable(
@@ -198,8 +125,6 @@ class SprintControllerKanbanBoardTest {
                 ),
             )
         assertThat(inProgressItem.text).contains("${developer.fullName.firstName} ${developer.fullName.lastName}")
-
-        webDriver.close()
     }
 
     /*
@@ -212,8 +137,6 @@ class SprintControllerKanbanBoardTest {
         // Given
         val itemTitle = "Implement Login"
         val itemDescription = "As a user, I want to log in to the application."
-
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         val productOwner =
             userService.registerUser(
@@ -305,17 +228,10 @@ class SprintControllerKanbanBoardTest {
             ),
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(developer.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(developerPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(developer.username, developerPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
         val moveRightButton =
             wait.until(
                 ExpectedConditions.elementToBeClickable(
@@ -335,13 +251,11 @@ class SprintControllerKanbanBoardTest {
             )
         assertThat(doneItem.text).contains("${developer.fullName.firstName} ${developer.fullName.lastName}")
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/backlog")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/backlog")
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".product-backlog-list-item")))
 
         val productBacklogPageSource = webDriver.pageSource
         assertThat(productBacklogPageSource).contains("Committed to sprint (done)")
-
-        webDriver.close()
     }
 
     /*
@@ -354,8 +268,6 @@ class SprintControllerKanbanBoardTest {
         // Given
         val itemTitle = "Implement Login"
         val itemDescription = "As a user, I want to log in to the application."
-
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         val productOwner =
             userService.registerUser(
@@ -447,17 +359,10 @@ class SprintControllerKanbanBoardTest {
         sprintApplicationService.moveSprintBacklogItem(developer.username, moveCommand)
         sprintApplicationService.moveSprintBacklogItem(developer.username, moveCommand)
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(developer.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(developerPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(developer.username, developerPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
         val moveLeftButton =
             wait.until(
                 ExpectedConditions.elementToBeClickable(
@@ -475,13 +380,11 @@ class SprintControllerKanbanBoardTest {
             )
         assertThat(inProgressItem.text).contains("${developer.fullName.firstName} ${developer.fullName.lastName}")
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/backlog")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/backlog")
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".product-backlog-list-item")))
 
         val productBacklogPageSource = webDriver.pageSource
         assertThat(productBacklogPageSource).contains("Committed to sprint")
-
-        webDriver.close()
     }
 
     /*
@@ -494,8 +397,6 @@ class SprintControllerKanbanBoardTest {
         // Given
         val itemTitle = "Implement Login"
         val itemDescription = "As a user, I want to log in to the application."
-
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
 
         val productOwner =
             userService.registerUser(
@@ -587,17 +488,10 @@ class SprintControllerKanbanBoardTest {
             ),
         )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(developer.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(developerPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(developer.username, developerPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
         val moveLeftButton =
             wait.until(
                 ExpectedConditions.elementToBeClickable(
@@ -614,8 +508,6 @@ class SprintControllerKanbanBoardTest {
                 ),
             )
         assertThat(todoItem.text).doesNotContain("${developer.fullName.firstName} ${developer.fullName.lastName}")
-
-        webDriver.close()
     }
 
     /*
@@ -626,8 +518,6 @@ class SprintControllerKanbanBoardTest {
     @Test
     fun ensureMoveSprintBacklogItemDoesNotWorkWhenUserIsNotDeveloperOfThisProject() {
         // Given
-        val admin = userEntityRepository.findByUsername("admin")!!.toUser()
-
         val productOwner =
             userService.registerUser(
                 authenticatedUser = admin,
@@ -704,21 +594,12 @@ class SprintControllerKanbanBoardTest {
                 email = "developer.other@gmail.com",
             )
 
-        val webDriver = createHeadlessChromeDriver()
-        val wait = WebDriverWait(webDriver, Duration.ofSeconds(5))
-
         // When
-        webDriver.get("http://localhost:8080")
-        webDriver.findElement(By.cssSelector("input#username")).sendKeys(otherDeveloper.username)
-        webDriver.findElement(By.cssSelector("input#password")).sendKeys(otherDeveloperPassword)
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#login-form button"))).click()
-        wait.until(ExpectedConditions.urlContains("/projects"))
+        login(otherDeveloper.username, otherDeveloperPassword)
 
-        webDriver.get("http://localhost:8080/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/kanban-board")
 
         // Then
         assertThat(webDriver.pageSource).contains("404")
-
-        webDriver.close()
     }
 }

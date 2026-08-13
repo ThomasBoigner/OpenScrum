@@ -13,4 +13,7 @@ class JpaTeamMemberRepository(
         projectId: UUID,
         userName: String,
     ): TeamMember? = teamMemberEntityRepository.findByProjectIdAndUsername(projectId, userName)?.toTeamMember()
+
+    override fun findAllByUserId(userId: UUID): List<TeamMember> =
+        teamMemberEntityRepository.findAllByUserId(userId).map { it.toTeamMember() }
 }

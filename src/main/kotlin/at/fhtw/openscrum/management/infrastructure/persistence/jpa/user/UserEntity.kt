@@ -36,7 +36,9 @@ class UserEntity(
         fullName = FullNameEmbeddable(user.fullName),
         password = user.password,
         role = user.role,
-    )
+    ) {
+        user.userInformationChangedEvents.forEach { this.registerEvent(it) }
+    }
 
     fun toUser(): User =
         User(

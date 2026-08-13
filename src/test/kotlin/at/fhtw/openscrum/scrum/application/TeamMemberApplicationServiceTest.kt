@@ -6,6 +6,7 @@ import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateTeamMemberInformationCommand
 import at.fhtw.openscrum.scrum.application.dtos.DeveloperDto
 import at.fhtw.openscrum.scrum.domain.model.teammember.Developer
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
@@ -16,6 +17,7 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,6 +34,9 @@ class TeamMemberApplicationServiceTest {
     lateinit var teamMemberApplicationService: TeamMemberApplicationService
 
     @Mock
+    lateinit var teamMemberService: TeamMemberService
+
+    @Mock
     lateinit var teamMemberRepository: TeamMemberRepository
 
     @Mock
@@ -46,7 +51,13 @@ class TeamMemberApplicationServiceTest {
     @BeforeEach
     fun setUp() {
         teamMemberApplicationService =
-            TeamMemberApplicationService(teamMemberRepository, developerRepository, scrumMasterRepository, productOwnerRepository)
+            TeamMemberApplicationService(
+                teamMemberService,
+                teamMemberRepository,
+                developerRepository,
+                scrumMasterRepository,
+                productOwnerRepository,
+            )
     }
 
     @Test
@@ -287,6 +298,29 @@ class TeamMemberApplicationServiceTest {
         assertThat(result.firstName).isEqualTo(command.firstName)
         assertThat(result.lastName).isEqualTo(command.lastName)
         assertThat(result.fullName).isEqualTo("${command.firstName} ${command.lastName}")
+    }
+
+    @Test
+    fun ensureUpdateTeamMemberInformationWorksProperly() {
+        // Given
+        val command =
+            UpdateTeamMemberInformationCommand(
+                userId = UUID.randomUUID(),
+                username = "jane.doe",
+                firstName = "Jane",
+                lastName = "Doe",
+            )
+
+        // When
+        teamMemberApplicationService.updateTeamMemberInformation(command)
+
+        // Then
+        verify(teamMemberService).updateTeamMemberInformation(
+            userId = command.userId,
+            username = command.username,
+            firstName = command.firstName,
+            lastName = command.lastName,
+        )
     }
 
     @Test

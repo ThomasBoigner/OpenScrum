@@ -6,6 +6,7 @@ import at.fhtw.openscrum.scrum.application.command.AssignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateTeamMemberInformationCommand
 import at.fhtw.openscrum.scrum.application.dtos.DeveloperDto
 import at.fhtw.openscrum.scrum.application.dtos.ProductOwnerDto
 import at.fhtw.openscrum.scrum.application.dtos.ScrumMasterDto
@@ -19,6 +20,7 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberRepository
+import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -28,6 +30,7 @@ import java.util.UUID
 @Service
 @Transactional(readOnly = true)
 class TeamMemberApplicationService(
+    private val teamMemberService: TeamMemberService,
     private val teamMemberRepository: TeamMemberRepository,
     private val developerRepository: DeveloperRepository,
     private val scrumMasterRepository: ScrumMasterRepository,
@@ -117,6 +120,17 @@ class TeamMemberApplicationService(
 
         log.info("Assigned product owner {}", productOwner)
         return ProductOwnerDto(productOwnerRepository.save(productOwner))
+    }
+
+    @Transactional(readOnly = false)
+    fun updateTeamMemberInformation(command: UpdateTeamMemberInformationCommand) {
+        log.debug("Trying to update team member information with command: {}", command)
+        teamMemberService.updateTeamMemberInformation(
+            userId = command.userId,
+            username = command.username,
+            firstName = command.firstName,
+            lastName = command.lastName,
+        )
     }
 
     @Transactional(readOnly = false)

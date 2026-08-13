@@ -9,6 +9,7 @@ import at.fhtw.openscrum.management.domain.model.project.ProjectCreated
 import at.fhtw.openscrum.management.domain.model.project.ProjectInformationChanged
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterAssigned
 import at.fhtw.openscrum.management.domain.model.project.ScrumMasterUnassigned
+import at.fhtw.openscrum.management.domain.model.user.UserInformationChanged
 import at.fhtw.openscrum.scrum.application.ProjectApplicationService
 import at.fhtw.openscrum.scrum.application.TeamMemberApplicationService
 import at.fhtw.openscrum.scrum.application.command.AssignDeveloperCommand
@@ -20,6 +21,7 @@ import at.fhtw.openscrum.scrum.application.command.UnassignDeveloperCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignProductOwnerCommand
 import at.fhtw.openscrum.scrum.application.command.UnassignScrumMasterCommand
 import at.fhtw.openscrum.scrum.application.command.UpdateProjectCommand
+import at.fhtw.openscrum.scrum.application.command.UpdateTeamMemberInformationCommand
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.modulith.events.ApplicationModuleListener
@@ -98,6 +100,19 @@ class ManagementEventListener(
             AssignProductOwnerCommand(
                 userId = event.userId.token,
                 projectId = event.projectId.token,
+                username = event.username,
+                firstName = event.fullName.firstName,
+                lastName = event.fullName.lastName,
+            ),
+        )
+    }
+
+    @ApplicationModuleListener
+    fun receiveUserInformationChangedEvent(event: UserInformationChanged) {
+        log.trace("Received user information changed event: {}", event)
+        teamMemberApplicationService.updateTeamMemberInformation(
+            UpdateTeamMemberInformationCommand(
+                userId = event.userId.token,
                 username = event.username,
                 firstName = event.fullName.firstName,
                 lastName = event.fullName.lastName,

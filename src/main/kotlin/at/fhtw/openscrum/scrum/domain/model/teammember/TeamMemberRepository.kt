@@ -7,4 +7,6 @@ interface TeamMemberRepository {
         projectId: UUID,
         userName: String,
     ): TeamMember?
+
+    fun findAllByUserId(userId: UUID): List<TeamMember>
 }

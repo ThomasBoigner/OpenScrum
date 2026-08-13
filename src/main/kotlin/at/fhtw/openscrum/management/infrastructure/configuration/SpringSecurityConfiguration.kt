@@ -23,8 +23,12 @@ class SpringSecurityConfiguration {
                 authorize("/assets/**", permitAll)
                 authorize("/js/**", permitAll)
                 authorize("/users/register", hasRole("MANAGER"))
+                authorize("/users/*/promote", hasRole("MANAGER"))
+                authorize("/users/*/demote", hasRole("MANAGER"))
+                authorize("/users/*/delete", hasRole("MANAGER"))
                 authorize("/projects/create", hasRole("MANAGER"))
                 authorize("/projects/*/update", hasRole("MANAGER"))
+                authorize("/projects/*/cancel", hasRole("MANAGER"))
                 authorize(anyRequest, authenticated)
             }
             formLogin {

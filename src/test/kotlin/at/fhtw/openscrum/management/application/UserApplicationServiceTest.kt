@@ -4,6 +4,7 @@ import at.fhtw.openscrum.management.application.command.DeleteUserCommand
 import at.fhtw.openscrum.management.application.command.DemoteUserCommand
 import at.fhtw.openscrum.management.application.command.PromoteUserCommand
 import at.fhtw.openscrum.management.application.command.RegisterUserCommand
+import at.fhtw.openscrum.management.application.command.UpdateUserCommand
 import at.fhtw.openscrum.management.application.dtos.RoleDto
 import at.fhtw.openscrum.management.application.dtos.UserDto
 import at.fhtw.openscrum.management.domain.model.user.EmailAddress
@@ -153,6 +154,41 @@ class UserApplicationServiceTest {
     }
 
     @Test
+    fun ensureGetUserByUserIdWorksProperly() {
+        // Given
+        val user =
+            User(
+                username = "John.Doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        whenever(userRepository.findByUserId(user.userId)).thenReturn(user)
+
+        // When
+        val result = userApplicationService.getUserByUserId(user.userId.token)
+
+        // Then
+        assertThat(result).isEqualTo(UserDto(user))
+    }
+
+    @Test
+    fun ensureGetUserByUserIdReturnsNullWhenUserDoesNotExist() {
+        // Given
+        val userId = UserId()
+
+        whenever(userRepository.findByUserId(userId)).thenReturn(null)
+
+        // When
+        val result = userApplicationService.getUserByUserId(userId.token)
+
+        // Then
+        assertThat(result).isNull()
+    }
+
+    @Test
     fun ensureRegisterUserWorksProperly() {
         // Given
         val username = "John.Doe"
@@ -251,6 +287,95 @@ class UserApplicationServiceTest {
                 command,
             )
         }
+    }
+
+    @Test
+    fun ensureUpdateUserWorksProperly() {
+        // Given
+        val username = "Jane.Doe"
+        val emailAddress = "jane.doe@gmail.com"
+        val firstName = "Jane"
+        val lastName = "Doe"
+        val password = "def456"
+
+        val user =
+            User(
+                username = username,
+                emailAddress = EmailAddress(emailAddress),
+                fullName = FullName(firstName, lastName),
+                password = password,
+                role = Role.USER,
+            )
+
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
+        val command =
+            UpdateUserCommand(
+                user.userId.token,
+                username,
+                emailAddress,
+                firstName,
+                lastName,
+                password,
+            )
+
+        whenever(userRepository.findByUsername(authenticatedUser.username)).thenReturn(authenticatedUser)
+
+        whenever(
+            userService.updateUser(
+                authenticatedUser,
+                user.userId,
+                username,
+                emailAddress,
+                firstName,
+                lastName,
+                password,
+            ),
+        ).thenReturn(
+            user,
+        )
+
+        // When
+        val userDto = userApplicationService.updateUser(authenticatedUser.username, command)
+
+        // Then
+        assertThat(userDto.username).isEqualTo(username)
+        assertThat(userDto.emailAddress).isEqualTo(emailAddress)
+        assertThat(userDto.firstName).isEqualTo(firstName)
+        assertThat(userDto.lastName).isEqualTo(lastName)
+    }
+
+    @Test
+    fun ensureUpdateUserThrowsExceptionIfAuthenticatedUserCanNotBeFound() {
+        // Given
+        val authenticatedUserUsername = "admin"
+
+        val command =
+            UpdateUserCommand(
+                UserId().token,
+                "Jane.Doe",
+                "jane.doe@gmail.com",
+                "Jane",
+                "Doe",
+                "def456",
+            )
+
+        whenever(userRepository.findByUsername(authenticatedUserUsername)).thenReturn(null)
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            userApplicationService.updateUser(authenticatedUserUsername, command)
+        }
+
+        // Then
+        verify(userService, never()).updateUser(any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
