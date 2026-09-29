@@ -4,6 +4,7 @@
     <title>Access denied</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/error/403.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/back-button.css}">
 </head>
 <body>
 <div class="container">
@@ -15,10 +16,7 @@
         <h3>You do not have permission to access this page</h3>
     </section>
 
-    <a class="btn" th:href="@{/projects}">
-        <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
-        Go Back
-    </a>
+    <a th:replace="~{fragments/back-button :: back-button(@{/projects}, 'Go Back')}"></a>
 </div>
 </body>
 </html>

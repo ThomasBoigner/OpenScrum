@@ -1,9 +1,6 @@
 <header id="sprint-header" th:fragment="sprint-header(sprint, active)" th:object="${sprint}"
         xmlns:hx="http://www.w3.org/1999/xhtml">
-    <a class="btn back-button" th:href="@{/projects/{projectId}/sprints(projectId=*{projectId})}">
-        <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
-        Back
-    </a>
+    <a th:replace="~{fragments/back-button :: back-button(@{/projects/{projectId}/sprints(projectId=*{projectId})}, 'Back')}"></a>
     <nav th:if="*{numberOfSprintBacklogItems > 0}">
         <a class="btn" th:classappend="${active == 'details'} ? 'selected'"
            th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">

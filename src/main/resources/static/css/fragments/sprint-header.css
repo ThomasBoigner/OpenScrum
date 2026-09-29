@@ -13,27 +13,12 @@ header#sprint-header {
 a.back-button {
     position: absolute;
     left: 32px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    background-color: var(--primary-color);
-    color: var(--white);
-    border-radius: 8px;
-    padding: 16px 24px;
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
     width: 256px;
 }
 
 a.back-button img {
     width: 32px;
     height: auto;
-    transform: rotate(180deg);
-}
-
-a.back-button:hover {
-    gap: 8px;
 }
 
 /* Navigation pills */

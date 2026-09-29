@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Configure a project</title>
     <link rel="stylesheet" th:href="@{/css/pages/configure-project.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/back-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/saved-changes.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
@@ -56,10 +57,7 @@
             </form>
         </div>
 
-        <a class="btn" th:href="@{/projects/{projectId}(projectId=*{projectId})}">
-            <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
-            Back
-        </a>
+        <a th:replace="~{fragments/back-button :: back-button(@{/projects/{projectId}(projectId=*{projectId})}, 'Back')}"></a>
     </section>
 </div>
 </body>

@@ -74,25 +74,7 @@ div.input-fields button {
 
 /* Back button */
 section#configure-form a.btn {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    border-radius: 8px;
-    background-color: var(--primary-color);
-    padding: 16px 24px;
     width: 512px;
-    color: var(--white);
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
-section#configure-form a.btn:hover {
-    gap: 8px;
-}
-
-section#configure-form a img {
-    transform: rotate(180deg);
 }
 
 /* 1200px - 600px */
