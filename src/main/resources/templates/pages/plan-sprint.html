@@ -3,6 +3,7 @@
 <head th:replace="~{layout/head :: head(~{::title}, ~{::link})}">
     <title>Plan the sprint</title>
     <link rel="stylesheet" th:href="@{/css/pages/plan-sprint.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/sprint-planning-product-backlog-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
@@ -17,13 +18,7 @@
     </section>
     <section id="plan-sprint-form">
         <form th:action="@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=${sprint.projectId}, sprintId=${sprint.sprintId})}" th:object="${planSprintForm}" method="post">
-            <div class="error-message" th:if="${#fields.hasErrors() || errorMessage != null}">
-                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-                <p th:text="${errorMessage}">Error while defining product backlog item!</p>
-                <div>
-                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}">Validation error while defining product backlog item!</p>
-                </div>
-            </div>
+            <div th:replace="~{fragments/error-message :: form-errors}"></div>
 
             <div id="input-fields">
                 <div id="sprint-goal">

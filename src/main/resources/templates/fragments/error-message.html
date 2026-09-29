@@ -2,3 +2,11 @@
     <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
     <p th:text="${errorMessage}">Error while configuring project!</p>
 </div>
+
+<div th:fragment="form-errors" th:if="${#fields.hasErrors() || errorMessage != null}" class="error-message">
+    <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
+    <p th:if="${errorMessage != null}" th:text="${errorMessage}">Error message</p>
+    <div th:if="${#fields.hasErrors()}">
+        <p th:each="err : ${#fields.allErrors()}" th:text="${err}">Validation error</p>
+    </div>
+</div>

@@ -3,6 +3,7 @@
 <head th:replace="~{layout/head :: head(~{::title}, ~{::link})}">
     <title>Update a user</title>
     <link rel="stylesheet" th:href="@{/css/pages/update-user.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
@@ -15,13 +16,7 @@
     </section>
     <section id="update-user-form">
         <form method="post" th:action="@{/users/{userId}/update(userId=${userId})}" th:object="${updateUserForm}">
-            <div th:if="${#fields.hasErrors() || errorMessage != null}" class="error-message">
-                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-                <p th:if="${errorMessage}" th:text="${errorMessage}">Error while updating user!</p>
-                <div th:if="${#fields.hasErrors()}">
-                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}">Validation error while updating user!</p>
-                </div>
-            </div>
+            <div th:replace="~{fragments/error-message :: form-errors}"></div>
             <div class="input-fields">
                 <label for="username">Username:</label>
                 <input type="text" id="username" placeholder="Update the username!" th:field="*{username}">

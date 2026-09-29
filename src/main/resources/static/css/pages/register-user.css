@@ -31,27 +31,6 @@ section#registration-form form {
     gap: 64px;
 }
 
-div.error-message {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    border: solid 3px var(--error);
-    border-radius: 8px;
-    gap: 16px;
-    padding: 16px 24px;
-}
-
-div.error-message p {
-    color: var(--error);
-}
-
-div.error-message div {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
 section#registration-form div.input-fields {
     width: 1024px;
 }
@@ -116,10 +95,6 @@ section#registration-form button:hover {
     /* Login Form */
     section#registration-form form {
         gap: 48px;
-    }
-
-    div.error-message img {
-        height: 24px;
     }
 
     section#registration-form div.input-fields {

@@ -36,21 +36,6 @@ section#login-form form {
     gap: 64px;
 }
 
-div.error-message {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    border: solid 3px var(--error);
-    border-radius: 8px;
-    gap: 16px;
-    padding: 16px 24px;
-}
-
-div.error-message p {
-    color: var(--error);
-}
-
 section#login-form div.input-fields {
     width: 1024px;
 }
@@ -118,10 +103,6 @@ section#login-form button:hover {
     /* Login Form */
     section#login-form form {
         gap: 48px;
-    }
-
-    div.error-message img {
-        height: 24px;
     }
 
     section#login-form div.input-fields {

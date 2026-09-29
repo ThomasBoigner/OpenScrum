@@ -95,7 +95,7 @@ class ProjectController(
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while configuring sprint length with message: {}", ex.message)
             model.addAttribute("errorMessage", ex.message)
-            return "fragments/error-message"
+            return "fragments/error-message :: error-message"
         }
         model.addAttribute("message", "Saved sprint length")
         return "fragments/saved-changes"
@@ -122,7 +122,7 @@ class ProjectController(
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while configuring product goal with message: {}", ex.message)
             model.addAttribute("errorMessage", ex.message)
-            return "fragments/error-message"
+            return "fragments/error-message :: error-message"
         }
         model.addAttribute("message", "Saved product goal")
         return "fragments/saved-changes"
@@ -149,7 +149,7 @@ class ProjectController(
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while configuring definition of done with message: {}", ex.message)
             model.addAttribute("errorMessage", ex.message)
-            return "fragments/error-message"
+            return "fragments/error-message :: error-message"
         }
         model.addAttribute("message", "Saved definition of done")
         return "fragments/saved-changes"

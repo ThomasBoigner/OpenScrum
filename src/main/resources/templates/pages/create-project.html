@@ -3,6 +3,7 @@
 <head th:replace="~{layout/head :: head(~{::title}, ~{::link})}">
     <title>Create a project</title>
     <link rel="stylesheet" th:href="@{/css/pages/create-project.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/developer-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
@@ -16,13 +17,7 @@
     </section>
     <section id="project-form">
         <form method="post" th:action="@{/projects/create}" th:object="${createProjectForm}">
-            <div class="error-message" th:if="${#fields.hasErrors() || errorMessage != null}">
-                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-                <p th:if="${errorMessage}" th:text="${errorMessage}">Error while creating project!</p>
-                <div>
-                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
-                </div>
-            </div>
+            <div th:replace="~{fragments/error-message :: form-errors}"></div>
             <div class="input-fields">
                 <label for="project-name">Project name:</label>
                 <input type="text" id="project-name" th:field="*{projectName}" placeholder="Enter the project name!">

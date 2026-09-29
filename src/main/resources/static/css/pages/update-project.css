@@ -36,27 +36,6 @@ section#project-form form {
     width: 100%;
 }
 
-div.error-message {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    border: solid 3px var(--error);
-    border-radius: 8px;
-    gap: 16px;
-    padding: 16px 24px;
-}
-
-div.error-message p {
-    color: var(--error);
-}
-
-div.error-message div {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
 section#project-form div.input-fields {
     width: 1024px;
 }
@@ -142,10 +121,6 @@ section#project-form button:hover {
     /* Project Form */
     section#project-form form {
         gap: 48px;
-    }
-
-    div.error-message img {
-        height: 24px;
     }
 
     section#project-form div.input-fields {
