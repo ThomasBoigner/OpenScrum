@@ -52,26 +52,7 @@ section#registration-form input:not(:last-child) {
 }
 
 section#registration-form button {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background-color: var(--primary-color);
-    padding: 16px 24px;
     width: 512px;
-    color: var(--white);
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
-section#registration-form button img {
-    width: 32px;
-    height: 32px;
-}
-
-section#registration-form button:hover {
-    gap: 8px;
 }
 
 /* 1200px - 600px */
@@ -107,10 +88,6 @@ section#registration-form button:hover {
 
     section#registration-form button {
         width: 256px;
-    }
-
-    section#registration-form button img {
-        height: 24px;
     }
 }
 

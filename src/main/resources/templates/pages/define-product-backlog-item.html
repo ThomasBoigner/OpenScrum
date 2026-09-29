@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Define a product backlog item</title>
     <link rel="stylesheet" th:href="@{/css/pages/define-product-backlog-item.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/submit-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
@@ -29,10 +30,7 @@
                 </div>
             </div>
             <div class="submit-go-back">
-                <button type="submit">
-                    Define item
-                    <img th:src="@{/assets/svg/plus.svg}" alt="plus">
-                </button>
+                <button th:replace="~{fragments/submit-button :: submit-button('Define item', 'plus.svg', 'plus')}"></button>
                 <p>Changed your mind? Go <a th:href="@{/projects/{projectId}/backlog(projectId=${project.projectId})}">back</a>!</p>
             </div>
         </form>

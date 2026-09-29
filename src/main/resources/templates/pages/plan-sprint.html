@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Plan the sprint</title>
     <link rel="stylesheet" th:href="@{/css/pages/plan-sprint.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/submit-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/sprint-planning-product-backlog-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
@@ -31,10 +32,7 @@
                 </div>
             </div>
             <div class="submit-go-back">
-                <button type="submit">
-                    Commit
-                    <img th:src="@{/assets/svg/check-white.svg}" alt="check">
-                </button>
+                <button th:replace="~{fragments/submit-button :: submit-button('Commit', 'check-white.svg', 'check')}"></button>
                 <p>Changed your mind? Go <a th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=${sprint.projectId}, sprintId=${sprint.sprintId})}">back</a>!</p>
             </div>
         </form>

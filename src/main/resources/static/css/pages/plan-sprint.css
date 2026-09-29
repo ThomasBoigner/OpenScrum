@@ -88,26 +88,7 @@ div.submit-go-back {
 }
 
 section#plan-sprint-form button {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background-color: var(--primary-color);
-    padding: 16px 24px;
     width: 100%;
-    color: var(--white);
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
-section#plan-sprint-form button img {
-    width: 32px;
-    height: 32px;
-}
-
-section#plan-sprint-form button:hover {
-    gap: 8px;
 }
 
 section#plan-sprint-form div.submit-go-back > p {
@@ -165,11 +146,6 @@ section#plan-sprint-form div.submit-go-back > p a {
 
     div.submit-go-back {
         width: 256px;
-    }
-
-    section#plan-sprint-form button img {
-        width: 24px;
-        height: 24px;
     }
 }
 

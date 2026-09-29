@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Update a user</title>
     <link rel="stylesheet" th:href="@{/css/pages/update-user.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/submit-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
@@ -29,10 +30,7 @@
                 <label for="password">Password:</label>
                 <input type="password" id="password" placeholder="Update the password!" th:field="*{password}">
             </div>
-            <button type="submit">
-                Update the User
-                <img th:src="@{/assets/svg/check-white.svg}" alt="check">
-            </button>
+            <button th:replace="~{fragments/submit-button :: submit-button('Update the User', 'check-white.svg', 'check')}"></button>
         </form>
     </section>
 </div>

@@ -76,26 +76,7 @@ div.submit-go-back {
 }
 
 section#update-product-backlog-item-form button {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background-color: var(--primary-color);
-    padding: 16px 24px;
     width: 100%;
-    color: var(--white);
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
-section#update-product-backlog-item-form button img {
-    width: 32px;
-    height: 23px;
-}
-
-section#update-product-backlog-item-form button:hover {
-    gap: 8px;
 }
 
 div.submit-go-back > p {
@@ -141,11 +122,6 @@ div.submit-go-back > p a {
 
     div.submit-go-back {
         width: 256px;
-    }
-
-    section#update-product-backlog-item-form button img {
-        width: 24px;
-        height: 17px;
     }
 }
 

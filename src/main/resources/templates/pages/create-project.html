@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Create a project</title>
     <link rel="stylesheet" th:href="@{/css/pages/create-project.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/submit-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/developer-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
@@ -44,10 +45,7 @@
                        hx-swap="outerHTML">Could not load users!</p>
                 </div>
             </div>
-            <button type="submit">
-                Create Project
-                <img th:src="@{/assets/svg/plus.svg}" alt="plus">
-            </button>
+            <button th:replace="~{fragments/submit-button :: submit-button('Create Project', 'plus.svg', 'plus')}"></button>
         </form>
     </section>
 </div>

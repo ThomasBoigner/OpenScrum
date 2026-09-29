@@ -1,0 +1,4 @@
+<button type="submit" class="submit-button" th:fragment="submit-button(text, icon, alt)">
+    <th:block th:text="${text}">Submit</th:block>
+    <img th:src="@{/assets/svg/{icon}(icon=${icon})}" th:alt="${alt}">
+</button>
