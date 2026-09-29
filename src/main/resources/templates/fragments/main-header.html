@@ -1,0 +1,19 @@
+<header id="main-header" th:fragment="main-header(active)" xmlns:hx="http://www.w3.org/1999/xhtml">
+    <a th:href="@{/projects}">
+        <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
+    </a>
+    <nav>
+        <a class="btn" th:classappend="${active == 'projects'} ? 'selected'" th:href="@{/projects}">
+            <img th:src="${active == 'projects'} ? @{/assets/svg/project-white.svg} : @{/assets/svg/project.svg}" alt="Project">
+            Projects
+        </a>
+        <a class="btn" th:classappend="${active == 'users'} ? 'selected'" th:href="@{/users}">
+            <img th:src="${active == 'users'} ? @{/assets/svg/user-white.svg} : @{/assets/svg/user.svg}" alt="User">
+            Users
+        </a>
+        <a class="btn" hx:post="@{/logout}">
+            <img th:src="@{/assets/svg/exit.svg}" alt="Exit">
+            Logout
+        </a>
+    </nav>
+</header>

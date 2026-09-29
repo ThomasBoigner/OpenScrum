@@ -3,30 +3,13 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>List Projects</title>
     <link rel="stylesheet" th:href="@{/css/pages/list-projects.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/main-header.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/project-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
 <div class="container">
-    <header id="main-header">
-        <a th:href="@{/projects}">
-            <img th:src="@{/assets/svg/logo.svg}" alt="Logo">
-        </a>
-        <nav>
-            <a class="btn selected" th:href="@{/projects}">
-                <img th:src="@{/assets/svg/project-white.svg}" alt="Project">
-                Projects
-            </a>
-            <a class="btn" th:href="@{/users}">
-                <img th:src="@{/assets/svg/user.svg}" alt="User">
-                Users
-            </a>
-            <a class="btn" hx:post="@{/logout}">
-                <img th:src="@{/assets/svg/exit.svg}" alt="Exit">
-                Logout
-            </a>
-        </nav>
-    </header>
+    <header th:replace="~{fragments/main-header :: main-header('projects')}"></header>
     <section id="projects-list">
         <div class="search-input">
             <label for="search-input"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
