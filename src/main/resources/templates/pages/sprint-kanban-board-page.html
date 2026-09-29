@@ -4,34 +4,12 @@
     <title>Sprint kanban board</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/pages/sprint-kanban-board-page.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/sprint-header.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/sprint-backlog-item.css}">
 </head>
 <body>
 <div class="container" th:object="${sprint}">
-    <header id="sprint-header">
-        <a class="btn back-button" th:href="@{/projects/{projectId}/sprints(projectId=*{projectId})}">
-            <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
-            Back
-        </a>
-        <nav>
-            <a class="btn"
-               th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">
-                Details
-            </a>
-            <a class="btn selected"
-               th:href="@{/projects/{projectId}/sprints/{sprintId}/kanban-board(projectId=*{projectId}, sprintId=*{sprintId})}">
-                Kanban Board
-            </a>
-        </nav>
-        <a class="btn cancel-sprint-button"
-           th:if="${!sprint.status.isFinished() && authenticatedTeamMember.isProductOwner()}"
-           hx:put="@{/projects/{projectId}/sprints/{sprintId}/cancel(projectId=*{projectId}, sprintId=*{sprintId})}"
-           hx-trigger="click"
-           hx-swap="delete">
-            <img th:src="@{/assets/svg/cancel.svg}" alt="Cancel">
-            Cancel sprint
-        </a>
-    </header>
+    <header th:replace="~{fragments/sprint-header :: sprint-header(${sprint}, 'kanban-board')}"></header>
 
     <div id="kanban-board">
         <div class="kanban-column" id="todo-column">

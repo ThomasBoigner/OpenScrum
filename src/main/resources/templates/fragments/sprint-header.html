@@ -1,0 +1,27 @@
+<header id="sprint-header" th:fragment="sprint-header(sprint, active)" th:object="${sprint}"
+        xmlns:hx="http://www.w3.org/1999/xhtml">
+    <a class="btn back-button" th:href="@{/projects/{projectId}/sprints(projectId=*{projectId})}">
+        <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
+        Back
+    </a>
+    <nav th:if="*{numberOfSprintBacklogItems > 0}">
+        <a class="btn" th:classappend="${active == 'details'} ? 'selected'"
+           th:href="@{/projects/{projectId}/sprints/{sprintId}(projectId=*{projectId}, sprintId=*{sprintId})}">
+            Details
+        </a>
+        <a class="btn" th:classappend="${active == 'kanban-board'} ? 'selected'"
+           th:href="@{/projects/{projectId}/sprints/{sprintId}/kanban-board(projectId=*{projectId}, sprintId=*{sprintId})}">
+            Kanban Board
+        </a>
+    </nav>
+    <a class="btn cancel-sprint-button"
+       th:if="${!sprint.status.isFinished() && authenticatedTeamMember.isProductOwner()}"
+       hx:put="@{/projects/{projectId}/sprints/{sprintId}/cancel(projectId=*{projectId}, sprintId=*{sprintId})}"
+       hx-trigger="click"
+       th:hx-target="${active == 'details'} ? '#sprint-details'"
+       th:hx-swap="${active == 'details'} ? 'outerHTML' : 'delete'"
+       th:hx-on--after-request="${active == 'details'} ? 'this.closest(\'.cancel-sprint-button\').remove()'">
+        <img th:src="@{/assets/svg/cancel.svg}" alt="Cancel">
+        Cancel sprint
+    </a>
+</header>
