@@ -21,22 +21,6 @@ section#product-backlog {
     overflow: scroll;
 }
 
-/* Add button */
-a.add-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--secondary-color);
-    border-radius: 128px;
-    padding: 32px;
-    width: 128px;
-    height: 128px;
-    position: fixed;
-    right: 32px;
-    bottom: 32px;
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
 /* 1200px - 600px */
 @media screen and (max-width: 1200px) {
     /* Container */
@@ -52,18 +36,6 @@ a.add-button {
         gap: 24px;
         padding: 48px 32px;
     }
-
-    /* Add button */
-    a.add-button {
-        padding: 24px;
-        width: 96px;
-        height: 96px;
-    }
-
-    a.add-button img {
-        width: 48px;
-        height: 48px;
-    }
 }
 
 /* < 600px */
@@ -71,19 +43,5 @@ a.add-button {
     /* Product Backlog */
     section#product-backlog {
         padding: 32px 16px;
-    }
-
-    /* Add button */
-    a.add-button {
-        padding: 16px;
-        width: 64px;
-        height: 64px;
-        right: 16px;
-        bottom: 16px;
-    }
-
-    a.add-button img {
-        width: 32px;
-        height: 32px;
     }
 }

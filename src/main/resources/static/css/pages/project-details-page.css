@@ -84,19 +84,6 @@ div.developers-list {
     overflow: scroll;
 }
 
-/* Settings button */
-a.settings-button {
-    background-color: var(--secondary-color);
-    border-radius: 128px;
-    padding: 32px;
-    width: 128px;
-    height: 128px;
-    position: fixed;
-    right: 32px;
-    bottom: 32px;
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
 /* 1200px - 600px */
 @media screen and (max-width: 1200px) {
     /* Container */
@@ -130,20 +117,6 @@ a.settings-button {
         flex-direction: row;
         gap: 32px;
     }
-
-    /* Settings button */
-    a.settings-button {
-        padding: 24px;
-        width: 96px;
-        height: 96px;
-        right: 32px;
-        bottom: 32px;
-    }
-
-    a.settings-button img {
-        width: 48px;
-        height: 48px;
-    }
 }
 
 /* < 600px */
@@ -170,19 +143,5 @@ a.settings-button {
     div.team-info {
         flex-direction: column;
         gap: 16px;
-    }
-
-    /* Settings button */
-    a.settings-button {
-        padding: 16px;
-        width: 64px;
-        height: 64px;
-        right: 16px;
-        bottom: 16px;
-    }
-
-    a.settings-button img {
-        width: 32px;
-        height: 32px;
     }
 }

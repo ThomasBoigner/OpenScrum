@@ -5,6 +5,7 @@
     <link rel="stylesheet" th:href="@{/css/pages/list-product-backlog.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/scrum-header.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/search-input.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/floating-action-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/product-backlog-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
@@ -15,9 +16,9 @@
     <section id="product-backlog">
         <div th:replace="~{fragments/search-input :: search-input}"></div>
         <p hx:get="@{/projects/{projectId}/backlog/list(projectId=*{projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog!</p>
-        <a th:if="${authenticatedTeamMember.isProductOwner()}" class="add-button" th:href="@{/projects/{projectId}/backlog/define(projectId=*{projectId})}">
-            <img th:src="@{/assets/svg/plus.svg}" alt="Add">
-        </a>
+        <th:block th:if="${authenticatedTeamMember.isProductOwner()}">
+            <a th:replace="~{fragments/floating-action-button :: floating-action-button(@{/projects/{projectId}/backlog/define(projectId=*{projectId})}, 'plus.svg', 'Add', 'secondary')}"></a>
+        </th:block>
     </section>
 </div>
 </body>

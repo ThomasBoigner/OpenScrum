@@ -1,0 +1,4 @@
+<a class="floating-action-button" th:fragment="floating-action-button(href, icon, alt, color)"
+   th:classappend="${color == 'secondary'} ? 'secondary'" th:href="${href}">
+    <img th:src="@{/assets/svg/{icon}(icon=${icon})}" th:alt="${alt}">
+</a>

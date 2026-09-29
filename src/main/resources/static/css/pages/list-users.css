@@ -22,18 +22,6 @@ section#users-list {
     overflow: scroll;
 }
 
-section#users-list a.create-button {
-    background-color: var(--primary-color);
-    border-radius: 128px;
-    padding: 32px;
-    width: 128px;
-    height: 128px;
-    position: fixed;
-    right: 32px;
-    bottom: 32px;
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
 /* 1200px - 600px */
 @media screen and (max-width: 1200px) {
     /* Container */
@@ -49,19 +37,6 @@ section#users-list a.create-button {
         gap: 24px;
         padding: 48px 32px;
     }
-
-    section#users-list a.create-button {
-        padding: 24px;
-        width: 96px;
-        height: 96px;
-        right: 32px;
-        bottom: 32px;
-    }
-
-    section#users-list a.create-button img {
-        width: 48px;
-        height: 48px;
-    }
 }
 
 /* < 600px */
@@ -70,18 +45,5 @@ section#users-list a.create-button {
     section#users-list {
         gap: 16px;
         padding: 32px 16px;
-    }
-
-    section#users-list a.create-button {
-        padding: 16px;
-        width: 64px;
-        height: 64px;
-        right: 16px;
-        bottom: 16px;
-    }
-
-    section#users-list a.create-button img {
-        width: 32px;
-        height: 32px;
     }
 }

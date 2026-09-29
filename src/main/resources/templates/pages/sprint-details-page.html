@@ -5,6 +5,7 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/pages/sprint-details-page.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/sprint-header.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/floating-action-button.css}">
 </head>
 <body>
 <div class="container">
@@ -41,11 +42,9 @@
             </div>
         </div>
 
-        <a th:if="${authenticatedTeamMember.isScrumMaster() && !sprint.status.isPlanned()}"
-           class="sprint-planning-button"
-           th:href="@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=*{projectId}, sprintId=*{sprintId})}">
-            <img th:src="@{/assets/svg/gear.svg}" alt="Gear">
-        </a>
+        <th:block th:if="${authenticatedTeamMember.isScrumMaster() && !sprint.status.isPlanned()}">
+            <a th:replace="~{fragments/floating-action-button :: floating-action-button(@{/projects/{projectId}/sprints/{sprintId}/planning(projectId=*{projectId}, sprintId=*{sprintId})}, 'gear.svg', 'Gear', 'primary')}"></a>
+        </th:block>
     </section>
 </div>
 </body>

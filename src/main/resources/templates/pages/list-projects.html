@@ -5,6 +5,7 @@
     <link rel="stylesheet" th:href="@{/css/pages/list-projects.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/main-header.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/search-input.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/floating-action-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/project-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
@@ -14,9 +15,9 @@
     <section id="projects-list">
         <div th:replace="~{fragments/search-input :: search-input}"></div>
         <p hx:get="@{/projects/list}" hx-trigger="load" hx-swap="outerHTML">Could not load projects!</p>
-        <a th:if="${authenticatedUser != null && authenticatedUser.role.isManager()}" class="create-button" th:href="@{/projects/create}">
-            <img th:src="@{/assets/svg/plus.svg}" alt="Plus">
-        </a>
+        <th:block th:if="${authenticatedUser != null && authenticatedUser.role.isManager()}">
+            <a th:replace="~{fragments/floating-action-button :: floating-action-button(@{/projects/create}, 'plus.svg', 'Plus', 'primary')}"></a>
+        </th:block>
     </section>
 </div>
 </body>

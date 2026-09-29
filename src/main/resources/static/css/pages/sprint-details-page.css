@@ -66,19 +66,6 @@ div.info-group {
     gap: 8px;
 }
 
-/* Settings button */
-a.sprint-planning-button {
-    background-color: var(--primary-color);
-    border-radius: 128px;
-    padding: 32px;
-    width: 128px;
-    height: 128px;
-    position: fixed;
-    right: 32px;
-    bottom: 32px;
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
 /* 1200px - 600px */
 @media screen and (max-width: 1200px) {
     /* Sprint details section */
@@ -99,17 +86,6 @@ a.sprint-planning-button {
     div.card-info:has(div.info-group) {
         flex-direction: row;
     }
-
-    a.sprint-planning-button {
-        padding: 24px;
-        width: 96px;
-        height: 96px;
-    }
-
-    a.sprint-planning-button img {
-        width: 48px;
-        height: 48px;
-    }
 }
 
 /* < 600px */
@@ -127,19 +103,6 @@ a.sprint-planning-button {
     div.card-info:has(div.info-group) {
         flex-direction: column;
         gap: 16px;
-    }
-
-    a.sprint-planning-button {
-        padding: 16px;
-        width: 64px;
-        height: 64px;
-        right: 16px;
-        bottom: 16px;
-    }
-
-    a.sprint-planning-button img {
-        width: 32px;
-        height: 32px;
     }
 }
 

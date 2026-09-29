@@ -4,6 +4,7 @@
     <title>Project details page</title>
     <link rel="stylesheet" th:href="@{/css/pages/project-details-page.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/scrum-header.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/floating-action-button.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body th:object="${project}">
@@ -65,9 +66,9 @@
             </div>
         </div>
 
-        <a th:if="${authenticatedTeamMember.isProductOwner || authenticatedTeamMember.isScrumMaster}" class="settings-button" th:href="@{/projects/{projectId}/configure(projectId=*{projectId})}">
-            <img th:src="@{/assets/svg/gear.svg}" alt="Gear">
-        </a>
+        <th:block th:if="${authenticatedTeamMember.isProductOwner || authenticatedTeamMember.isScrumMaster}">
+            <a th:replace="~{fragments/floating-action-button :: floating-action-button(@{/projects/{projectId}/configure(projectId=*{projectId})}, 'gear.svg', 'Gear', 'secondary')}"></a>
+        </th:block>
     </section>
 </div>
 </body>
