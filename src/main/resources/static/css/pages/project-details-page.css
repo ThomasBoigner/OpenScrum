@@ -61,6 +61,7 @@ section#project-details {
     background-color: var(--black5);
     padding: 64px 32px;
     flex: 1;
+    overflow: scroll;
 }
 
 h1.project-title {
