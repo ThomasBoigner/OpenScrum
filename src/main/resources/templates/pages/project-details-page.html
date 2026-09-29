@@ -3,29 +3,12 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Project details page</title>
     <link rel="stylesheet" th:href="@{/css/pages/project-details-page.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/scrum-header.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body th:object="${project}">
 <div class="container">
-    <header id="scrum-header">
-        <a th:href="@{/projects}">
-            <img th:src="@{/assets/svg/logo-secondary.svg}" alt="Logo">
-        </a>
-        <nav>
-            <a class="btn selected" th:href="@{/projects/{projectId}(projectId=*{projectId})}">
-                <img th:src="@{/assets/svg/sticky-white.svg}" alt="Sticky">
-                Details
-            </a>
-            <a class="btn" th:href="@{/projects/{projectId}/backlog(projectId=*{projectId})}">
-                <img th:src="@{/assets/svg/list.svg}" alt="List">
-                Backlog
-            </a>
-            <a class="btn" th:href="@{/projects/{projectId}/sprints(projectId=*{projectId})}">
-                <img th:src="@{/assets/svg/rotate.svg}" alt="Rotate">
-                Sprints
-            </a>
-        </nav>
-    </header>
+    <header th:replace="~{fragments/scrum-header :: scrum-header(${project.projectId}, 'details')}"></header>
 
     <section id="project-details">
         <h1 class="project-title" th:text="*{projectName}">Project Name</h1>
