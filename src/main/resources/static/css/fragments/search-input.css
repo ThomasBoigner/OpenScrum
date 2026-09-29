@@ -1,0 +1,28 @@
+div.search-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    border-radius: 8px;
+    padding: 24px;
+    background-color: var(--white);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+div.search-input label {
+    display: flex;
+    align-items: center;
+}
+
+div.search-input input {
+    width: 100%;
+}
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    div.search-input img {
+        width: 24px;
+        height: 24px;
+    }
+}

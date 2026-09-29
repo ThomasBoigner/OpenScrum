@@ -4,6 +4,7 @@
     <title>List Projects</title>
     <link rel="stylesheet" th:href="@{/css/pages/list-projects.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/main-header.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/search-input.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/project-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
@@ -11,10 +12,7 @@
 <div class="container">
     <header th:replace="~{fragments/main-header :: main-header('projects')}"></header>
     <section id="projects-list">
-        <div class="search-input">
-            <label for="search-input"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
-            <input type="text" name="search-input" id="search-input" placeholder="Search">
-        </div>
+        <div th:replace="~{fragments/search-input :: search-input}"></div>
         <p hx:get="@{/projects/list}" hx-trigger="load" hx-swap="outerHTML">Could not load projects!</p>
         <a th:if="${authenticatedUser != null && authenticatedUser.role.isManager()}" class="create-button" th:href="@{/projects/create}">
             <img th:src="@{/assets/svg/plus.svg}" alt="Plus">

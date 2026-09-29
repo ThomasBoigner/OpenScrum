@@ -4,6 +4,7 @@
     <title>List Sprints</title>
     <link rel="stylesheet" th:href="@{/css/pages/list-sprints.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/scrum-header.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/search-input.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/sprint-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
@@ -12,10 +13,7 @@
     <header th:replace="~{fragments/scrum-header :: scrum-header(${project.projectId}, 'sprints')}"></header>
 
     <section id="sprint-list">
-        <div class="search-input">
-            <label for="search"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
-            <input type="text" id="search" placeholder="Search">
-        </div>
+        <div th:replace="~{fragments/search-input :: search-input}"></div>
         <p hx:get="@{/projects/{projectId}/sprints/list(projectId=*{projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load sprints!</p>
     </section>
 </div>
