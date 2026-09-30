@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Create a project</title>
     <link rel="stylesheet" th:href="@{/css/pages/create-project.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/form-field.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/submit-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/developer-list-item.css}">
@@ -20,22 +21,9 @@
         <form method="post" th:action="@{/projects/create}" th:object="${createProjectForm}">
             <div th:replace="~{fragments/error-message :: form-errors}"></div>
             <div class="input-fields">
-                <label for="project-name">Project name:</label>
-                <input type="text" id="project-name" th:field="*{projectName}" placeholder="Enter the project name!">
-                <label for="product-owner">Product Owner:</label>
-                <select id="product-owner" th:field="*{productOwnerId}">
-                    <option value="">Select a product owner!</option>
-                    <option th:each="user : ${users}"
-                            th:value="${user.userId}"
-                            th:text="${user.fullName}"></option>
-                </select>
-                <label for="scrum-master">Scrum Master:</label>
-                <select id="scrum-master" th:field="*{scrumMasterId}">
-                    <option value="">Select a scrum master!</option>
-                    <option th:each="user : ${users}"
-                            th:value="${user.userId}"
-                            th:text="${user.fullName}"></option>
-                </select>
+                <th:block th:replace="~{fragments/form-field :: text-field('project-name', 'Project name:', 'projectName', *{projectName}, 'Enter the project name!')}"></th:block>
+                <th:block th:replace="~{fragments/form-field :: user-select-field('product-owner', 'Product Owner:', 'productOwnerId', *{productOwnerId}, 'Select a product owner!')}"></th:block>
+                <th:block th:replace="~{fragments/form-field :: user-select-field('scrum-master', 'Scrum Master:', 'scrumMasterId', *{scrumMasterId}, 'Select a scrum master!')}"></th:block>
             </div>
             <div id="developers">
                 <h4>Select the Developers:</h4>

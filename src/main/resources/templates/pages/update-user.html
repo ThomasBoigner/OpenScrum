@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Update a user</title>
     <link rel="stylesheet" th:href="@{/css/pages/update-user.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/form-field.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/submit-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
@@ -19,16 +20,11 @@
         <form method="post" th:action="@{/users/{userId}/update(userId=${userId})}" th:object="${updateUserForm}">
             <div th:replace="~{fragments/error-message :: form-errors}"></div>
             <div class="input-fields">
-                <label for="username">Username:</label>
-                <input type="text" id="username" placeholder="Update the username!" th:field="*{username}">
-                <label for="first-name">First name:</label>
-                <input type="text" id="first-name" placeholder="Update the first name!" th:field="*{firstName}">
-                <label for="last-name">Last name:</label>
-                <input type="text" id="last-name" placeholder="Update the last name!" th:field="*{lastName}">
-                <label for="email-address">Email address:</label>
-                <input type="text" id="email-address" placeholder="Update the email address!" th:field="*{email}">
-                <label for="password">Password:</label>
-                <input type="password" id="password" placeholder="Update the password!" th:field="*{password}">
+                <th:block th:replace="~{fragments/form-field :: text-field('username', 'Username:', 'username', *{username}, 'Update the username!')}"></th:block>
+                <th:block th:replace="~{fragments/form-field :: text-field('first-name', 'First name:', 'firstName', *{firstName}, 'Update the first name!')}"></th:block>
+                <th:block th:replace="~{fragments/form-field :: text-field('last-name', 'Last name:', 'lastName', *{lastName}, 'Update the last name!')}"></th:block>
+                <th:block th:replace="~{fragments/form-field :: text-field('email-address', 'Email address:', 'email', *{email}, 'Update the email address!')}"></th:block>
+                <th:block th:replace="~{fragments/form-field :: password-field('password', 'Password:', 'password', 'Update the password!')}"></th:block>
             </div>
             <button th:replace="~{fragments/submit-button :: submit-button('Update the User', 'check-white.svg', 'check')}"></button>
         </form>

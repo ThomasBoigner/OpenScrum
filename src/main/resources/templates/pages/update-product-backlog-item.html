@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Update a product backlog item</title>
     <link rel="stylesheet" th:href="@{/css/pages/update-product-backlog-item.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/form-field.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/submit-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
@@ -21,12 +22,10 @@
             <div th:replace="~{fragments/error-message :: form-errors}"></div>
             <div class="input-fields">
                 <div class="label-input">
-                    <label for="title">Title</label>
-                    <input type="text" id="title" placeholder="Update the title of the product backlog item!" th:field="*{title}">
+                    <th:block th:replace="~{fragments/form-field :: text-field('title', 'Title', 'title', *{title}, 'Update the title of the product backlog item!')}"></th:block>
                 </div>
                 <div class="label-input">
-                    <label for="description">Description</label>
-                    <textarea id="description" placeholder="Update the description to the product backlog item!" th:field="*{description}"></textarea>
+                    <th:block th:replace="~{fragments/form-field :: textarea-field('description', 'Description', 'description', *{description}, 'Update the description to the product backlog item!')}"></th:block>
                 </div>
             </div>
             <div class="submit-go-back">

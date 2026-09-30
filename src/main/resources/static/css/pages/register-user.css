@@ -40,13 +40,6 @@ section#registration-form label {
     margin-bottom: 8px;
 }
 
-section#registration-form input {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
-}
-
 section#registration-form input:not(:last-child) {
     margin-bottom: 32px;
 }

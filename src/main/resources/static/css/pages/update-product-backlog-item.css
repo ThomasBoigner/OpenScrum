@@ -52,18 +52,10 @@ section#update-product-backlog-item-form div.label-input {
 }
 
 section#update-product-backlog-item-form input {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
     height: 75px;
 }
 
 section#update-product-backlog-item-form textarea {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
     height: 256px;
 }
 

@@ -60,10 +60,6 @@ section#plan-sprint-form div#sprint-goal {
 }
 
 section#plan-sprint-form div#sprint-goal textarea {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
     height: 256px;
 }
 

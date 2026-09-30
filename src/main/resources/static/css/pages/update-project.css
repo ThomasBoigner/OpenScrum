@@ -45,14 +45,6 @@ section#project-form div.input-fields label {
     margin-bottom: 8px;
 }
 
-section#project-form div.input-fields input,
-section#project-form div.input-fields select {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
-}
-
 section#project-form div.input-fields input:not(:last-child),
 section#project-form div.input-fields select:not(:last-child) {
     margin-bottom: 32px;

@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Configure a project</title>
     <link rel="stylesheet" th:href="@{/css/pages/configure-project.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/form-field.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/back-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/saved-changes.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
@@ -26,10 +27,7 @@
             <form id="sprint-length-form" th:if="${authenticatedTeamMember.isScrumMaster}" hx:put="@{/projects/{projectId}/configure/sprint-length(projectId=*{projectId})}"
                   hx-target="div#message" hx-swap="outerHTML">
                 <div class="label-input">
-                    <label for="sprint-length">Sprint length:</label>
-                    <input type="number" id="sprint-length" name="sprintLength"
-                           placeholder="Enter the length of Sprints in weeks!" min="1" max="4"
-                           th:value="*{sprintLength}">
+                    <th:block th:replace="~{fragments/form-field :: number-field('sprint-length', 'Sprint length:', 'sprintLength', *{sprintLength}, 'Enter the length of Sprints in weeks!', 1, 4)}"></th:block>
                 </div>
                 <button type="submit">Save</button>
             </form>
@@ -37,10 +35,7 @@
             <form id="product-goal-form" th:if="${authenticatedTeamMember.isProductOwner}" hx:put="@{/projects/{projectId}/configure/product-goal(projectId=*{projectId})}"
                   hx-target="div#message" hx-swap="outerHTML">
                 <div class="label-input">
-                    <label for="product-goal">Product goal:</label>
-                    <textarea id="product-goal" name="productGoal"
-                              placeholder="Describe the product goal for this project!"
-                              th:text="*{productGoal}"></textarea>
+                    <th:block th:replace="~{fragments/form-field :: textarea-field('product-goal', 'Product goal:', 'productGoal', *{productGoal}, 'Describe the product goal for this project!')}"></th:block>
                 </div>
                 <button type="submit">Save</button>
             </form>
@@ -48,10 +43,7 @@
             <form id="definition-of-done-form" th:if="${authenticatedTeamMember.isScrumMaster()}" hx:put="@{/projects/{projectId}/configure/definition-of-done(projectId=*{projectId})}"
                   hx-target="div#message" hx-swap="outerHTML">
                 <div class="label-input">
-                    <label for="definition-of-done">Definition of done:</label>
-                    <textarea id="definition-of-done" name="definitionOfDone"
-                              placeholder="Describe when a task is considered done!"
-                              th:text="*{definitionOfDone}"></textarea>
+                    <th:block th:replace="~{fragments/form-field :: textarea-field('definition-of-done', 'Definition of done:', 'definitionOfDone', *{definitionOfDone}, 'Describe when a task is considered done!')}"></th:block>
                 </div>
                 <button type="submit">Save</button>
             </form>

@@ -3,6 +3,7 @@
 <head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Plan the sprint</title>
     <link rel="stylesheet" th:href="@{/css/pages/plan-sprint.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/form-field.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/submit-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/sprint-planning-product-backlog-list-item.css}">
@@ -23,9 +24,7 @@
 
             <div id="input-fields">
                 <div id="sprint-goal">
-                    <label for="sprint-goal-input">Sprint Goal:</label>
-                    <textarea id="sprint-goal-input" th:field="*{sprintGoal}"
-                              placeholder="Describe the goal of this sprint!"></textarea>
+                    <th:block th:replace="~{fragments/form-field :: textarea-field('sprint-goal-input', 'Sprint Goal:', 'sprintGoal', *{sprintGoal}, 'Describe the goal of this sprint!')}"></th:block>
                 </div>
                 <div id="sprint-backlog-items">
                     <p hx:get="@{/projects/{projectId}/backlog/sprint-planning-list(projectId=${sprint.projectId}, productBacklogIds=*{productBacklogIds})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog items!</p>

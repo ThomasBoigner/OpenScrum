@@ -51,14 +51,6 @@ div.label-input {
     gap: 8px;
 }
 
-div.input-fields input,
-div.input-fields textarea {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
-}
-
 div.input-fields textarea {
     height: 256px;
 }

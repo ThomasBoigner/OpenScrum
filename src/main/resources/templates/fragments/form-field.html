@@ -1,0 +1,31 @@
+<th:block th:fragment="text-field(id, label, name, value, placeholder)">
+    <label th:for="${id}" th:text="${label}">Label:</label>
+    <input type="text" class="form-field" th:id="${id}" th:name="${name}" th:value="${value}" th:placeholder="${placeholder}">
+</th:block>
+
+<th:block th:fragment="password-field(id, label, name, placeholder)">
+    <label th:for="${id}" th:text="${label}">Password:</label>
+    <input type="password" class="form-field" th:id="${id}" th:name="${name}" th:placeholder="${placeholder}">
+</th:block>
+
+<th:block th:fragment="number-field(id, label, name, value, placeholder, min, max)">
+    <label th:for="${id}" th:text="${label}">Label:</label>
+    <input type="number" class="form-field" th:id="${id}" th:name="${name}" th:value="${value}" th:placeholder="${placeholder}"
+           th:min="${min}" th:max="${max}">
+</th:block>
+
+<th:block th:fragment="textarea-field(id, label, name, value, placeholder)">
+    <label th:for="${id}" th:text="${label}">Label:</label>
+    <textarea class="form-field" th:id="${id}" th:name="${name}" th:text="${value}" th:placeholder="${placeholder}"></textarea>
+</th:block>
+
+<th:block th:fragment="user-select-field(id, label, name, value, placeholder)">
+    <label th:for="${id}" th:text="${label}">Label:</label>
+    <select class="form-field" th:id="${id}" th:name="${name}">
+        <option value="" th:text="${placeholder}">Select a user!</option>
+        <option th:each="user : ${users}"
+                th:value="${user.userId}"
+                th:text="${user.fullName}"
+                th:selected="${value != null && user.userId.toString() == value.toString()}"></option>
+    </select>
+</th:block>

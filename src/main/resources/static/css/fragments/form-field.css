@@ -1,0 +1,8 @@
+input.form-field,
+textarea.form-field,
+select.form-field {
+    border-radius: 8px;
+    background-color: var(--black10);
+    width: 100%;
+    padding: 24px;
+}

@@ -45,13 +45,6 @@ section#login-form label {
     margin-bottom: 8px;
 }
 
-section#login-form input {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
-}
-
 section#login-form input:nth-child(2) {
     margin-bottom: 32px;
 }
