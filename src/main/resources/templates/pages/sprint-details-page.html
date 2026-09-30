@@ -4,6 +4,7 @@
     <title>Sprint details page</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/pages/sprint-details-page.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/detail-card.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/sprint-header.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/back-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/floating-action-button.css}">
@@ -16,9 +17,8 @@
         <h1 th:text="*{sprintName}">Sprint Name</h1>
 
         <div class="details-row">
-            <div class="detail-card">
-                <img th:src="@{/assets/svg/calendar.svg}" alt="Calendar">
-                <div class="card-info">
+            <div th:replace="~{fragments/detail-card :: detail-card-with-content('calendar.svg', 'Calendar', ~{::dates-content})}">
+                <th:block th:fragment="dates-content">
                     <div class="info-group">
                         <label>Start Date</label>
                         <p th:text="*{#temporals.format(startDate, 'dd.MM.yyyy')}">01.01.2020</p>
@@ -31,16 +31,12 @@
                         <label>Status</label>
                         <p th:text="*{status.displayName}">In progress</p>
                     </div>
-                </div>
+                </th:block>
             </div>
 
-            <div class="detail-card" th:if="*{sprintGoal != null}">
-                <img th:src="@{/assets/svg/flag-checkered.svg}" alt="Flag">
-                <div class="card-info">
-                    <label>Sprint Goal</label>
-                    <p th:text="*{sprintGoal}">Sprint Goal text</p>
-                </div>
-            </div>
+            <th:block th:if="*{sprintGoal != null}">
+                <div th:replace="~{fragments/detail-card :: detail-card('flag-checkered.svg', 'Flag', 'Sprint Goal', *{sprintGoal})}"></div>
+            </th:block>
         </div>
 
         <th:block th:if="${authenticatedTeamMember.isScrumMaster() && !sprint.status.isPlanned()}">

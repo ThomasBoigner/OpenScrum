@@ -1,0 +1,12 @@
+<div class="detail-card" th:fragment="detail-card(icon, alt, label, text)">
+    <img th:src="@{/assets/svg/{icon}(icon=${icon})}" th:alt="${alt}">
+    <div class="card-info">
+        <label th:text="${label}">Label</label>
+        <p th:text="${text}">Text</p>
+    </div>
+</div>
+
+<div class="detail-card" th:fragment="detail-card-with-content(icon, alt, content)">
+    <img th:src="@{/assets/svg/{icon}(icon=${icon})}" th:alt="${alt}">
+    <div class="card-info" th:insert="${content}"></div>
+</div>

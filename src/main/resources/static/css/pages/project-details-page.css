@@ -42,32 +42,8 @@ div.details-row {
     width: 100%;
 }
 
-div.detail-card {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
-    flex: 1;
-    background-color: var(--white);
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
-}
-
-div.card-info {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
 div.card-info > p {
     white-space: pre-line;
-}
-
-div.info-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
 }
 
 div.team-info {
@@ -109,7 +85,6 @@ div.developers-list {
     }
 
     div.detail-card > img {
-        width: 48px;
         height: 48px;
     }
 
@@ -133,11 +108,6 @@ div.developers-list {
 
     div.details-row {
         gap: 16px;
-    }
-
-    div.detail-card {
-        flex-direction: column;
-        align-items: flex-start;
     }
 
     div.team-info {
