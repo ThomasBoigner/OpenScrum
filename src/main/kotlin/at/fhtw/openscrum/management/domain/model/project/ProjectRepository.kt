@@ -5,7 +5,10 @@ import at.fhtw.openscrum.management.domain.model.user.UserId
 interface ProjectRepository {
     fun findAll(nameQuery: String? = null): List<Project>
 
-    fun findProjectsOfUser(userId: UserId): List<Project>
+    fun findProjectsOfUser(
+        userId: UserId,
+        nameQuery: String? = null,
+    ): List<Project>
 
     fun findByProjectId(projectId: ProjectId): Project?
 

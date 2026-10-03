@@ -24,8 +24,10 @@ class JpaProjectRepository(
         projectEntityRepository.delete(projectEntity)
     }
 
-    override fun findProjectsOfUser(userId: UserId): List<Project> =
-        projectEntityRepository.findProjectsOfUser(userId.token).map { it.toProject() }
+    override fun findProjectsOfUser(
+        userId: UserId,
+        nameQuery: String?,
+    ): List<Project> = projectEntityRepository.findProjectsOfUser(userId.token, nameQuery ?: "").map { it.toProject() }
 
     override fun findByProjectId(projectId: ProjectId): Project? = projectEntityRepository.findByProjectId(projectId.token)?.toProject()
 

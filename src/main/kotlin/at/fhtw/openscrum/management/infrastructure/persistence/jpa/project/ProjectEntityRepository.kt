@@ -17,10 +17,14 @@ interface ProjectEntityRepository : JpaRepository<ProjectEntity, Long> {
         value =
             "SELECT * " +
                 "FROM management_project_entity " +
-                "WHERE scrum_master_id = :userId " +
+                "WHERE (scrum_master_id = :userId " +
                 "OR product_owner_id = :userId " +
-                "OR :userId = ANY(developer_ids)",
+                "OR :userId = ANY(developer_ids)) " +
+                "AND strpos(lower(project_name), lower(:nameQuery)) > 0",
         nativeQuery = true,
     )
-    fun findProjectsOfUser(userId: UUID): List<ProjectEntity>
+    fun findProjectsOfUser(
+        userId: UUID,
+        nameQuery: String,
+    ): List<ProjectEntity>
 }
