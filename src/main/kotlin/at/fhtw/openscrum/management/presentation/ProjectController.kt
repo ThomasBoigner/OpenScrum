@@ -58,13 +58,13 @@ class ProjectController(
     @GetMapping(value = [FRAGMENT_PROJECTS_LIST_ITEM])
     fun getProjectsListItems(
         principal: Principal,
-        @RequestParam(required = false) query: String?,
+        @RequestParam(required = false, name = "query") nameQuery: String?,
         model: Model,
     ): String {
         try {
             model.addAttribute(
                 "projects",
-                projectApplicationService.getProjects(principal.name, query),
+                projectApplicationService.getProjects(principal.name, nameQuery),
             )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while trying to get all projects with message: {}", ex.message)

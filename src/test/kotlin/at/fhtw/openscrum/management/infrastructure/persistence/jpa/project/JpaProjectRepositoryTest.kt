@@ -25,29 +25,103 @@ class JpaProjectRepositoryTest {
     }
 
     @Test
-    fun ensureFindAllWorksProperly() {
+    fun ensureFindAllByNameLikeWorksProperly() {
         // Given
-        val project1 =
+        val openScrum =
             Project(
                 projectName = "OpenScrum",
                 productOwnerId = UserId(),
                 scrumMasterId = UserId(),
             )
-        val project2 =
+        val scrumBoard =
             Project(
-                projectName = "AnotherProject",
+                projectName = "ScrumBoard",
                 productOwnerId = UserId(),
                 scrumMasterId = UserId(),
             )
-        projectRepository.save(project1)
-        projectRepository.save(project2)
+        val webShop =
+            Project(
+                projectName = "WebShop",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(openScrum)
+        projectRepository.save(scrumBoard)
+        projectRepository.save(webShop)
+
+        // When
+        val result = projectRepository.findAll("sCRUM")
+
+        // Then
+        assertThat(result).containsExactlyInAnyOrder(openScrum, scrumBoard)
+    }
+
+    @Test
+    fun ensureFindAllByNameLikeReturnsEmptyListWhenNothingMatches() {
+        // Given
+        val project =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(project)
+
+        // When
+        val result = projectRepository.findAll("Kanban")
+
+        // Then
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun ensureFindAllByNameLikeReturnsAllProjectsForEmptyName() {
+        // Given
+        val openScrum =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        val webShop =
+            Project(
+                projectName = "WebShop",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(openScrum)
+        projectRepository.save(webShop)
+
+        // When
+        val result = projectRepository.findAll("")
+
+        // Then
+        assertThat(result).containsExactlyInAnyOrder(openScrum, webShop)
+    }
+
+    @Test
+    fun ensureFindAllByNameLikeReturnsAllProjectsForNullName() {
+        // Given
+        val openScrum =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        val webShop =
+            Project(
+                projectName = "WebShop",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(openScrum)
+        projectRepository.save(webShop)
 
         // When
         val result = projectRepository.findAll()
 
         // Then
-        assertThat(result).hasSize(2)
-        assertThat(result).containsExactlyInAnyOrder(project1, project2)
+        assertThat(result).containsExactlyInAnyOrder(openScrum, webShop)
     }
 
     @Test

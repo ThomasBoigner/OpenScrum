@@ -10,10 +10,10 @@ class ProjectService(
 ) {
     fun getProjects(
         authenticatedUser: User,
-        query: String? = null,
+        nameQuery: String? = null,
     ): List<Project> =
         when (authenticatedUser.role.isManager) {
-            true -> projectRepository.findAll()
+            true -> projectRepository.findAll(nameQuery)
             false -> projectRepository.findProjectsOfUser(authenticatedUser.userId)
         }
 

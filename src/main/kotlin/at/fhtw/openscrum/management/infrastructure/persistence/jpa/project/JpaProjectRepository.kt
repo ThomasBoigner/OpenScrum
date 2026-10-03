@@ -10,7 +10,8 @@ import org.springframework.stereotype.Repository
 class JpaProjectRepository(
     private val projectEntityRepository: ProjectEntityRepository,
 ) : ProjectRepository {
-    override fun findAll(): List<Project> = projectEntityRepository.findAll().map { it.toProject() }
+    override fun findAll(nameQuery: String?): List<Project> =
+        projectEntityRepository.findAllByProjectNameContainingIgnoreCase(nameQuery ?: "").map { it.toProject() }
 
     override fun save(project: Project): Project {
         val projectEntity = ProjectEntity(project)
