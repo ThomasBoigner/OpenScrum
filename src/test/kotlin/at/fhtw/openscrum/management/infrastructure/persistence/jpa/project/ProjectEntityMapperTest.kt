@@ -1,7 +1,5 @@
 package at.fhtw.openscrum.management.infrastructure.persistence.jpa.project
 
-import at.fhtw.openscrum.management.domain.model.project.ProjectId
-import at.fhtw.openscrum.management.domain.model.user.UserId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

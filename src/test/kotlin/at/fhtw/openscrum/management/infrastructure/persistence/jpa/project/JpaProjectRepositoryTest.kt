@@ -380,4 +380,91 @@ class JpaProjectRepositoryTest {
         // Then
         assertThat(result).isTrue()
     }
+
+    @Test
+    fun ensureUserHasProjectReturnsTrueWhenUserIsProductOwner() {
+        // Given
+        val userId = UserId()
+        projectRepository.save(
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = userId,
+                scrumMasterId = UserId(),
+            ),
+        )
+
+        // When
+        val result = projectRepository.userHasProject(userId)
+
+        // Then
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun ensureUserHasProjectReturnsTrueWhenUserIsScrumMaster() {
+        // Given
+        val userId = UserId()
+        projectRepository.save(
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = userId,
+            ),
+        )
+
+        // When
+        val result = projectRepository.userHasProject(userId)
+
+        // Then
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun ensureUserHasProjectReturnsTrueWhenUserIsDeveloper() {
+        // Given
+        val userId = UserId()
+        projectRepository.save(
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+                developerIds = setOf(UserId(), userId),
+            ),
+        )
+
+        // When
+        val result = projectRepository.userHasProject(userId)
+
+        // Then
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun ensureUserHasProjectReturnsFalseWhenThereAreNoProjects() {
+        // When
+        val result = projectRepository.userHasProject(UserId())
+
+        // Then
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun ensureUserHasProjectReturnsFalseWhenUserIsNotAssignedToAnyProject() {
+        // Given
+        val userId = UserId()
+        projectRepository.save(
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+                developerIds = setOf(UserId()),
+            ),
+        )
+
+        // When
+        val result = projectRepository.userHasProject(userId)
+
+        // Then
+        assertThat(result).isFalse()
+    }
 }

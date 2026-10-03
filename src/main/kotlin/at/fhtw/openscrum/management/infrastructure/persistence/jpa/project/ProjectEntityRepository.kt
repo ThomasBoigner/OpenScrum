@@ -2,7 +2,6 @@ package at.fhtw.openscrum.management.infrastructure.persistence.jpa.project
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
@@ -18,6 +17,20 @@ interface ProjectEntityRepository : JpaRepository<ProjectEntity, Long> {
     ): Page<ProjectEntity>
 
     fun findByProjectId(projectId: UUID): ProjectEntity?
+
+    @Query(
+        value = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM management_project_entity
+                WHERE scrum_master_id = :userId
+                OR product_owner_id = :userId
+                OR :userId = ANY(developer_ids)
+            )
+        """,
+        nativeQuery = true,
+    )
+    fun userHasProject(userId: UUID): Boolean
 
     @Query(
         value = """

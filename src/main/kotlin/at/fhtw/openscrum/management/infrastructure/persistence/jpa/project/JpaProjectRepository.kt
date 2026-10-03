@@ -34,9 +34,7 @@ class JpaProjectRepository(
         return project
     }
 
-    override fun userHasProject(userId: UserId): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun userHasProject(userId: UserId): Boolean = projectEntityRepository.userHasProject(userId.token)
 
     override fun delete(project: Project) {
         val projectEntity = ProjectEntity(project)
