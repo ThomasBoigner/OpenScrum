@@ -9,6 +9,7 @@ import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import at.fhtw.openscrum.management.domain.model.project.ProjectService
 import at.fhtw.openscrum.management.domain.model.user.UserId
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
+import at.fhtw.openscrum.management.domain.util.Page
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -18,6 +19,7 @@ import java.util.UUID
 @Service("managementProjectApplicationService")
 @Transactional(readOnly = true)
 class ProjectApplicationService(
+    private val projectMapper: ProjectMapper,
     private val projectService: ProjectService,
     private val projectRepository: ProjectRepository,
     private val userRepository: UserRepository,
@@ -32,14 +34,25 @@ class ProjectApplicationService(
         return ProjectDto(project)
     }
 
-    fun getProjects(authenticatedUserUsername: String): List<ProjectDto> {
-        log.info("User {} is trying to find all of his projects", authenticatedUserUsername)
+    fun getProjects(
+        authenticatedUserUsername: String,
+        nameQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<ProjectDto> {
+        log.info(
+            "User {} is trying to find page {} with size {} of his projects matching query '{}'",
+            authenticatedUserUsername,
+            page,
+            size,
+            nameQuery,
+        )
         val authenticatedUser =
             userRepository.findByUsername(authenticatedUserUsername)
                 ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
-        val projects = projectService.getProjects(authenticatedUser)
-        log.info("Found all ({}) projects of user {}", projects.size, authenticatedUser)
-        return projects.map { ProjectDto(it) }
+        val projectPage = projectService.getProjects(authenticatedUser, nameQuery, page, size)
+        log.info("Found {} of {} projects of user {}", projectPage.numberOfElements, projectPage.totalElements, authenticatedUser)
+        return projectMapper.toProjectDtoPage(projectPage)
     }
 
     @Transactional(readOnly = false)

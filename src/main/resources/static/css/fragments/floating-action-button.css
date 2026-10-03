@@ -1,0 +1,48 @@
+a.floating-action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    border-radius: 128px;
+    padding: 32px;
+    width: 128px;
+    height: 128px;
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    box-shadow: 0 4px 24px rgb(196, 196, 196);
+}
+
+a.floating-action-button.secondary {
+    background-color: var(--secondary-color);
+}
+
+/* 1200px - 600px */
+@media screen and (max-width: 1200px) {
+    a.floating-action-button {
+        padding: 24px;
+        width: 96px;
+        height: 96px;
+    }
+
+    a.floating-action-button img {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+/* < 600px */
+@media screen and (max-width: 600px) {
+    a.floating-action-button {
+        padding: 16px;
+        width: 64px;
+        height: 64px;
+        right: 16px;
+        bottom: 16px;
+    }
+
+    a.floating-action-button img {
+        width: 32px;
+        height: 32px;
+    }
+}

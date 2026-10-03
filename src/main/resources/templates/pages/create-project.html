@@ -1,25 +1,13 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:hx="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Create a project</title>
-    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-          rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-          rel="stylesheet">
-
     <link rel="stylesheet" th:href="@{/css/pages/create-project.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/form-field.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/submit-button.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/developer-list-item.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-
-    <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.10/dist/htmx.js}"></script>
 </head>
 <body>
 <div class="container">
@@ -31,30 +19,11 @@
     </section>
     <section id="project-form">
         <form method="post" th:action="@{/projects/create}" th:object="${createProjectForm}">
-            <div class="error-message" th:if="${#fields.hasErrors() || errorMessage != null}">
-                <img th:src="@{/assets/svg/exclamation-mark.svg}" alt="exclamation mark">
-                <p th:if="${errorMessage}" th:text="${errorMessage}">Error while creating project!</p>
-                <div>
-                    <p th:each="err : ${#fields.allErrors()}" th:text="${err}"></p>
-                </div>
-            </div>
+            <div th:replace="~{fragments/error-message :: form-errors}"></div>
             <div class="input-fields">
-                <label for="project-name">Project name:</label>
-                <input type="text" id="project-name" th:field="*{projectName}" placeholder="Enter the project name!">
-                <label for="product-owner">Product Owner:</label>
-                <select id="product-owner" th:field="*{productOwnerId}">
-                    <option value="">Select a product owner!</option>
-                    <option th:each="user : ${users}"
-                            th:value="${user.userId}"
-                            th:text="${user.fullName}"></option>
-                </select>
-                <label for="scrum-master">Scrum Master:</label>
-                <select id="scrum-master" th:field="*{scrumMasterId}">
-                    <option value="">Select a scrum master!</option>
-                    <option th:each="user : ${users}"
-                            th:value="${user.userId}"
-                            th:text="${user.fullName}"></option>
-                </select>
+                <th:block th:replace="~{fragments/form-field :: text-field('project-name', 'Project name:', 'projectName', *{projectName}, 'Enter the project name!')}"></th:block>
+                <th:block th:replace="~{fragments/form-field :: user-select-field('product-owner', 'Product Owner:', 'productOwnerId', *{productOwnerId}, 'Select a product owner!')}"></th:block>
+                <th:block th:replace="~{fragments/form-field :: user-select-field('scrum-master', 'Scrum Master:', 'scrumMasterId', *{scrumMasterId}, 'Select a scrum master!')}"></th:block>
             </div>
             <div id="developers">
                 <h4>Select the Developers:</h4>
@@ -64,10 +33,7 @@
                        hx-swap="outerHTML">Could not load users!</p>
                 </div>
             </div>
-            <button type="submit">
-                Create Project
-                <img th:src="@{/assets/svg/plus.svg}" alt="plus">
-            </button>
+            <button th:replace="~{fragments/submit-button :: submit-button('Create Project', 'plus.svg', 'plus')}"></button>
         </form>
     </section>
 </div>

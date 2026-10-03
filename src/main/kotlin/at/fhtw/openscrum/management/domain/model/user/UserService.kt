@@ -109,7 +109,7 @@ class UserService(
         authenticatedUser != null &&
             authenticatedUser.role.isManager &&
             authenticatedUser.userId != user.userId &&
-            projectRepository.findProjectsOfUser(user.userId).isEmpty()
+            !projectRepository.userHasProject(user.userId)
 
     fun deleteUser(
         authenticatedUser: User,
@@ -118,7 +118,7 @@ class UserService(
         log.debug("Trying to delete user {}", user)
         require(authenticatedUser.role.isManager) { "You have no permission to delete users!" }
         require(authenticatedUser.userId != user.userId) { "You can not delete your own account!" }
-        require(projectRepository.findProjectsOfUser(user.userId).isEmpty()) {
+        require(!projectRepository.userHasProject(user.userId)) {
             "The user must not be assigned to a project in order to be deleted!"
         }
 

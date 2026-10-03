@@ -746,7 +746,7 @@ class UserServiceTest {
                 password = "abc123",
             )
 
-        whenever(projectRepository.findProjectsOfUser(user.userId)).thenReturn(emptyList())
+        whenever(projectRepository.userHasProject(user.userId)).thenReturn(false)
 
         // When
         userService.deleteUser(authenticatedUser, user)
@@ -827,14 +827,7 @@ class UserServiceTest {
                 password = "abc123",
             )
 
-        val project =
-            Project(
-                projectName = "OpenScrum",
-                productOwnerId = user.userId,
-                scrumMasterId = authenticatedUser.userId,
-            )
-
-        whenever(projectRepository.findProjectsOfUser(user.userId)).thenReturn(listOf(project))
+        whenever(projectRepository.userHasProject(user.userId)).thenReturn(true)
 
         // When
         val exception =
@@ -866,7 +859,7 @@ class UserServiceTest {
                 password = "abc123",
             )
 
-        whenever(projectRepository.findProjectsOfUser(user.userId)).thenReturn(emptyList())
+        whenever(projectRepository.userHasProject(user.userId)).thenReturn(false)
 
         // When
         val result = userService.canDeleteUser(authenticatedUser, user)
@@ -968,7 +961,7 @@ class UserServiceTest {
                 scrumMasterId = authenticatedUser.userId,
             )
 
-        whenever(projectRepository.findProjectsOfUser(user.userId)).thenReturn(listOf(project))
+        whenever(projectRepository.userHasProject(user.userId)).thenReturn(true)
 
         // When
         val result = userService.canDeleteUser(authenticatedUser, user)

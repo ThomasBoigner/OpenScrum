@@ -1,0 +1,19 @@
+<header id="scrum-header" th:fragment="scrum-header(projectId, active)">
+    <a th:href="@{/projects}">
+        <img th:src="@{/assets/svg/logo-secondary.svg}" alt="Logo">
+    </a>
+    <nav>
+        <a class="btn" th:classappend="${active == 'details'} ? 'selected'" th:href="@{/projects/{projectId}(projectId=${projectId})}">
+            <img th:src="${active == 'details'} ? @{/assets/svg/sticky-white.svg} : @{/assets/svg/sticky.svg}" alt="Sticky">
+            Details
+        </a>
+        <a class="btn" th:classappend="${active == 'backlog'} ? 'selected'" th:href="@{/projects/{projectId}/backlog(projectId=${projectId})}">
+            <img th:src="${active == 'backlog'} ? @{/assets/svg/list-white.svg} : @{/assets/svg/list.svg}" alt="List">
+            Backlog
+        </a>
+        <a class="btn" th:classappend="${active == 'sprints'} ? 'selected'" th:href="@{/projects/{projectId}/sprints(projectId=${projectId})}">
+            <img th:src="${active == 'sprints'} ? @{/assets/svg/rotate-white.svg} : @{/assets/svg/rotate.svg}" alt="Rotate">
+            Sprints
+        </a>
+    </nav>
+</header>

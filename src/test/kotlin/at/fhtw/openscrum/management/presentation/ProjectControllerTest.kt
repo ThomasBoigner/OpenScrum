@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import java.time.Duration
@@ -856,5 +857,245 @@ class ProjectControllerTest : E2ETest() {
         // Then
         assertThat(webDriver.findElements(By.cssSelector("#project-${project.projectId.token}"))).isEmpty()
         assertThat(managementProjectEntityRepository.findByProjectId(project.projectId.token)).isNull()
+    }
+
+    @Test
+    fun ensureSearchProjectsAsManagerWorksProperly() {
+        // Given
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        listOf("OpenScrum", "ScrumBoard", "WebShop").forEach { projectName ->
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = projectName,
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+        }
+
+        // When
+        loginAsAdmin()
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".projects-list-item"), 3))
+        val firstRow = webDriver.findElement(By.cssSelector(".projects-list-item"))
+        webDriver.findElement(By.cssSelector("input#search-input")).sendKeys("sCRUM")
+        // the search response replaces the list, so the old first row becomes stale once the search has been answered
+        wait.until(ExpectedConditions.stalenessOf(firstRow))
+
+        // Then
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".projects-list-item"), 2))
+        val projectNames = webDriver.findElements(By.cssSelector(".projects-list-item h2")).map { it.text }
+        assertThat(projectNames).containsExactly("OpenScrum", "ScrumBoard")
+    }
+
+    @Test
+    fun ensureSearchProjectsAsUserWorksProperly() {
+        // Given
+        val username = "john.doe"
+        val password = "abc123"
+
+        val user =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = username,
+                firstName = "John",
+                lastName = "Doe",
+                password = password,
+                email = "john.doe@gmail.com",
+            )
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        projectService.createProject(
+            authenticatedUser = admin,
+            projectName = "OpenScrum",
+            productOwner = user,
+            scrumMaster = scrumMaster,
+            developers = setOf(),
+        )
+        projectService.createProject(
+            authenticatedUser = admin,
+            projectName = "WebShop",
+            productOwner = productOwner,
+            scrumMaster = scrumMaster,
+            developers = setOf(user),
+        )
+        projectService.createProject(
+            authenticatedUser = admin,
+            projectName = "ScrumBoard",
+            productOwner = productOwner,
+            scrumMaster = scrumMaster,
+            developers = setOf(),
+        )
+
+        // When
+        login(username, password)
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".projects-list-item"), 2))
+        val firstRow = webDriver.findElement(By.cssSelector(".projects-list-item"))
+        webDriver.findElement(By.cssSelector("input#search-input")).sendKeys("sCRUM")
+        // the search response replaces the list, so the old first row becomes stale once the search has been answered
+        wait.until(ExpectedConditions.stalenessOf(firstRow))
+
+        // Then
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".projects-list-item"), 1))
+        val projectNames = webDriver.findElements(By.cssSelector(".projects-list-item h2")).map { it.text }
+        assertThat(projectNames).containsExactly("OpenScrum")
+    }
+
+    @Test
+    fun ensurePaginateProjectsAsManagerWorksProperly() {
+        // Given
+        val pageSize = 5
+        val projectNames = (1..pageSize + 2).map { "Project %02d".format(it) }
+        val loaderSelector = "#projects-list-items [hx-trigger='intersect once']"
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        projectNames.forEach { projectName ->
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = projectName,
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+        }
+
+        webDriver.manage().window().size = Dimension(1920, 600)
+
+        // When
+        loginAsAdmin()
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".projects-list-item"), pageSize))
+        assertThat(webDriver.findElements(By.cssSelector(loaderSelector))).hasSize(1)
+
+        // scroll to the end of the projects list
+        webDriver.executeScript("document.querySelector(arguments[0]).scrollIntoView()", loaderSelector)
+
+        // Then
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".projects-list-item"), pageSize + 2))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(loaderSelector), 0))
+        val loadedProjectNames = webDriver.findElements(By.cssSelector(".projects-list-item h2")).map { it.text }
+        assertThat(loadedProjectNames).isEqualTo(projectNames)
+    }
+
+    @Test
+    fun ensurePaginateProjectsOnlyLoadsProjectsOfUser() {
+        // Given
+        val pageSize = 5
+        val projectNames = (1..pageSize + 2).map { "Project %02d".format(it) }
+        val loaderSelector = "#projects-list-items [hx-trigger='intersect once']"
+        val username = "john.doe"
+        val password = "abc123"
+
+        val user =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = username,
+                firstName = "John",
+                lastName = "Doe",
+                password = password,
+                email = "john.doe@gmail.com",
+            )
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        projectNames.forEach { projectName ->
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = projectName,
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(user),
+            )
+        }
+        projectService.createProject(
+            authenticatedUser = admin,
+            projectName = "Project 00",
+            productOwner = productOwner,
+            scrumMaster = scrumMaster,
+            developers = setOf(),
+        )
+
+        webDriver.manage().window().size = Dimension(1920, 600)
+
+        // When
+        login(username, password)
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".projects-list-item"), pageSize))
+        assertThat(webDriver.findElements(By.cssSelector(loaderSelector))).hasSize(1)
+
+        // scroll to the end of the projects list
+        webDriver.executeScript("document.querySelector(arguments[0]).scrollIntoView()", loaderSelector)
+
+        // Then
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".projects-list-item"), pageSize + 2))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(loaderSelector), 0))
+        val loadedProjectNames = webDriver.findElements(By.cssSelector(".projects-list-item h2")).map { it.text }
+        assertThat(loadedProjectNames).isEqualTo(projectNames)
     }
 }

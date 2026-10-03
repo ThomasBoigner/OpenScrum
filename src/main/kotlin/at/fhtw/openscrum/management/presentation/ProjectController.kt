@@ -58,10 +58,16 @@ class ProjectController(
     @GetMapping(value = [FRAGMENT_PROJECTS_LIST_ITEM])
     fun getProjectsListItems(
         principal: Principal,
+        @RequestParam(required = false, name = "query") nameQuery: String?,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "5") size: Int,
         model: Model,
     ): String {
         try {
-            model.addAttribute("projects", projectApplicationService.getProjects(principal.name))
+            model.addAttribute(
+                "projectPage",
+                projectApplicationService.getProjects(principal.name, nameQuery, page, size),
+            )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while trying to get all projects with message: {}", ex.message)
             return "redirect:htmx:/error/400"

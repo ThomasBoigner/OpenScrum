@@ -30,25 +30,7 @@ section#hero h3 {
 
 /* Go Back button */
 a.btn {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    border-radius: 8px;
-    background-color: var(--primary-color);
-    padding: 16px 24px;
     width: 256px;
-    color: var(--white);
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
-a.btn:hover {
-    gap: 8px;
-}
-
-a.btn img {
-    transform: rotate(180deg);
 }
 
 /* 1200px - 600px */

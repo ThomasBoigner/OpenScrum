@@ -1,0 +1,8 @@
+<div class="search-input" th:fragment="search-input" xmlns:hx="http://www.w3.org/1999/xhtml">
+    <label for="search-input"><img th:src="@{/assets/svg/search.svg}" alt="Search"></label>
+    <input type="text" name="query" id="search-input" placeholder="Search" autocomplete="off"
+           hx:get="${searchUrl}"
+           hx:target="${searchTarget}"
+           hx-trigger="input changed delay:100ms, keyup[key=='Enter']"
+           hx-swap="innerHTML">
+</div>

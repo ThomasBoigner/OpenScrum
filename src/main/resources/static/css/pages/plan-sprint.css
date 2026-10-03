@@ -42,27 +42,6 @@ section#plan-sprint-form form {
     width: 100%;
 }
 
-div.error-message {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    border: solid 3px var(--error);
-    border-radius: 8px;
-    gap: 16px;
-    padding: 16px 24px;
-}
-
-div.error-message p {
-    color: var(--error);
-}
-
-div.error-message div {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
 /* Input fields */
 section#plan-sprint-form div#input-fields {
     display: flex;
@@ -81,10 +60,6 @@ section#plan-sprint-form div#sprint-goal {
 }
 
 section#plan-sprint-form div#sprint-goal textarea {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
     height: 256px;
 }
 
@@ -109,26 +84,7 @@ div.submit-go-back {
 }
 
 section#plan-sprint-form button {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background-color: var(--primary-color);
-    padding: 16px 24px;
     width: 100%;
-    color: var(--white);
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
-section#plan-sprint-form button img {
-    width: 32px;
-    height: 32px;
-}
-
-section#plan-sprint-form button:hover {
-    gap: 8px;
 }
 
 section#plan-sprint-form div.submit-go-back > p {
@@ -167,10 +123,6 @@ section#plan-sprint-form div.submit-go-back > p a {
         gap: 48px;
     }
 
-    div.error-message img {
-        height: 24px;
-    }
-
     section#plan-sprint-form div#input-fields {
         gap: 48px;
     }
@@ -190,11 +142,6 @@ section#plan-sprint-form div.submit-go-back > p a {
 
     div.submit-go-back {
         width: 256px;
-    }
-
-    section#plan-sprint-form button img {
-        width: 24px;
-        height: 24px;
     }
 }
 

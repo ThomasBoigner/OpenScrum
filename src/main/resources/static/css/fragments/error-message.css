@@ -12,3 +12,15 @@ div.error-message {
 div.error-message p {
     color: var(--error);
 }
+
+div.error-message div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+@media screen and (max-width: 1200px) {
+    div.error-message img {
+        height: 24px;
+    }
+}

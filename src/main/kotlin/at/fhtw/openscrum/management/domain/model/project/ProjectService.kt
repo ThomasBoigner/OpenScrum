@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.management.domain.model.project
 
 import at.fhtw.openscrum.management.domain.model.user.User
+import at.fhtw.openscrum.management.domain.util.Page
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -8,11 +9,19 @@ class ProjectService(
     private val projectRepository: ProjectRepository,
     private val log: Logger = LoggerFactory.getLogger(ProjectService::class.java),
 ) {
-    fun getProjects(authenticatedUser: User): List<Project> =
-        when (authenticatedUser.role.isManager) {
-            true -> projectRepository.findAll()
-            false -> projectRepository.findProjectsOfUser(authenticatedUser.userId)
+    fun getProjects(
+        authenticatedUser: User,
+        nameQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<Project> {
+        require(page >= 0) { "Page number must not be negative!" }
+        require(size > 0) { "Page size must be positive!" }
+        return when (authenticatedUser.role.isManager) {
+            true -> projectRepository.findAll(nameQuery, page, size)
+            false -> projectRepository.findProjectsOfUser(authenticatedUser.userId, nameQuery, page, size)
         }
+    }
 
     fun createProject(
         authenticatedUser: User,

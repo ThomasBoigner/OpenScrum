@@ -1,26 +1,13 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:hx="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<head th:replace="~{fragments/head :: head(~{::title}, ~{::link})}">
     <title>Configure a project</title>
-    <link rel="icon" type="image/x-icon" th:href="@{/assets/svg/logo.svg}"/>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-          rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-          rel="stylesheet">
-
     <link rel="stylesheet" th:href="@{/css/pages/configure-project.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/form-field.css}">
+    <link rel="stylesheet" th:href="@{/css/fragments/back-button.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/saved-changes.css}">
     <link rel="stylesheet" th:href="@{/css/fragments/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-
-    <script type="application/javascript" th:src="@{/webjars/htmx.org/2.0.10/dist/htmx.js}"></script>
 </head>
 <body>
 <div class="container">
@@ -40,10 +27,7 @@
             <form id="sprint-length-form" th:if="${authenticatedTeamMember.isScrumMaster}" hx:put="@{/projects/{projectId}/configure/sprint-length(projectId=*{projectId})}"
                   hx-target="div#message" hx-swap="outerHTML">
                 <div class="label-input">
-                    <label for="sprint-length">Sprint length:</label>
-                    <input type="number" id="sprint-length" name="sprintLength"
-                           placeholder="Enter the length of Sprints in weeks!" min="1" max="4"
-                           th:value="*{sprintLength}">
+                    <th:block th:replace="~{fragments/form-field :: number-field('sprint-length', 'Sprint length:', 'sprintLength', *{sprintLength}, 'Enter the length of Sprints in weeks!', 1, 4)}"></th:block>
                 </div>
                 <button type="submit">Save</button>
             </form>
@@ -51,10 +35,7 @@
             <form id="product-goal-form" th:if="${authenticatedTeamMember.isProductOwner}" hx:put="@{/projects/{projectId}/configure/product-goal(projectId=*{projectId})}"
                   hx-target="div#message" hx-swap="outerHTML">
                 <div class="label-input">
-                    <label for="product-goal">Product goal:</label>
-                    <textarea id="product-goal" name="productGoal"
-                              placeholder="Describe the product goal for this project!"
-                              th:text="*{productGoal}"></textarea>
+                    <th:block th:replace="~{fragments/form-field :: textarea-field('product-goal', 'Product goal:', 'productGoal', *{productGoal}, 'Describe the product goal for this project!')}"></th:block>
                 </div>
                 <button type="submit">Save</button>
             </form>
@@ -62,19 +43,13 @@
             <form id="definition-of-done-form" th:if="${authenticatedTeamMember.isScrumMaster()}" hx:put="@{/projects/{projectId}/configure/definition-of-done(projectId=*{projectId})}"
                   hx-target="div#message" hx-swap="outerHTML">
                 <div class="label-input">
-                    <label for="definition-of-done">Definition of done:</label>
-                    <textarea id="definition-of-done" name="definitionOfDone"
-                              placeholder="Describe when a task is considered done!"
-                              th:text="*{definitionOfDone}"></textarea>
+                    <th:block th:replace="~{fragments/form-field :: textarea-field('definition-of-done', 'Definition of done:', 'definitionOfDone', *{definitionOfDone}, 'Describe when a task is considered done!')}"></th:block>
                 </div>
                 <button type="submit">Save</button>
             </form>
         </div>
 
-        <a class="btn" th:href="@{/projects/{projectId}(projectId=*{projectId})}">
-            <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
-            Back
-        </a>
+        <a th:replace="~{fragments/back-button :: back-button(@{/projects/{projectId}(projectId=*{projectId})}, 'Back')}"></a>
     </section>
 </div>
 </body>

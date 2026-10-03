@@ -31,27 +31,6 @@ section#registration-form form {
     gap: 64px;
 }
 
-div.error-message {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    border: solid 3px var(--error);
-    border-radius: 8px;
-    gap: 16px;
-    padding: 16px 24px;
-}
-
-div.error-message p {
-    color: var(--error);
-}
-
-div.error-message div {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
 section#registration-form div.input-fields {
     width: 1024px;
 }
@@ -61,38 +40,12 @@ section#registration-form label {
     margin-bottom: 8px;
 }
 
-section#registration-form input {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
-}
-
 section#registration-form input:not(:last-child) {
     margin-bottom: 32px;
 }
 
 section#registration-form button {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background-color: var(--primary-color);
-    padding: 16px 24px;
     width: 512px;
-    color: var(--white);
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
-section#registration-form button img {
-    width: 32px;
-    height: 32px;
-}
-
-section#registration-form button:hover {
-    gap: 8px;
 }
 
 /* 1200px - 600px */
@@ -118,10 +71,6 @@ section#registration-form button:hover {
         gap: 48px;
     }
 
-    div.error-message img {
-        height: 24px;
-    }
-
     section#registration-form div.input-fields {
         width: 512px;
     }
@@ -132,10 +81,6 @@ section#registration-form button:hover {
 
     section#registration-form button {
         width: 256px;
-    }
-
-    section#registration-form button img {
-        height: 24px;
     }
 }
 

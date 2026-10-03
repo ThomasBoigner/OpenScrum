@@ -5,6 +5,7 @@ import at.fhtw.openscrum.management.domain.model.user.FullName
 import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.User
 import at.fhtw.openscrum.management.domain.model.user.UserId
+import at.fhtw.openscrum.management.domain.util.Page
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -41,11 +42,30 @@ class ProjectServiceTest {
                 role = Role.MANAGER,
             )
 
-        val projects = listOf<Project>()
-        whenever(projectRepository.findAll()).thenReturn(projects)
+        val projects =
+            Page(
+                content =
+                    mutableListOf(
+                        Project(
+                            projectName = "OpenScrum",
+                            productOwnerId = UserId(),
+                            scrumMasterId = UserId(),
+                        ),
+                    ),
+                last = true,
+                totalPages = 1,
+                totalElements = 1,
+                first = true,
+                size = 1,
+                number = 1,
+                numberOfElements = 1,
+                empty = false,
+            )
+
+        whenever(projectRepository.findAll("query", 1, 10)).thenReturn(projects)
 
         // When
-        val result = projectService.getProjects(manager)
+        val result = projectService.getProjects(manager, "query", 1, 10)
 
         // Then
         assertThat(result).isEqualTo(projects)
@@ -63,7 +83,26 @@ class ProjectServiceTest {
                 role = Role.USER,
             )
 
-        val projects = listOf<Project>()
+        val projects =
+            Page(
+                content =
+                    mutableListOf(
+                        Project(
+                            projectName = "OpenScrum",
+                            productOwnerId = UserId(),
+                            scrumMasterId = UserId(),
+                        ),
+                    ),
+                last = true,
+                totalPages = 1,
+                totalElements = 1,
+                first = true,
+                size = 1,
+                number = 1,
+                numberOfElements = 1,
+                empty = false,
+            )
+
         whenever(projectRepository.findProjectsOfUser(user.userId)).thenReturn(projects)
 
         // When
@@ -71,6 +110,45 @@ class ProjectServiceTest {
 
         // Then
         assertThat(result).isEqualTo(projects)
+    }
+
+    @Test
+    fun ensureGetProjectsThrowsExceptionForNegativePage() {
+        // Given
+        val manager =
+            User(
+                username = "manager",
+                emailAddress = EmailAddress("manager@gmail.com"),
+                fullName = FullName("Manager", "User"),
+                password = "password",
+                role = Role.MANAGER,
+            )
+
+        // When
+        val exception = assertThrows<IllegalArgumentException> { projectService.getProjects(manager, page = -1) }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Page number must not be negative!")
+        verify(projectRepository, never()).findAll(any(), any(), any(), any())
+    }
+
+    @Test
+    fun ensureGetProjectsThrowsExceptionForNonPositiveSize() {
+        // Given
+        val manager =
+            User(
+                username = "manager",
+                emailAddress = EmailAddress("manager@gmail.com"),
+                fullName = FullName("Manager", "User"),
+                password = "password",
+                role = Role.MANAGER,
+            )
+
+        // When
+        val exception = assertThrows<IllegalArgumentException> { projectService.getProjects(manager, size = 0) }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Page size must be positive!")
     }
 
     @Test

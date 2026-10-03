@@ -38,27 +38,6 @@ section#update-product-backlog-item-form form {
     width: 1024px;
 }
 
-div.error-message {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    border: solid 3px var(--error);
-    border-radius: 8px;
-    gap: 16px;
-    padding: 16px 24px;
-}
-
-div.error-message p {
-    color: var(--error);
-}
-
-div.error-message div {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
 section#update-product-backlog-item-form div.input-fields {
     display: flex;
     flex-direction: column;
@@ -73,18 +52,10 @@ section#update-product-backlog-item-form div.label-input {
 }
 
 section#update-product-backlog-item-form input {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
     height: 75px;
 }
 
 section#update-product-backlog-item-form textarea {
-    border-radius: 8px;
-    background-color: var(--black10);
-    width: 100%;
-    padding: 24px;
     height: 256px;
 }
 
@@ -97,26 +68,7 @@ div.submit-go-back {
 }
 
 section#update-product-backlog-item-form button {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    background-color: var(--primary-color);
-    padding: 16px 24px;
     width: 100%;
-    color: var(--white);
-    box-shadow: 0 4px 24px rgb(196, 196, 196);
-}
-
-section#update-product-backlog-item-form button img {
-    width: 32px;
-    height: 23px;
-}
-
-section#update-product-backlog-item-form button:hover {
-    gap: 8px;
 }
 
 div.submit-go-back > p {
@@ -156,21 +108,12 @@ div.submit-go-back > p a {
         width: 512px;
     }
 
-    div.error-message img {
-        height: 24px;
-    }
-
     section#update-product-backlog-item-form textarea {
         height: 194px;
     }
 
     div.submit-go-back {
         width: 256px;
-    }
-
-    section#update-product-backlog-item-form button img {
-        width: 24px;
-        height: 17px;
     }
 }
 

@@ -1,0 +1,4 @@
+<a class="btn back-button" th:fragment="back-button(href, text)" th:href="${href}">
+    <img th:src="@{/assets/svg/arrow-white.svg}" alt="Arrow">
+    <th:block th:text="${text}">Back</th:block>
+</a>

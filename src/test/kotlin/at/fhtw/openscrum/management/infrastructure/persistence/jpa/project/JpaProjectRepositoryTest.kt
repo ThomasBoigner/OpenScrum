@@ -27,27 +27,101 @@ class JpaProjectRepositoryTest {
     @Test
     fun ensureFindAllWorksProperly() {
         // Given
-        val project1 =
+        val openScrum =
             Project(
                 projectName = "OpenScrum",
                 productOwnerId = UserId(),
                 scrumMasterId = UserId(),
             )
-        val project2 =
+        val scrumBoard =
             Project(
-                projectName = "AnotherProject",
+                projectName = "ScrumBoard",
                 productOwnerId = UserId(),
                 scrumMasterId = UserId(),
             )
-        projectRepository.save(project1)
-        projectRepository.save(project2)
+        val webShop =
+            Project(
+                projectName = "WebShop",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(openScrum)
+        projectRepository.save(scrumBoard)
+        projectRepository.save(webShop)
+
+        // When
+        val result = projectRepository.findAll("sCRUM")
+
+        // Then
+        assertThat(result.content).containsExactly(openScrum, scrumBoard)
+    }
+
+    @Test
+    fun ensureFindAllReturnsEmptyListWhenNothingMatches() {
+        // Given
+        val project =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(project)
+
+        // When
+        val result = projectRepository.findAll("Kanban")
+
+        // Then
+        assertThat(result.content).isEmpty()
+    }
+
+    @Test
+    fun ensureFindAllReturnsAllProjectsForEmptyName() {
+        // Given
+        val openScrum =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        val webShop =
+            Project(
+                projectName = "WebShop",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(openScrum)
+        projectRepository.save(webShop)
+
+        // When
+        val result = projectRepository.findAll("")
+
+        // Then
+        assertThat(result.content).containsExactly(openScrum, webShop)
+    }
+
+    @Test
+    fun ensureFindAllReturnsAllProjectsForNullName() {
+        // Given
+        val openScrum =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        val webShop =
+            Project(
+                projectName = "WebShop",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(openScrum)
+        projectRepository.save(webShop)
 
         // When
         val result = projectRepository.findAll()
 
         // Then
-        assertThat(result).hasSize(2)
-        assertThat(result).containsExactlyInAnyOrder(project1, project2)
+        assertThat(result.content).containsExactly(openScrum, webShop)
     }
 
     @Test
@@ -66,8 +140,8 @@ class JpaProjectRepositoryTest {
 
         // Then
         val savedProjects = projectRepository.findAll()
-        assertThat(savedProjects).hasSize(1)
-        assertThat(savedProjects.first()).isEqualTo(project)
+        assertThat(savedProjects.content).hasSize(1)
+        assertThat(savedProjects.content.first()).isEqualTo(project)
     }
 
     @Test
@@ -87,7 +161,7 @@ class JpaProjectRepositoryTest {
 
         // Then
         assertThat(projectRepository.findByProjectId(project.projectId)).isNull()
-        assertThat(projectRepository.findAll()).isEmpty()
+        assertThat(projectRepository.findAll().content).isEmpty()
     }
 
     @Test
@@ -113,7 +187,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId)
 
         // Then
-        assertThat(result).containsExactly(userProject)
+        assertThat(result.content).containsExactly(userProject)
     }
 
     @Test
@@ -139,7 +213,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId)
 
         // Then
-        assertThat(result).containsExactly(userProject)
+        assertThat(result.content).containsExactly(userProject)
     }
 
     @Test
@@ -166,7 +240,127 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId)
 
         // Then
-        assertThat(result).containsExactly(userProject)
+        assertThat(result.content).containsExactly(userProject)
+    }
+
+    @Test
+    fun ensureFindProjectsOfUserFiltersByNameQueryIgnoringCase() {
+        // Given
+        val userId = UserId()
+        val openScrum =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = userId,
+                scrumMasterId = UserId(),
+            )
+        val webShop =
+            Project(
+                projectName = "WebShop",
+                productOwnerId = UserId(),
+                scrumMasterId = userId,
+            )
+        val scrumBoard =
+            Project(
+                projectName = "ScrumBoard",
+                productOwnerId = userId,
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(openScrum)
+        projectRepository.save(webShop)
+        projectRepository.save(scrumBoard)
+
+        // When
+        val result = projectRepository.findProjectsOfUser(userId, "sCRUM")
+
+        // Then
+        assertThat(result.content).containsExactly(openScrum, scrumBoard)
+    }
+
+    @Test
+    fun ensureFindProjectsOfUserReturnsEmptyListWhenNothingMatches() {
+        // Given
+        val userId = UserId()
+        val openScrum =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = userId,
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(openScrum)
+
+        // When
+        val result = projectRepository.findProjectsOfUser(userId, "Kanban")
+
+        // Then
+        assertThat(result.content).isEmpty()
+    }
+
+    @Test
+    fun ensureFindProjectsOfUserReturnsAllProjectsOfUserForEmptyNameQuery() {
+        // Given
+        val userId = UserId()
+        val openScrum =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = userId,
+                scrumMasterId = UserId(),
+            )
+        val webShop =
+            Project(
+                projectName = "WebShop",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+                developerIds = setOf(userId),
+            )
+        val scrumBoard =
+            Project(
+                projectName = "ScrumBoard",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(openScrum)
+        projectRepository.save(webShop)
+        projectRepository.save(scrumBoard)
+
+        // When
+        val result = projectRepository.findProjectsOfUser(userId, "")
+
+        // Then
+        assertThat(result.content).containsExactlyInAnyOrder(openScrum, webShop)
+    }
+
+    @Test
+    fun ensureFindProjectsOfUserReturnsAllProjectsOfUserForNullNameQuery() {
+        // Given
+        val userId = UserId()
+        val openScrum =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = userId,
+                scrumMasterId = UserId(),
+            )
+        val webShop =
+            Project(
+                projectName = "WebShop",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+                developerIds = setOf(userId),
+            )
+        val scrumBoard =
+            Project(
+                projectName = "ScrumBoard",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+        projectRepository.save(openScrum)
+        projectRepository.save(webShop)
+        projectRepository.save(scrumBoard)
+
+        // When
+        val result = projectRepository.findProjectsOfUser(userId, null)
+
+        // Then
+        assertThat(result.content).containsExactly(openScrum, webShop)
     }
 
     @Test
@@ -185,5 +379,92 @@ class JpaProjectRepositoryTest {
 
         // Then
         assertThat(result).isTrue()
+    }
+
+    @Test
+    fun ensureUserHasProjectReturnsTrueWhenUserIsProductOwner() {
+        // Given
+        val userId = UserId()
+        projectRepository.save(
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = userId,
+                scrumMasterId = UserId(),
+            ),
+        )
+
+        // When
+        val result = projectRepository.userHasProject(userId)
+
+        // Then
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun ensureUserHasProjectReturnsTrueWhenUserIsScrumMaster() {
+        // Given
+        val userId = UserId()
+        projectRepository.save(
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = userId,
+            ),
+        )
+
+        // When
+        val result = projectRepository.userHasProject(userId)
+
+        // Then
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun ensureUserHasProjectReturnsTrueWhenUserIsDeveloper() {
+        // Given
+        val userId = UserId()
+        projectRepository.save(
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+                developerIds = setOf(UserId(), userId),
+            ),
+        )
+
+        // When
+        val result = projectRepository.userHasProject(userId)
+
+        // Then
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun ensureUserHasProjectReturnsFalseWhenThereAreNoProjects() {
+        // When
+        val result = projectRepository.userHasProject(UserId())
+
+        // Then
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun ensureUserHasProjectReturnsFalseWhenUserIsNotAssignedToAnyProject() {
+        // Given
+        val userId = UserId()
+        projectRepository.save(
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+                developerIds = setOf(UserId()),
+            ),
+        )
+
+        // When
+        val result = projectRepository.userHasProject(userId)
+
+        // Then
+        assertThat(result).isFalse()
     }
 }
