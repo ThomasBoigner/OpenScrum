@@ -78,6 +78,36 @@ class ProjectApplicationServiceTest {
     }
 
     @Test
+    fun ensureGetProjectsWorksProperlyWithQuery() {
+        // Given
+        val username = "user"
+        val query = "scrum"
+        val user =
+            User(
+                username = username,
+                emailAddress = EmailAddress("user@gmail.com"),
+                fullName = FullName("User", "User"),
+                password = "abc123",
+                role = Role.MANAGER,
+            )
+        val project =
+            Project(
+                projectName = "OpenScrum",
+                productOwnerId = UserId(),
+                scrumMasterId = UserId(),
+            )
+
+        whenever(userRepository.findByUsername(username)).thenReturn(user)
+        whenever(projectService.getProjects(user, query)).thenReturn(listOf(project))
+
+        // When
+        val result = projectApplicationService.getProjects(username, query)
+
+        // Then
+        assertThat(result).isEqualTo(listOf(ProjectDto(project)))
+    }
+
+    @Test
     fun ensureCreateProjectWorksProperly() {
         // Given
         val manager =

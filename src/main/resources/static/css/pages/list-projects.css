@@ -21,6 +21,14 @@ section#projects-list {
     overflow: scroll;
 }
 
+div#projects-list-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+}
+
 /* 1200px - 600px */
 @media screen and (max-width: 1200px) {
     /* Container */

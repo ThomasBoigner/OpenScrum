@@ -13,8 +13,11 @@
 <div class="container">
     <header th:replace="~{fragments/main-header :: main-header('projects')}"></header>
     <section id="projects-list">
-        <div th:replace="~{fragments/search-input :: search-input}"></div>
-        <p hx:get="@{/projects/list}" hx-trigger="load" hx-swap="outerHTML">Could not load projects!</p>
+        <div th:replace="~{fragments/search-input :: search-input(searchUrl=@{/projects/list}, searchTarget='#projects-list-items')}"></div>
+        <div id="projects-list-items" hx:get="@{/projects/list}" hx-trigger="load" hx-swap="innerHTML">
+            <p>Could not load projects!</p>
+        </div>
+
         <th:block th:if="${authenticatedUser != null && authenticatedUser.role.isManager()}">
             <a th:replace="~{fragments/floating-action-button :: floating-action-button(@{/projects/create}, 'plus.svg', 'Plus', 'primary')}"></a>
         </th:block>

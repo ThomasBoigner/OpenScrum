@@ -32,12 +32,15 @@ class ProjectApplicationService(
         return ProjectDto(project)
     }
 
-    fun getProjects(authenticatedUserUsername: String): List<ProjectDto> {
-        log.info("User {} is trying to find all of his projects", authenticatedUserUsername)
+    fun getProjects(
+        authenticatedUserUsername: String,
+        query: String? = null,
+    ): List<ProjectDto> {
+        log.info("User {} is trying to find all of his projects matching query '{}'", authenticatedUserUsername, query)
         val authenticatedUser =
             userRepository.findByUsername(authenticatedUserUsername)
                 ?: throw IllegalArgumentException("Could not find user with username $authenticatedUserUsername")
-        val projects = projectService.getProjects(authenticatedUser)
+        val projects = projectService.getProjects(authenticatedUser, query)
         log.info("Found all ({}) projects of user {}", projects.size, authenticatedUser)
         return projects.map { ProjectDto(it) }
     }
