@@ -53,7 +53,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findAll("sCRUM")
 
         // Then
-        assertThat(result).containsExactly(openScrum, scrumBoard)
+        assertThat(result.content).containsExactly(openScrum, scrumBoard)
     }
 
     @Test
@@ -71,7 +71,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findAll("Kanban")
 
         // Then
-        assertThat(result).isEmpty()
+        assertThat(result.content).isEmpty()
     }
 
     @Test
@@ -96,7 +96,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findAll("")
 
         // Then
-        assertThat(result).containsExactly(openScrum, webShop)
+        assertThat(result.content).containsExactly(openScrum, webShop)
     }
 
     @Test
@@ -121,7 +121,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findAll()
 
         // Then
-        assertThat(result).containsExactly(openScrum, webShop)
+        assertThat(result.content).containsExactly(openScrum, webShop)
     }
 
     @Test
@@ -140,8 +140,8 @@ class JpaProjectRepositoryTest {
 
         // Then
         val savedProjects = projectRepository.findAll()
-        assertThat(savedProjects).hasSize(1)
-        assertThat(savedProjects.first()).isEqualTo(project)
+        assertThat(savedProjects.content).hasSize(1)
+        assertThat(savedProjects.content.first()).isEqualTo(project)
     }
 
     @Test
@@ -161,7 +161,7 @@ class JpaProjectRepositoryTest {
 
         // Then
         assertThat(projectRepository.findByProjectId(project.projectId)).isNull()
-        assertThat(projectRepository.findAll()).isEmpty()
+        assertThat(projectRepository.findAll().content).isEmpty()
     }
 
     @Test

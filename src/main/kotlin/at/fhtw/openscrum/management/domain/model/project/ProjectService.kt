@@ -13,7 +13,7 @@ class ProjectService(
         nameQuery: String? = null,
     ): List<Project> =
         when (authenticatedUser.role.isManager) {
-            true -> projectRepository.findAll(nameQuery)
+            true -> projectRepository.findAll(nameQuery).content
             false -> projectRepository.findProjectsOfUser(authenticatedUser.userId, nameQuery)
         }
 

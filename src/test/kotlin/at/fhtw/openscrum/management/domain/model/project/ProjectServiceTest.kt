@@ -5,6 +5,7 @@ import at.fhtw.openscrum.management.domain.model.user.FullName
 import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.User
 import at.fhtw.openscrum.management.domain.model.user.UserId
+import at.fhtw.openscrum.management.domain.util.Page
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -41,14 +42,32 @@ class ProjectServiceTest {
                 role = Role.MANAGER,
             )
 
-        val projects = listOf<Project>()
+        val projects =
+            Page(
+                content =
+                    mutableListOf(
+                        Project(
+                            projectName = "OpenScrum",
+                            productOwnerId = UserId(),
+                            scrumMasterId = UserId(),
+                        ),
+                    ),
+                last = true,
+                totalPages = 1,
+                totalElements = 1,
+                first = true,
+                size = 1,
+                number = 1,
+                numberOfElements = 1,
+                empty = false,
+            )
         whenever(projectRepository.findAll()).thenReturn(projects)
 
         // When
         val result = projectService.getProjects(manager)
 
         // Then
-        assertThat(result).isEqualTo(projects)
+        assertThat(result).isEqualTo(projects.content)
     }
 
     @Test

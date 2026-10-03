@@ -1,5 +1,7 @@
 package at.fhtw.openscrum.management.infrastructure.persistence.jpa.project
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -12,8 +14,8 @@ interface ProjectEntityRepository : JpaRepository<ProjectEntity, Long> {
 
     fun findAllByProjectNameContainingIgnoreCase(
         projectName: String,
-        sort: Sort,
-    ): List<ProjectEntity>
+        pageable: Pageable,
+    ): Page<ProjectEntity>
 
     fun findByProjectId(projectId: UUID): ProjectEntity?
 

@@ -1,12 +1,15 @@
 package at.fhtw.openscrum.management.domain.model.project
 
 import at.fhtw.openscrum.management.domain.model.user.UserId
+import at.fhtw.openscrum.management.domain.util.Page
 
 interface ProjectRepository {
     fun findAll(
         nameQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
         sortBy: String = "projectName",
-    ): List<Project>
+    ): Page<Project>
 
     fun findProjectsOfUser(
         userId: UserId,

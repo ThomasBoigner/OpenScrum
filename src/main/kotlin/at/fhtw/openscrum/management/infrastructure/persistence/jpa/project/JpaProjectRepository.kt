@@ -4,20 +4,29 @@ import at.fhtw.openscrum.management.domain.model.project.Project
 import at.fhtw.openscrum.management.domain.model.project.ProjectId
 import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import at.fhtw.openscrum.management.domain.model.user.UserId
+import at.fhtw.openscrum.management.domain.util.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 
 @Repository("managementJpaProjectRepository")
 class JpaProjectRepository(
     private val projectEntityRepository: ProjectEntityRepository,
+    private val projectEntityMapper: ProjectEntityMapper,
 ) : ProjectRepository {
     override fun findAll(
         nameQuery: String?,
+        page: Int,
+        size: Int,
         sortBy: String,
-    ): List<Project> =
-        projectEntityRepository
-            .findAllByProjectNameContainingIgnoreCase(nameQuery ?: "", Sort.by(Sort.Order.asc(sortBy)))
-            .map { it.toProject() }
+    ): Page<Project> =
+        projectEntityMapper.toProjectPage(
+            projectEntityRepository
+                .findAllByProjectNameContainingIgnoreCase(
+                    nameQuery ?: "",
+                    PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortBy))),
+                ),
+        )
 
     override fun save(project: Project): Project {
         val projectEntity = ProjectEntity(project)
