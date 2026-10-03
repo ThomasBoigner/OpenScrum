@@ -61,6 +61,7 @@ class ProjectServiceTest {
                 numberOfElements = 1,
                 empty = false,
             )
+
         whenever(projectRepository.findAll()).thenReturn(projects)
 
         // When
@@ -82,14 +83,33 @@ class ProjectServiceTest {
                 role = Role.USER,
             )
 
-        val projects = listOf<Project>()
+        val projects =
+            Page(
+                content =
+                    mutableListOf(
+                        Project(
+                            projectName = "OpenScrum",
+                            productOwnerId = UserId(),
+                            scrumMasterId = UserId(),
+                        ),
+                    ),
+                last = true,
+                totalPages = 1,
+                totalElements = 1,
+                first = true,
+                size = 1,
+                number = 1,
+                numberOfElements = 1,
+                empty = false,
+            )
+
         whenever(projectRepository.findProjectsOfUser(user.userId)).thenReturn(projects)
 
         // When
         val result = projectService.getProjects(user)
 
         // Then
-        assertThat(result).isEqualTo(projects)
+        assertThat(result).isEqualTo(projects.content)
     }
 
     @Test

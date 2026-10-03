@@ -14,7 +14,7 @@ class ProjectService(
     ): List<Project> =
         when (authenticatedUser.role.isManager) {
             true -> projectRepository.findAll(nameQuery).content
-            false -> projectRepository.findProjectsOfUser(authenticatedUser.userId, nameQuery)
+            false -> projectRepository.findProjectsOfUser(authenticatedUser.userId, nameQuery).content
         }
 
     fun createProject(

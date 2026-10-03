@@ -34,6 +34,10 @@ class JpaProjectRepository(
         return project
     }
 
+    override fun userHasProject(userId: UserId): Boolean {
+        TODO("Not yet implemented")
+    }
+
     override fun delete(project: Project) {
         val projectEntity = ProjectEntity(project)
         projectEntityRepository.delete(projectEntity)
@@ -42,11 +46,18 @@ class JpaProjectRepository(
     override fun findProjectsOfUser(
         userId: UserId,
         nameQuery: String?,
+        page: Int,
+        size: Int,
         sortBy: String,
-    ): List<Project> =
-        projectEntityRepository
-            .findProjectsOfUser(userId.token, nameQuery ?: "", Sort.by(Sort.Order.asc(sortBy)))
-            .map { it.toProject() }
+    ): Page<Project> =
+        projectEntityMapper.toProjectPage(
+            projectEntityRepository
+                .findProjectsOfUser(
+                    userId.token,
+                    nameQuery ?: "",
+                    PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortBy))),
+                ),
+        )
 
     override fun findByProjectId(projectId: ProjectId): Project? = projectEntityRepository.findByProjectId(projectId.token)?.toProject()
 

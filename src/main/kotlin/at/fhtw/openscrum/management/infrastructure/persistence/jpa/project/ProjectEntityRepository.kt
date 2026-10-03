@@ -33,6 +33,6 @@ interface ProjectEntityRepository : JpaRepository<ProjectEntity, Long> {
     fun findProjectsOfUser(
         userId: UUID,
         nameQuery: String,
-        sort: Sort,
-    ): List<ProjectEntity>
+        pageable: Pageable,
+    ): Page<ProjectEntity>
 }

@@ -14,12 +14,16 @@ interface ProjectRepository {
     fun findProjectsOfUser(
         userId: UserId,
         nameQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
         sortBy: String = "project_name",
-    ): List<Project>
+    ): Page<Project>
 
     fun findByProjectId(projectId: ProjectId): Project?
 
     fun save(project: Project): Project
+
+    fun userHasProject(userId: UserId): Boolean
 
     fun delete(project: Project)
 

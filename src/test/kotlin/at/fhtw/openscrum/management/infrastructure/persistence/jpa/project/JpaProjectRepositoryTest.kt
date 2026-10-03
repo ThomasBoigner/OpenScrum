@@ -187,7 +187,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId)
 
         // Then
-        assertThat(result).containsExactly(userProject)
+        assertThat(result.content).containsExactly(userProject)
     }
 
     @Test
@@ -213,7 +213,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId)
 
         // Then
-        assertThat(result).containsExactly(userProject)
+        assertThat(result.content).containsExactly(userProject)
     }
 
     @Test
@@ -240,7 +240,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId)
 
         // Then
-        assertThat(result).containsExactly(userProject)
+        assertThat(result.content).containsExactly(userProject)
     }
 
     @Test
@@ -273,7 +273,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId, "sCRUM")
 
         // Then
-        assertThat(result).containsExactly(openScrum, scrumBoard)
+        assertThat(result.content).containsExactly(openScrum, scrumBoard)
     }
 
     @Test
@@ -292,7 +292,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId, "Kanban")
 
         // Then
-        assertThat(result).isEmpty()
+        assertThat(result.content).isEmpty()
     }
 
     @Test
@@ -326,7 +326,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId, "")
 
         // Then
-        assertThat(result).containsExactlyInAnyOrder(openScrum, webShop)
+        assertThat(result.content).containsExactlyInAnyOrder(openScrum, webShop)
     }
 
     @Test
@@ -360,7 +360,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId, null)
 
         // Then
-        assertThat(result).containsExactly(openScrum, webShop)
+        assertThat(result.content).containsExactly(openScrum, webShop)
     }
 
     @Test
