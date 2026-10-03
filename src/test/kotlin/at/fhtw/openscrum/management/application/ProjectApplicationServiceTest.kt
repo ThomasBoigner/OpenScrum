@@ -14,6 +14,7 @@ import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.User
 import at.fhtw.openscrum.management.domain.model.user.UserId
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
+import at.fhtw.openscrum.management.domain.util.Page
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,13 +40,20 @@ class ProjectApplicationServiceTest {
 
     @BeforeEach
     fun setUp() {
-        projectApplicationService = ProjectApplicationService(projectService, projectRepository, userRepository)
+        projectApplicationService =
+            ProjectApplicationService(
+                ProjectMapper(),
+                projectService,
+                projectRepository,
+                userRepository,
+            )
     }
 
     @Test
     fun ensureGetProjectsWorksProperly() {
         // Given
         val username = "user"
+        val query = "scrum"
         val user =
             User(
                 username = username,
@@ -66,45 +74,32 @@ class ProjectApplicationServiceTest {
                 productOwnerId = UserId(),
                 scrumMasterId = UserId(),
             )
-
-        whenever(userRepository.findByUsername(username)).thenReturn(user)
-        whenever(projectService.getProjects(user)).thenReturn(listOf(project1, project2))
-
-        // When
-        val result = projectApplicationService.getProjects(username)
-
-        // Then
-        assertThat(result).isEqualTo(listOf(ProjectDto(project1), ProjectDto(project2)))
-    }
-
-    @Test
-    fun ensureGetProjectsWorksProperlyWithQuery() {
-        // Given
-        val username = "user"
-        val query = "scrum"
-        val user =
-            User(
-                username = username,
-                emailAddress = EmailAddress("user@gmail.com"),
-                fullName = FullName("User", "User"),
-                password = "abc123",
-                role = Role.MANAGER,
-            )
-        val project =
-            Project(
-                projectName = "OpenScrum",
-                productOwnerId = UserId(),
-                scrumMasterId = UserId(),
+        val projectPage =
+            Page(
+                content =
+                    mutableListOf(
+                        project1,
+                        project2,
+                    ),
+                last = true,
+                totalPages = 1,
+                totalElements = 1,
+                first = true,
+                size = 1,
+                number = 1,
+                numberOfElements = 1,
+                empty = false,
             )
 
         whenever(userRepository.findByUsername(username)).thenReturn(user)
-        whenever(projectService.getProjects(user, query)).thenReturn(listOf(project))
+        whenever(projectService.getProjects(user, query, 1, 1)).thenReturn(projectPage)
 
         // When
-        val result = projectApplicationService.getProjects(username, query)
+        val result = projectApplicationService.getProjects(username, query, 1, 1)
 
         // Then
-        assertThat(result).isEqualTo(listOf(ProjectDto(project)))
+        assertThat(result.content).isEqualTo(listOf(ProjectDto(project1), ProjectDto(project2)))
+        assertThat(result.last).isTrue()
     }
 
     @Test

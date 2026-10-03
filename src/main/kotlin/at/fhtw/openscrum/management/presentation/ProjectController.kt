@@ -59,12 +59,13 @@ class ProjectController(
     fun getProjectsListItems(
         principal: Principal,
         @RequestParam(required = false, name = "query") nameQuery: String?,
+        @RequestParam(defaultValue = "0") page: Int,
         model: Model,
     ): String {
         try {
             model.addAttribute(
-                "projects",
-                projectApplicationService.getProjects(principal.name, nameQuery),
+                "projectPage",
+                projectApplicationService.getProjects(principal.name, nameQuery, page),
             )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while trying to get all projects with message: {}", ex.message)

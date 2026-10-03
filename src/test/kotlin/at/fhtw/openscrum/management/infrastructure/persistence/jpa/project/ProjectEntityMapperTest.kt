@@ -16,7 +16,7 @@ class ProjectEntityMapperTest {
     }
 
     @Test
-    fun ensureToProjectPageMapsContent() {
+    fun ensureToProjectPageWorksProperly() {
         // Given
         val project1 =
             ProjectEntity(

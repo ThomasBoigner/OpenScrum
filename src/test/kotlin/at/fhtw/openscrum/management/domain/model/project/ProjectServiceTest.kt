@@ -62,13 +62,13 @@ class ProjectServiceTest {
                 empty = false,
             )
 
-        whenever(projectRepository.findAll()).thenReturn(projects)
+        whenever(projectRepository.findAll("query", 1, 10)).thenReturn(projects)
 
         // When
-        val result = projectService.getProjects(manager)
+        val result = projectService.getProjects(manager, "query", 1, 10)
 
         // Then
-        assertThat(result).isEqualTo(projects.content)
+        assertThat(result).isEqualTo(projects)
     }
 
     @Test
@@ -109,7 +109,46 @@ class ProjectServiceTest {
         val result = projectService.getProjects(user)
 
         // Then
-        assertThat(result).isEqualTo(projects.content)
+        assertThat(result).isEqualTo(projects)
+    }
+
+    @Test
+    fun ensureGetProjectsThrowsExceptionForNegativePage() {
+        // Given
+        val manager =
+            User(
+                username = "manager",
+                emailAddress = EmailAddress("manager@gmail.com"),
+                fullName = FullName("Manager", "User"),
+                password = "password",
+                role = Role.MANAGER,
+            )
+
+        // When
+        val exception = assertThrows<IllegalArgumentException> { projectService.getProjects(manager, page = -1) }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Page number must not be negative!")
+        verify(projectRepository, never()).findAll(any(), any(), any(), any())
+    }
+
+    @Test
+    fun ensureGetProjectsThrowsExceptionForNonPositiveSize() {
+        // Given
+        val manager =
+            User(
+                username = "manager",
+                emailAddress = EmailAddress("manager@gmail.com"),
+                fullName = FullName("Manager", "User"),
+                password = "password",
+                role = Role.MANAGER,
+            )
+
+        // When
+        val exception = assertThrows<IllegalArgumentException> { projectService.getProjects(manager, size = 0) }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Page size must be positive!")
     }
 
     @Test
