@@ -1,7 +1,7 @@
-<p th:if="${#lists.isEmpty(projects)}">No projects found!</p>
+<p th:if="${projectPage.empty && projectPage.first}">No projects found!</p>
 <div th:id="|project-*{projectId}|"
      th:fragment="project-list-item"
-     th:each="project : ${projects}"
+     th:each="project : ${projectPage.content}"
      th:object="${project}"
      class="projects-list-item"
      xmlns:hx="http://www.w3.org/1999/xhtml">
@@ -33,3 +33,11 @@
         </a>
     </div>
 </div>
+<p th:unless="${projectPage.last}"
+   hx:get="@{/projects/list(query=${param.query}, page=${projectPage.number + 1})}"
+   hx-trigger="intersect once"
+   hx-swap="outerHTML"
+   xmlns:hx="http://www.w3.org/1999/xhtml"
+>
+    Loading more projects...
+</p>

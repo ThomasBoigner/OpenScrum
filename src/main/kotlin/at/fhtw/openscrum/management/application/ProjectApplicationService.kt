@@ -41,9 +41,10 @@ class ProjectApplicationService(
         size: Int = 5,
     ): Page<ProjectDto> {
         log.info(
-            "User {} is trying to find page {} of his projects matching query '{}'",
+            "User {} is trying to find page {} with size {} of his projects matching query '{}'",
             authenticatedUserUsername,
             page,
+            size,
             nameQuery,
         )
         val authenticatedUser =
