@@ -53,7 +53,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findAll("sCRUM")
 
         // Then
-        assertThat(result).containsExactlyInAnyOrder(openScrum, scrumBoard)
+        assertThat(result).containsExactly(openScrum, scrumBoard)
     }
 
     @Test
@@ -96,7 +96,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findAll("")
 
         // Then
-        assertThat(result).containsExactlyInAnyOrder(openScrum, webShop)
+        assertThat(result).containsExactly(openScrum, webShop)
     }
 
     @Test
@@ -121,7 +121,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findAll()
 
         // Then
-        assertThat(result).containsExactlyInAnyOrder(openScrum, webShop)
+        assertThat(result).containsExactly(openScrum, webShop)
     }
 
     @Test
@@ -360,7 +360,7 @@ class JpaProjectRepositoryTest {
         val result = projectRepository.findProjectsOfUser(userId, null)
 
         // Then
-        assertThat(result).containsExactlyInAnyOrder(openScrum, webShop)
+        assertThat(result).containsExactly(openScrum, webShop)
     }
 
     @Test

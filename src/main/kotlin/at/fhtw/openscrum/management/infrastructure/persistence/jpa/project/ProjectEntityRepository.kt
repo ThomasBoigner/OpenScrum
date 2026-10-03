@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.management.infrastructure.persistence.jpa.project
 
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
@@ -9,22 +10,27 @@ import java.util.UUID
 interface ProjectEntityRepository : JpaRepository<ProjectEntity, Long> {
     fun existsByProjectName(projectName: String): Boolean
 
-    fun findAllByProjectNameContainingIgnoreCase(projectName: String): List<ProjectEntity>
+    fun findAllByProjectNameContainingIgnoreCase(
+        projectName: String,
+        sort: Sort,
+    ): List<ProjectEntity>
 
     fun findByProjectId(projectId: UUID): ProjectEntity?
 
     @Query(
-        value =
-            "SELECT * " +
-                "FROM management_project_entity " +
-                "WHERE (scrum_master_id = :userId " +
-                "OR product_owner_id = :userId " +
-                "OR :userId = ANY(developer_ids)) " +
-                "AND strpos(lower(project_name), lower(:nameQuery)) > 0",
+        value = """
+            SELECT * 
+            FROM management_project_entity 
+            WHERE (scrum_master_id = :userId 
+            OR product_owner_id = :userId 
+            OR :userId = ANY(developer_ids)) 
+            AND strpos(lower(project_name), lower(:nameQuery)) > 0
+        """,
         nativeQuery = true,
     )
     fun findProjectsOfUser(
         userId: UUID,
         nameQuery: String,
+        sort: Sort,
     ): List<ProjectEntity>
 }
