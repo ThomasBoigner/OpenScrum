@@ -44,6 +44,7 @@ class UserApplicationServiceTest {
     @Test
     fun ensureGetUsersWithAuthenticatedUserWorksProperly() {
         // Given
+        val usernameQuery = "admin"
         val authenticatedUser =
             User(
                 username = "admin",
@@ -72,12 +73,12 @@ class UserApplicationServiceTest {
             )
 
         whenever(userRepository.findByUsername(authenticatedUser.username)).thenReturn(authenticatedUser)
-        whenever(userRepository.findAll()).thenReturn(listOf(user1, user2))
+        whenever(userRepository.findAll(usernameQuery)).thenReturn(listOf(user1, user2))
         whenever(userService.canDeleteUser(authenticatedUser, user1)).thenReturn(true)
         whenever(userService.canDeleteUser(authenticatedUser, user2)).thenReturn(false)
 
         // When
-        val result = userApplicationService.getUsers(authenticatedUser.username)
+        val result = userApplicationService.getUsers(authenticatedUser.username, usernameQuery)
 
         // Then
         assertThat(result).isEqualTo(listOf(UserDto(user1, true), UserDto(user2, false)))

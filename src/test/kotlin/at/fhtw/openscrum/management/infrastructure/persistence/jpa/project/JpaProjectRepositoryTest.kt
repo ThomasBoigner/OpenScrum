@@ -75,7 +75,7 @@ class JpaProjectRepositoryTest {
     }
 
     @Test
-    fun ensureFindAllReturnsAllProjectsForEmptyName() {
+    fun ensureFindAllReturnsAllProjectsForEmptyQuery() {
         // Given
         val openScrum =
             Project(
@@ -100,7 +100,7 @@ class JpaProjectRepositoryTest {
     }
 
     @Test
-    fun ensureFindAllReturnsAllProjectsForNullName() {
+    fun ensureFindAllReturnsAllProjectsForNullQuery() {
         // Given
         val openScrum =
             Project(

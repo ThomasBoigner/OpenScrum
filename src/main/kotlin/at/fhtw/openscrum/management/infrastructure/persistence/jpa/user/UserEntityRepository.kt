@@ -14,6 +14,8 @@ interface UserEntityRepository : JpaRepository<UserEntity, Long> {
 
     fun existsByRole(role: Role): Boolean
 
+    fun findAllByUsernameContainingIgnoreCase(username: String): List<UserEntity>
+
     fun findByUsername(username: String): UserEntity?
 
     fun findByUserId(userId: UUID): UserEntity?

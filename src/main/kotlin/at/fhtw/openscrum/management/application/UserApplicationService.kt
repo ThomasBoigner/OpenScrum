@@ -22,13 +22,16 @@ class UserApplicationService(
     private val userRepository: UserRepository,
     private val log: Logger = LoggerFactory.getLogger(UserApplicationService::class.java),
 ) {
-    fun getUsers(authenticatedUserUsername: String): List<UserDto> {
-        log.debug("Trying to get all users for user {}", authenticatedUserUsername)
+    fun getUsers(
+        authenticatedUserUsername: String,
+        usernameQuery: String? = null,
+    ): List<UserDto> {
+        log.debug("Trying to get all users matching query '{}' for user {}", usernameQuery, authenticatedUserUsername)
 
         val authenticatedUser = userRepository.findByUsername(authenticatedUserUsername)
 
-        val users = userRepository.findAll()
-        log.info("Found all ({}) users", users.size)
+        val users = userRepository.findAll(usernameQuery)
+        log.info("Found {} users matching query '{}'", users.size, usernameQuery)
         return users.map { UserDto(it, userService.canDeleteUser(authenticatedUser, it)) }
     }
 

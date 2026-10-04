@@ -799,4 +799,33 @@ class UserControllerTest : E2ETest() {
         assertThat(webDriver.findElements(By.cssSelector(".users-list-item"))).hasSize(1)
         assertThat(userEntityRepository.findByUserId(user.userId.token)).isNull()
     }
+
+    @Test
+    fun ensureSearchUsersWorksProperly() {
+        // Given
+        listOf("john.doe", "jane.doe", "max.mustermann").forEach { username ->
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = username,
+                firstName = "First",
+                lastName = "Last",
+                password = "abc123",
+                email = "$username@gmail.com",
+            )
+        }
+
+        // When
+        loginAsAdmin()
+        webDriver.get("$baseUrl/users")
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".users-list-item"), 4))
+        val firstRow = webDriver.findElement(By.cssSelector(".users-list-item"))
+        webDriver.findElement(By.cssSelector("input#search-input")).sendKeys("DOE")
+        // the search response replaces the list, so the old first row becomes stale once the search has been answered
+        wait.until(ExpectedConditions.stalenessOf(firstRow))
+
+        // Then
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".users-list-item"), 2))
+        val usernames = webDriver.findElements(By.cssSelector(".users-list-item h2")).map { it.text }
+        assertThat(usernames).containsExactlyInAnyOrder("john.doe", "jane.doe")
+    }
 }

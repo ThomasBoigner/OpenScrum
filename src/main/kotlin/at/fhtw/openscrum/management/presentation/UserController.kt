@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import java.security.Principal
 import java.util.UUID
@@ -61,9 +62,10 @@ class UserController(
     @GetMapping(value = [FRAGMENT_USERS_LIST_ITEM])
     fun getUsersListItems(
         principal: Principal,
+        @RequestParam(required = false, name = "query") usernameQuery: String?,
         model: Model,
     ): String {
-        model.addAttribute("users", userApplicationService.getUsers(principal.name))
+        model.addAttribute("users", userApplicationService.getUsers(principal.name, usernameQuery))
         model.addAttribute(
             "authenticatedUser",
             userApplicationService.getUserByUsername(principal.name),
