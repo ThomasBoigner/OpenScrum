@@ -7,6 +7,7 @@ import at.fhtw.openscrum.management.application.command.RegisterUserCommand
 import at.fhtw.openscrum.management.application.command.UpdateUserCommand
 import at.fhtw.openscrum.management.application.dtos.RoleDto
 import at.fhtw.openscrum.management.application.dtos.UserDto
+import at.fhtw.openscrum.management.application.mappers.UserMapper
 import at.fhtw.openscrum.management.domain.model.user.EmailAddress
 import at.fhtw.openscrum.management.domain.model.user.FullName
 import at.fhtw.openscrum.management.domain.model.user.Role
@@ -14,6 +15,7 @@ import at.fhtw.openscrum.management.domain.model.user.User
 import at.fhtw.openscrum.management.domain.model.user.UserId
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
 import at.fhtw.openscrum.management.domain.model.user.UserService
+import at.fhtw.openscrum.management.domain.util.Page
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,7 +40,7 @@ class UserApplicationServiceTest {
 
     @BeforeEach
     fun setUp() {
-        userApplicationService = UserApplicationService(userService, userRepository)
+        userApplicationService = UserApplicationService(UserMapper(), userService, userRepository)
     }
 
     @Test
@@ -73,7 +75,7 @@ class UserApplicationServiceTest {
             )
 
         whenever(userRepository.findByUsername(authenticatedUser.username)).thenReturn(authenticatedUser)
-        whenever(userRepository.findAll(usernameQuery)).thenReturn(listOf(user1, user2))
+        whenever(userRepository.findAll(usernameQuery, 0, Int.MAX_VALUE)).thenReturn(pageOf(user1, user2))
         whenever(userService.canDeleteUser(authenticatedUser, user1)).thenReturn(true)
         whenever(userService.canDeleteUser(authenticatedUser, user2)).thenReturn(false)
 
@@ -108,7 +110,7 @@ class UserApplicationServiceTest {
             )
 
         whenever(userRepository.findByUsername(authenticatedUserUsername)).thenReturn(null)
-        whenever(userRepository.findAll()).thenReturn(listOf(user1, user2))
+        whenever(userRepository.findAll(null, 0, Int.MAX_VALUE)).thenReturn(pageOf(user1, user2))
         whenever(userService.canDeleteUser(null, user1)).thenReturn(false)
         whenever(userService.canDeleteUser(null, user2)).thenReturn(false)
 
@@ -117,6 +119,66 @@ class UserApplicationServiceTest {
 
         // Then
         assertThat(result).isEqualTo(listOf(UserDto(user1, false), UserDto(user2, false)))
+    }
+
+    @Test
+    fun ensureGetUserPageWorksProperly() {
+        // Given
+        val usernameQuery = "doe"
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
+        val user1 =
+            User(
+                username = "jane.doe",
+                emailAddress = EmailAddress("jane.doe@gmail.com"),
+                fullName = FullName("Jane", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        val user2 =
+            User(
+                username = "john.doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        val userPage =
+            Page(
+                content = mutableListOf(user1, user2),
+                last = false,
+                totalPages = 2,
+                totalElements = 3,
+                first = false,
+                size = 2,
+                number = 1,
+                numberOfElements = 2,
+                empty = false,
+            )
+
+        whenever(userRepository.findByUsername(authenticatedUser.username)).thenReturn(authenticatedUser)
+        whenever(userService.getUsers(usernameQuery, 1, 2)).thenReturn(userPage)
+        whenever(userService.canDeleteUser(authenticatedUser, user1)).thenReturn(true)
+        whenever(userService.canDeleteUser(authenticatedUser, user2)).thenReturn(false)
+
+        // When
+        val result = userApplicationService.getUserPage(authenticatedUser.username, usernameQuery, 1, 2)
+
+        // Then
+        assertThat(result.content).containsExactly(UserDto(user1, true), UserDto(user2, false))
+        assertThat(result.last).isFalse()
+        assertThat(result.first).isFalse()
+        assertThat(result.number).isEqualTo(1)
+        assertThat(result.totalElements).isEqualTo(3)
     }
 
     @Test
@@ -615,4 +677,17 @@ class UserApplicationServiceTest {
         // Then
         verify(userService, never()).deleteUser(any(), any())
     }
+
+    private fun pageOf(vararg users: User): Page<User> =
+        Page(
+            content = users.toMutableList(),
+            last = true,
+            totalPages = 1,
+            totalElements = users.size.toLong(),
+            first = true,
+            size = users.size,
+            number = 0,
+            numberOfElements = users.size,
+            empty = users.isEmpty(),
+        )
 }

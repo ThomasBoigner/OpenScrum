@@ -1,7 +1,7 @@
-<p th:if="${#lists.isEmpty(users)}">No users found!</p>
+<p th:if="${userPage.empty && userPage.first}">No users found!</p>
 <div th:id="|user-*{userId}|"
      th:fragment="users-list-item"
-     th:each="user : ${users}"
+     th:each="user : ${userPage.content}"
      th:object="${user}"
      class="users-list-item"
      xmlns:hx="http://www.w3.org/1999/xhtml">
@@ -48,3 +48,11 @@
         </a>
     </div>
 </div>
+<p th:unless="${userPage.last}"
+   hx:get="@{/users/list(query=${param.query}, page=${userPage.number + 1})}"
+   hx-trigger="intersect once"
+   hx-swap="outerHTML"
+   xmlns:hx="http://www.w3.org/1999/xhtml"
+>
+    Loading more users...
+</p>

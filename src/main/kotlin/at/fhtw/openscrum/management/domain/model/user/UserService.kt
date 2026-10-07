@@ -1,6 +1,7 @@
 package at.fhtw.openscrum.management.domain.model.user
 
 import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
+import at.fhtw.openscrum.management.domain.util.Page
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -11,6 +12,16 @@ class UserService(
     private val projectRepository: ProjectRepository,
     private val log: Logger = LoggerFactory.getLogger(UserService::class.java),
 ) {
+    fun getUsers(
+        usernameQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<User> {
+        require(page >= 0) { "Page number must not be negative!" }
+        require(size > 0) { "Page size must be positive!" }
+        return userRepository.findAll(usernameQuery, page, size)
+    }
+
     fun registerUser(
         authenticatedUser: User,
         username: String,

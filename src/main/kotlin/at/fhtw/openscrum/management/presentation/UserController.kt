@@ -63,9 +63,11 @@ class UserController(
     fun getUsersListItems(
         principal: Principal,
         @RequestParam(required = false, name = "query") usernameQuery: String?,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "5") size: Int,
         model: Model,
     ): String {
-        model.addAttribute("users", userApplicationService.getUsers(principal.name, usernameQuery))
+        model.addAttribute("userPage", userApplicationService.getUserPage(principal.name, usernameQuery, page, size))
         model.addAttribute(
             "authenticatedUser",
             userApplicationService.getUserByUsername(principal.name),
@@ -195,7 +197,7 @@ class UserController(
             "authenticatedUser",
             userApplicationService.getUserByUsername(principal.name),
         )
-        return "fragments/users-list-item"
+        return "fragments/users-list-item :: users-list-item"
     }
 
     @HxRequest
@@ -219,7 +221,7 @@ class UserController(
             "authenticatedUser",
             userApplicationService.getUserByUsername(principal.name),
         )
-        return "fragments/users-list-item"
+        return "fragments/users-list-item :: users-list-item"
     }
 
     @HxRequest

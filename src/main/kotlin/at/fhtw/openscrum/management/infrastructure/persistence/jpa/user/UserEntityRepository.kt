@@ -2,6 +2,8 @@ package at.fhtw.openscrum.management.infrastructure.persistence.jpa.user
 
 import at.fhtw.openscrum.management.domain.model.user.Role
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.UUID
@@ -14,7 +16,10 @@ interface UserEntityRepository : JpaRepository<UserEntity, Long> {
 
     fun existsByRole(role: Role): Boolean
 
-    fun findAllByUsernameContainingIgnoreCase(username: String): List<UserEntity>
+    fun findAllByUsernameContainingIgnoreCase(
+        username: String,
+        pageable: Pageable,
+    ): Page<UserEntity>
 
     fun findByUsername(username: String): UserEntity?
 

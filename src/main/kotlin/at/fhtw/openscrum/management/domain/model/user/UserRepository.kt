@@ -1,7 +1,14 @@
 package at.fhtw.openscrum.management.domain.model.user
 
+import at.fhtw.openscrum.management.domain.util.Page
+
 interface UserRepository {
-    fun findAll(usernameQuery: String? = null): List<User>
+    fun findAll(
+        usernameQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
+        sortBy: String = "username",
+    ): Page<User>
 
     fun save(user: User): User
 

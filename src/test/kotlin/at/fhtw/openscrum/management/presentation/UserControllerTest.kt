@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import java.time.Duration
 import java.util.UUID
@@ -827,5 +828,41 @@ class UserControllerTest : E2ETest() {
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".users-list-item"), 2))
         val usernames = webDriver.findElements(By.cssSelector(".users-list-item h2")).map { it.text }
         assertThat(usernames).containsExactlyInAnyOrder("john.doe", "jane.doe")
+    }
+
+    @Test
+    fun ensurePaginateUsersWorksProperly() {
+        // Given
+        val pageSize = 5
+        val usernames = (1..pageSize + 2).map { "user.%02d".format(it) }
+        val loaderSelector = "#users-list-items [hx-trigger='intersect once']"
+
+        usernames.forEach { username ->
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = username,
+                firstName = "First",
+                lastName = "Last",
+                password = "abc123",
+                email = "$username@gmail.com",
+            )
+        }
+
+        webDriver.manage().window().size = Dimension(1920, 600)
+
+        // When
+        loginAsAdmin()
+        webDriver.get("$baseUrl/users")
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".users-list-item"), pageSize))
+        assertThat(webDriver.findElements(By.cssSelector(loaderSelector))).hasSize(1)
+
+        // scroll to the end of the users list
+        webDriver.executeScript("document.querySelector(arguments[0]).scrollIntoView()", loaderSelector)
+
+        // Then
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".users-list-item"), pageSize + 3))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(loaderSelector), 0))
+        val loadedUsernames = webDriver.findElements(By.cssSelector(".users-list-item h2")).map { it.text }
+        assertThat(loadedUsernames).isEqualTo(listOf("admin") + usernames)
     }
 }

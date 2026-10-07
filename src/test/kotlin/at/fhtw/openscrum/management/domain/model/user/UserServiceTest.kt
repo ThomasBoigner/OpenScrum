@@ -2,6 +2,7 @@ package at.fhtw.openscrum.management.domain.model.user
 
 import at.fhtw.openscrum.management.domain.model.project.Project
 import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
+import at.fhtw.openscrum.management.domain.util.Page
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,6 +34,60 @@ class UserServiceTest {
     @BeforeEach
     fun setUp() {
         userService = UserService(encryptionService, passwordGenerator, userRepository, projectRepository)
+    }
+
+    @Test
+    fun ensureGetUsersWorksProperly() {
+        // Given
+        val user =
+            User(
+                username = "john.doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("John", "Doe"),
+                password = "abc123",
+                role = Role.USER,
+            )
+
+        val users =
+            Page(
+                content = mutableListOf(user),
+                last = true,
+                totalPages = 2,
+                totalElements = 6,
+                first = false,
+                size = 5,
+                number = 1,
+                numberOfElements = 1,
+                empty = false,
+            )
+
+        whenever(userRepository.findAll("doe", 1, 5)).thenReturn(users)
+
+        // When
+        val result = userService.getUsers("doe", 1, 5)
+
+        // Then
+        assertThat(result).isEqualTo(users)
+    }
+
+    @Test
+    fun ensureGetUsersThrowsExceptionForNegativePage() {
+        // When
+        val exception = assertThrows<IllegalArgumentException> { userService.getUsers(page = -1) }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Page number must not be negative!")
+        verify(userRepository, never()).findAll(any(), any(), any(), any())
+    }
+
+    @Test
+    fun ensureGetUsersThrowsExceptionForNonPositiveSize() {
+        // When
+        val exception = assertThrows<IllegalArgumentException> { userService.getUsers(size = 0) }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Page size must be positive!")
+        verify(userRepository, never()).findAll(any(), any(), any(), any())
     }
 
     @Test

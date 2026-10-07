@@ -4,6 +4,7 @@ import at.fhtw.openscrum.management.application.command.CancelProjectCommand
 import at.fhtw.openscrum.management.application.command.CreateProjectCommand
 import at.fhtw.openscrum.management.application.command.UpdateProjectCommand
 import at.fhtw.openscrum.management.application.dtos.ProjectDto
+import at.fhtw.openscrum.management.application.mappers.ProjectMapper
 import at.fhtw.openscrum.management.domain.model.project.ProjectId
 import at.fhtw.openscrum.management.domain.model.project.ProjectRepository
 import at.fhtw.openscrum.management.domain.model.project.ProjectService

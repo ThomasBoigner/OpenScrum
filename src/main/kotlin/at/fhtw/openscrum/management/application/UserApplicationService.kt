@@ -6,9 +6,11 @@ import at.fhtw.openscrum.management.application.command.PromoteUserCommand
 import at.fhtw.openscrum.management.application.command.RegisterUserCommand
 import at.fhtw.openscrum.management.application.command.UpdateUserCommand
 import at.fhtw.openscrum.management.application.dtos.UserDto
+import at.fhtw.openscrum.management.application.mappers.UserMapper
 import at.fhtw.openscrum.management.domain.model.user.UserId
 import at.fhtw.openscrum.management.domain.model.user.UserRepository
 import at.fhtw.openscrum.management.domain.model.user.UserService
+import at.fhtw.openscrum.management.domain.util.Page
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -18,6 +20,7 @@ import java.util.UUID
 @Service
 @Transactional(readOnly = true)
 class UserApplicationService(
+    private val userMapper: UserMapper,
     private val userService: UserService,
     private val userRepository: UserRepository,
     private val log: Logger = LoggerFactory.getLogger(UserApplicationService::class.java),
@@ -30,9 +33,28 @@ class UserApplicationService(
 
         val authenticatedUser = userRepository.findByUsername(authenticatedUserUsername)
 
-        val users = userRepository.findAll(usernameQuery)
+        val users = userRepository.findAll(usernameQuery, 0, Int.MAX_VALUE).content
         log.info("Found {} users matching query '{}'", users.size, usernameQuery)
         return users.map { UserDto(it, userService.canDeleteUser(authenticatedUser, it)) }
+    }
+
+    fun getUserPage(
+        authenticatedUserUsername: String,
+        usernameQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<UserDto> {
+        log.info(
+            "User {} is trying to find page {} with size {} of users matching query '{}'",
+            authenticatedUserUsername,
+            page,
+            size,
+            usernameQuery,
+        )
+        val authenticatedUser = userRepository.findByUsername(authenticatedUserUsername)
+        val userPage = userService.getUsers(usernameQuery, page, size)
+        log.info("Found {} of {} users matching query '{}'", userPage.numberOfElements, userPage.totalElements, usernameQuery)
+        return userMapper.toUserDtoPage(userPage) { UserDto(it, userService.canDeleteUser(authenticatedUser, it)) }
     }
 
     fun getUserByUsername(username: String): UserDto? {
