@@ -1,6 +1,5 @@
 <p th:if="${userPage.empty && userPage.first}">No users found!</p>
 <div th:id="|user-*{userId}|"
-     th:fragment="users-list-item"
      th:each="user : ${userPage.content}"
      th:object="${user}"
      class="users-list-item"

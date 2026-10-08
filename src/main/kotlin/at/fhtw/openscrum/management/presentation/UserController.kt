@@ -5,6 +5,7 @@ import at.fhtw.openscrum.management.application.command.DeleteUserCommand
 import at.fhtw.openscrum.management.application.command.DemoteUserCommand
 import at.fhtw.openscrum.management.application.command.PromoteUserCommand
 import at.fhtw.openscrum.management.application.dtos.UserDto
+import at.fhtw.openscrum.management.domain.util.Page
 import at.fhtw.openscrum.management.presentation.forms.RegisterUserForm
 import at.fhtw.openscrum.management.presentation.forms.UpdateUserForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
@@ -187,7 +188,20 @@ class UserController(
         log.debug("Received http POST request to promote user with id {}", userId)
         try {
             val user = userApplicationService.promoteUser(principal.name, PromoteUserCommand(userId))
-            model.addAttribute("users", listOfNotNull(user))
+            model.addAttribute(
+                "userPage",
+                Page(
+                    content = mutableListOf(user),
+                    last = true,
+                    totalPages = 1,
+                    totalElements = 1,
+                    first = true,
+                    size = 1,
+                    number = 1,
+                    numberOfElements = 1,
+                    empty = false,
+                ),
+            )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while promoting user with message: {}", ex.message)
             model.addAttribute("users", emptyList<UserDto>())
@@ -197,7 +211,7 @@ class UserController(
             "authenticatedUser",
             userApplicationService.getUserByUsername(principal.name),
         )
-        return "fragments/users-list-item :: users-list-item"
+        return "fragments/users-list-item"
     }
 
     @HxRequest
@@ -211,7 +225,20 @@ class UserController(
         log.debug("Received http POST request to demote user with id {}", userId)
         try {
             val user = userApplicationService.demoteUser(principal.name, DemoteUserCommand(userId))
-            model.addAttribute("users", listOf(user))
+            model.addAttribute(
+                "userPage",
+                Page(
+                    content = mutableListOf(user),
+                    last = true,
+                    totalPages = 1,
+                    totalElements = 1,
+                    first = true,
+                    size = 1,
+                    number = 1,
+                    numberOfElements = 1,
+                    empty = false,
+                ),
+            )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while demoting user with message: {}", ex.message)
             model.addAttribute("users", emptyList<UserDto>())
@@ -221,7 +248,7 @@ class UserController(
             "authenticatedUser",
             userApplicationService.getUserByUsername(principal.name),
         )
-        return "fragments/users-list-item :: users-list-item"
+        return "fragments/users-list-item"
     }
 
     @HxRequest
