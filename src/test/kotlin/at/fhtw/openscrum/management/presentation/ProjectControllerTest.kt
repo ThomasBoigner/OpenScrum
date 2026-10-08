@@ -1098,4 +1098,146 @@ class ProjectControllerTest : E2ETest() {
         val loadedProjectNames = webDriver.findElements(By.cssSelector(".projects-list-item h2")).map { it.text }
         assertThat(loadedProjectNames).isEqualTo(projectNames)
     }
+
+    @Test
+    fun ensurePaginateDevelopersOnCreateProjectWorksProperly() {
+        // Given
+        val pageSize = 5
+        val loaderSelector = ".developer-item-list [hx-trigger='intersect once']"
+
+        userService.registerUser(
+            authenticatedUser = admin,
+            username = "product.owner",
+            firstName = "Product",
+            lastName = "Owner",
+            password = "abc123",
+            email = "product.owner@gmail.com",
+        )
+        userService.registerUser(
+            authenticatedUser = admin,
+            username = "scrum.master",
+            firstName = "Scrum",
+            lastName = "Master",
+            password = "abc123",
+            email = "scrum.master@gmail.com",
+        )
+        val developers =
+            (1..pageSize + 2).map {
+                userService.registerUser(
+                    authenticatedUser = admin,
+                    username = "dev.%02d".format(it),
+                    firstName = "Developer",
+                    lastName = "%02d".format(it),
+                    password = "abc123",
+                    email = "dev.%02d@gmail.com".format(it),
+                )
+            }
+        val developerOnSecondPage = developers.last()
+
+        webDriver.manage().window().size = Dimension(1920, 600)
+
+        // When
+        loginAsAdmin()
+        webDriver.get("$baseUrl/projects/create")
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".developer-item"), pageSize))
+        assertThat(webDriver.findElements(By.cssSelector(loaderSelector))).hasSize(1)
+
+        // scroll to the end of the developer selection
+        webDriver.executeScript("document.querySelector(arguments[0]).scrollIntoView()", loaderSelector)
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".developer-item"), developers.size + 3))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(loaderSelector), 0))
+
+        webDriver.findElement(By.cssSelector("input#project-name")).sendKeys("OpenScrum")
+        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
+        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
+        val developerCheckbox =
+            webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${developerOnSecondPage.userId.token}']"))
+        webDriver.executeScript("arguments[0].scrollIntoView()", developerCheckbox)
+        wait.until(ExpectedConditions.elementToBeClickable(developerCheckbox)).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
+
+        // Then
+        wait.until(ExpectedConditions.urlToBe("$baseUrl/projects"))
+        val project = managementProjectEntityRepository.findAll().single()
+        assertThat(project.developerIds).containsExactly(developerOnSecondPage.userId.token)
+    }
+
+    @Test
+    fun ensurePaginateDevelopersOnUpdateProjectWorksProperly() {
+        // Given
+        val pageSize = 5
+        val loaderSelector = ".developer-item-list [hx-trigger='intersect once']"
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+        val developers =
+            (1..pageSize + 2).map {
+                userService.registerUser(
+                    authenticatedUser = admin,
+                    username = "dev.%02d".format(it),
+                    firstName = "Developer",
+                    lastName = "%02d".format(it),
+                    password = "abc123",
+                    email = "dev.%02d@gmail.com".format(it),
+                )
+            }
+        val (newDeveloperOnSecondPage, assignedDeveloperOnSecondPage) = developers.takeLast(2)
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(assignedDeveloperOnSecondPage),
+            )
+
+        webDriver.manage().window().size = Dimension(1920, 600)
+
+        // When
+        loginAsAdmin()
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/update")
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".developer-item"), pageSize))
+        assertThat(webDriver.findElements(By.cssSelector(loaderSelector))).hasSize(1)
+
+        // scroll to the end of the developer selection
+        webDriver.executeScript("document.querySelector(arguments[0]).scrollIntoView()", loaderSelector)
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".developer-item"), developers.size + 3))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(loaderSelector), 0))
+
+        // the already assigned developer stays selected after loading the next page
+        val assignedDeveloperCheckbox =
+            webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${assignedDeveloperOnSecondPage.userId.token}']"))
+        assertThat(assignedDeveloperCheckbox.isSelected).isTrue()
+
+        // swap the assigned developer for another developer of the second page
+        webDriver.executeScript("arguments[0].scrollIntoView()", assignedDeveloperCheckbox)
+        wait.until(ExpectedConditions.elementToBeClickable(assignedDeveloperCheckbox)).click()
+        val newDeveloperCheckbox =
+            webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${newDeveloperOnSecondPage.userId.token}']"))
+        webDriver.executeScript("arguments[0].scrollIntoView()", newDeveloperCheckbox)
+        wait.until(ExpectedConditions.elementToBeClickable(newDeveloperCheckbox)).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
+
+        // Then
+        wait.until(ExpectedConditions.urlToBe("$baseUrl/projects"))
+        val updatedProject = managementProjectEntityRepository.findByProjectId(project.projectId.token)!!
+        assertThat(updatedProject.developerIds).containsExactly(newDeveloperOnSecondPage.userId.token)
+    }
 }
