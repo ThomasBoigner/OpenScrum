@@ -62,11 +62,17 @@ Then he receives an error that the information is invalid
 
 ## Test 11 - Management context
 
+Given a manager, a 256 character long username, a 256 character long first name, a 256 character long last name, a 256 character long email address and a 256 character long password  
+When the manager enters the information into the update user form  
+Then he receives an error that the text is too long
+
+## Test 12 - Management context
+
 Given a manager and an existing user, a new username, a new first name, a new last name, a new email address and a blank password  
 When the manager enters the information into the update user form  
 Then the user information should be updated, the password should stay unchanged and a UserInformationChanged event should be published
 
-## Test 12 - Scrum context
+## Test 13 - Scrum context
 
 Given a teammember and a UserInformationChanged event  
 When the UserInformationChanged event is received  

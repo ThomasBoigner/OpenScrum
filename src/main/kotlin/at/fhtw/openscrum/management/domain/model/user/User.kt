@@ -13,6 +13,7 @@ class User(
     var username: String = ""
         private set(value) {
             require(value.isNotBlank()) { "Username must not be blank!" }
+            require(value.length < 255) { "Username must not be longer than 255 characters!" }
             field = value
         }
 

@@ -4,6 +4,7 @@ import at.fhtw.openscrum.management.domain.model.user.EmailAddress
 import at.fhtw.openscrum.management.domain.model.user.Role
 import at.fhtw.openscrum.management.domain.model.user.User
 import at.fhtw.openscrum.management.domain.model.user.UserId
+import jakarta.persistence.Column
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -20,10 +21,13 @@ class UserEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     val userId: UUID,
+    @Column(length = 255)
     val username: String,
+    @Column(length = 255)
     val emailAddress: String,
     @Embedded
     val fullName: FullNameEmbeddable,
+    @Column(length = 255)
     val password: String,
     @Enumerated(EnumType.STRING)
     val role: Role,

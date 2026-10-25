@@ -9,7 +9,6 @@ import org.openqa.selenium.By
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import java.time.Duration
-import java.util.UUID
 
 class SprintControllerListSprintsTest : E2ETest() {
     @Test

@@ -29,3 +29,9 @@ Then he receives an error that the email address is already taken
 Given a manager, a blank username, a blank first name, a blank last name, a blank email address and a blank password  
 When the manager enters the information  
 Then he receives an error that the information is invalid
+
+## Test 5
+
+Given a manager, a 256 character long username, a 256 character long first name, a 256 character long last name, a 256 character long email address and a 256 character long password  
+When the manager enters the information  
+Then he receives an error that the text is too long

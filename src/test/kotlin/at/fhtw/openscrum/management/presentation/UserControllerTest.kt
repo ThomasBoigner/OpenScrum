@@ -205,6 +205,44 @@ class UserControllerTest : E2ETest() {
     }
 
     /*
+    Given a manager, a 256 character long username, a 256 character long first name, a 256 character long last name,
+    a 256 character long email address and a 256 character long password
+    When the manager enters the information
+    Then he receives an error that the text is too long
+     */
+    @Test
+    fun ensureRegisterUserDoesNotWorkWithTooLongInformation() {
+        // Given
+        val username = "u".repeat(256)
+        val firstName = "f".repeat(256)
+        val lastName = "l".repeat(256)
+        val email = "e".repeat(256 - "@gmail.com".length) + "@gmail.com"
+        val password = "p".repeat(256)
+
+        // When
+        loginAsAdmin()
+
+        // register user
+        webDriver.get("$baseUrl/users/register")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
+        webDriver.findElement(By.cssSelector("input#first-name")).sendKeys(firstName)
+        webDriver.findElement(By.cssSelector("input#last-name")).sendKeys(lastName)
+        webDriver.findElement(By.cssSelector("input#email-address")).sendKeys(email)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#registration-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/users"))
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+        assertThat(error.text).contains("Username must not be longer than 255 characters!")
+        assertThat(error.text).contains("First name must not be longer than 255 characters!")
+        assertThat(error.text).contains("Last name must not be longer than 255 characters!")
+        assertThat(error.text).contains("Email address must not be longer than 255 characters!")
+        assertThat(error.text).contains("Password must not be longer than 255 characters!")
+        assertThat(userEntityRepository.findByUsername(username)).isNull()
+    }
+
+    /*
     Given a manager and a user
     When the manager clicks the promote user button
     Then the user should have the role of manager
@@ -650,6 +688,54 @@ class UserControllerTest : E2ETest() {
         assertThat(error.text).contains("First name")
         assertThat(error.text).contains("Last name")
         assertThat(userEntityRepository.findByUserId(user.userId.token)!!.username).isEqualTo("john.doe")
+    }
+
+    /*
+    Given a manager, a 256 character long username, a 256 character long first name, a 256 character long last name,
+    a 256 character long email address and a 256 character long password
+    When the manager enters the information into the update user form
+    Then he receives an error that the text is too long
+     */
+    @Test
+    fun ensureUpdateUserDoesNotWorkWithTooLongInformation() {
+        // Given
+        val user =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "john.doe",
+                firstName = "John",
+                lastName = "Doe",
+                password = "abc123",
+                email = "john.doe@gmail.com",
+            )
+
+        // When
+        loginAsAdmin()
+
+        // update user with too long information
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
+        webDriver.findElement(By.cssSelector("input#username")).clear()
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys("u".repeat(256))
+        webDriver.findElement(By.cssSelector("input#first-name")).clear()
+        webDriver.findElement(By.cssSelector("input#first-name")).sendKeys("f".repeat(256))
+        webDriver.findElement(By.cssSelector("input#last-name")).clear()
+        webDriver.findElement(By.cssSelector("input#last-name")).sendKeys("l".repeat(256))
+        webDriver.findElement(By.cssSelector("input#email-address")).clear()
+        webDriver.findElement(By.cssSelector("input#email-address")).sendKeys("e".repeat(256 - "@gmail.com".length) + "@gmail.com")
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys("p".repeat(256))
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-user-form button"))).click()
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+        assertThat(error.text).contains("Username must not be longer than 255 characters!")
+        assertThat(error.text).contains("First name must not be longer than 255 characters!")
+        assertThat(error.text).contains("Last name must not be longer than 255 characters!")
+        assertThat(error.text).contains("Email address must not be longer than 255 characters!")
+        assertThat(error.text).contains("Password must not be longer than 255 characters!")
+        val unchangedUser = userEntityRepository.findByUserId(user.userId.token)!!
+        assertThat(unchangedUser.username).isEqualTo("john.doe")
+        assertThat(unchangedUser.fullName.firstName).isEqualTo("John")
+        assertThat(unchangedUser.emailAddress).isEqualTo("john.doe@gmail.com")
     }
 
     /*
