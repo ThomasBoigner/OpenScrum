@@ -108,24 +108,43 @@ class ProductBacklogItemApplicationServiceTest {
                 description = "As a user, I want to log in to the application.",
             )
 
+        val productBacklogItemPage =
+            Page(
+                content = mutableListOf(item1, item2),
+                last = false,
+                totalPages = 2,
+                totalElements = 4,
+                first = true,
+                size = 2,
+                number = 0,
+                numberOfElements = 2,
+                empty = false,
+            )
+
         whenever(
-            productBacklogItemRepository.findProductBacklogItemsByProjectIdAndStatus(
+            productBacklogItemService.getProductBacklogItemsByStatus(
                 projectId,
                 ProductBacklogItemStatus.IN_BACKLOG,
+                0,
+                2,
             ),
-        ).thenReturn(listOf(item1, item2))
+        ).thenReturn(productBacklogItemPage)
 
         // When
-        val result = productBacklogItemApplicationService.getProductBacklogOfProjectWithStatusInBacklog(projectId)
+        val result = productBacklogItemApplicationService.getProductBacklogOfProjectWithStatusInBacklog(projectId, 0, 2)
 
         // Then
-        assertThat(result).hasSize(2)
-        assertThat(result[0].title).isEqualTo(item1.title)
-        assertThat(result[0].description).isEqualTo(item1.description)
-        assertThat(result[0].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
-        assertThat(result[1].title).isEqualTo(item2.title)
-        assertThat(result[1].description).isEqualTo(item2.description)
-        assertThat(result[1].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+        assertThat(result.content).hasSize(2)
+        assertThat(result.content[0].title).isEqualTo(item1.title)
+        assertThat(result.content[0].description).isEqualTo(item1.description)
+        assertThat(result.content[0].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+        assertThat(result.content[1].title).isEqualTo(item2.title)
+        assertThat(result.content[1].description).isEqualTo(item2.description)
+        assertThat(result.content[1].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+        assertThat(result.first).isTrue()
+        assertThat(result.last).isFalse()
+        assertThat(result.number).isEqualTo(0)
+        assertThat(result.totalElements).isEqualTo(4)
     }
 
     @Test

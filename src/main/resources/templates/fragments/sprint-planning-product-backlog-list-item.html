@@ -1,5 +1,5 @@
-<p class="no-product-backlog-item" th:if="${#lists.isEmpty(productBacklog)}">No product backlog items found!</p>
-<div class="product-backlog-item" th:each="productBacklogItem : ${productBacklog}" th:object="${productBacklogItem}">
+<p class="no-product-backlog-item" th:if="${productBacklogPage.empty && productBacklogPage.first}">No product backlog items found!</p>
+<div class="product-backlog-item" th:each="productBacklogItem : ${productBacklogPage.content}" th:object="${productBacklogItem}">
     <input th:id="|select-backlog-item-*{productBacklogItemId}|"
            type="checkbox"
            name="productBacklogIds"
@@ -15,3 +15,11 @@
         </div>
     </div>
 </div>
+<p th:unless="${productBacklogPage.last}"
+   hx:get="@{/projects/{projectId}/backlog/sprint-planning-list(projectId=${projectId}, productBacklogIds=${productBacklogIds}, page=${productBacklogPage.number + 1})}"
+   hx-trigger="intersect once"
+   hx-swap="outerHTML"
+   xmlns:hx="http://www.w3.org/1999/xhtml"
+>
+    Loading more product backlog items...
+</p>

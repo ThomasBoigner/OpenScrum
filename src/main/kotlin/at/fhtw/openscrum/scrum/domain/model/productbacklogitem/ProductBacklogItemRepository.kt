@@ -13,13 +13,16 @@ interface ProductBacklogItemRepository {
         titleQuery: String? = null,
         page: Int = 0,
         size: Int = 5,
-        sortBy: String = "id",
+        sortBy: String = "title",
     ): Page<ProductBacklogItem>
 
     fun findProductBacklogItemsByProjectIdAndStatus(
         projectId: UUID,
         status: ProductBacklogItemStatus,
-    ): List<ProductBacklogItem>
+        page: Int = 0,
+        size: Int = 5,
+        sortBy: String = "title",
+    ): Page<ProductBacklogItem>
 
     fun delete(productBacklogItemId: ProductBacklogItemId)
 

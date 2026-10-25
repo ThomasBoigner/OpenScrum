@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
-import kotlin.collections.map
 
 @Service
 @Transactional(readOnly = true)
@@ -54,22 +53,31 @@ class ProductBacklogItemApplicationService(
         return productBacklogItemMapper.toProductBacklogItemDtoPage(productBacklogItemPage)
     }
 
-    fun getProductBacklogOfProjectWithStatusInBacklog(projectId: UUID): List<ProductBacklogItemDto> {
+    fun getProductBacklogOfProjectWithStatusInBacklog(
+        projectId: UUID,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<ProductBacklogItemDto> {
         log.debug(
-            "Trying to get all product backlog items of project with id {} that have status in backlog",
+            "Trying to find page {} with size {} of product backlog items of project with id {} that have status in backlog",
+            page,
+            size,
             projectId,
         )
-        val productBacklogItems =
-            productBacklogItemRepository.findProductBacklogItemsByProjectIdAndStatus(
+        val productBacklogItemPage =
+            productBacklogItemService.getProductBacklogItemsByStatus(
                 projectId,
                 ProductBacklogItemStatus.IN_BACKLOG,
+                page,
+                size,
             )
         log.info(
-            "Found all ({}) product backlog items of project with id {} that have status in backlog",
-            productBacklogItems.size,
+            "Found {} of {} product backlog items of project with id {} that have status in backlog",
+            productBacklogItemPage.numberOfElements,
+            productBacklogItemPage.totalElements,
             projectId,
         )
-        return productBacklogItems.map { ProductBacklogItemDto(it) }
+        return productBacklogItemMapper.toProductBacklogItemDtoPage(productBacklogItemPage)
     }
 
     fun getProductBacklogItem(

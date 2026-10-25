@@ -21,7 +21,8 @@ interface ProductBacklogItemEntityRepository : JpaRepository<ProductBacklogItemE
     fun findProductBacklogItemEntitiesByProjectIdAndStatus(
         projectId: UUID,
         status: ProductBacklogItemStatus,
-    ): List<ProductBacklogItemEntity>
+        pageable: Pageable,
+    ): Page<ProductBacklogItemEntity>
 
     @Transactional
     fun deleteByProjectIdAndProductBacklogItemId(

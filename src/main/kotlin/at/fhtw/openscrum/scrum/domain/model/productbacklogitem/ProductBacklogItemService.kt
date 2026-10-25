@@ -23,6 +23,17 @@ class ProductBacklogItemService(
         return productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId, titleQuery, page, size)
     }
 
+    fun getProductBacklogItemsByStatus(
+        projectId: UUID,
+        status: ProductBacklogItemStatus,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<ProductBacklogItem> {
+        require(page >= 0) { "Page number must not be negative!" }
+        require(size > 0) { "Page size must be positive!" }
+        return productBacklogItemRepository.findProductBacklogItemsByProjectIdAndStatus(projectId, status, page, size)
+    }
+
     fun defineBacklogItem(
         productOwner: ProductOwner?,
         projectId: UUID,

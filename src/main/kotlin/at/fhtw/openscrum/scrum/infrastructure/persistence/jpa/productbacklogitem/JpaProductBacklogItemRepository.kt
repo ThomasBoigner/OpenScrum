@@ -45,10 +45,18 @@ class JpaProductBacklogItemRepository(
     override fun findProductBacklogItemsByProjectIdAndStatus(
         projectId: UUID,
         status: ProductBacklogItemStatus,
-    ): List<ProductBacklogItem> =
-        productBacklogItemEntityRepository
-            .findProductBacklogItemEntitiesByProjectIdAndStatus(projectId, status)
-            .map { it.toProductBacklogItem() }
+        page: Int,
+        size: Int,
+        sortBy: String,
+    ): Page<ProductBacklogItem> =
+        productBacklogItemEntityMapper.toProductBacklogItemPage(
+            productBacklogItemEntityRepository
+                .findProductBacklogItemEntitiesByProjectIdAndStatus(
+                    projectId,
+                    status,
+                    PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortBy))),
+                ),
+        )
 
     override fun delete(productBacklogItemId: ProductBacklogItemId) {
         productBacklogItemEntityRepository.deleteByProjectIdAndProductBacklogItemId(

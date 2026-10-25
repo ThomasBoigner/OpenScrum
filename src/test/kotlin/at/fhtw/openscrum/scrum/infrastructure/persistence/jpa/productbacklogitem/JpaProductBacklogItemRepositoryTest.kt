@@ -236,8 +236,8 @@ class JpaProductBacklogItemRepositoryTest {
             )
 
         // Then
-        assertThat(result).hasSize(1)
-        assertThat(result).isEqualTo(listOf(inBacklogItem))
+        assertThat(result.content).containsExactly(inBacklogItem)
+        assertThat(result.totalElements).isEqualTo(1)
     }
 
     @Test

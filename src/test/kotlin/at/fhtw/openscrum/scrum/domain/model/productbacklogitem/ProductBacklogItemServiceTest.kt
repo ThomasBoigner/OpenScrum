@@ -96,6 +96,82 @@ class ProductBacklogItemServiceTest {
     }
 
     @Test
+    fun ensureGetProductBacklogItemsByStatusWorksProperly() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            )
+        val productBacklogItemPage =
+            Page(
+                content = mutableListOf(productBacklogItem),
+                last = true,
+                totalPages = 2,
+                totalElements = 6,
+                first = false,
+                size = 5,
+                number = 1,
+                numberOfElements = 1,
+                empty = false,
+            )
+
+        whenever(
+            productBacklogItemRepository.findProductBacklogItemsByProjectIdAndStatus(
+                projectId,
+                ProductBacklogItemStatus.IN_BACKLOG,
+                1,
+                5,
+            ),
+        ).thenReturn(productBacklogItemPage)
+
+        // When
+        val result =
+            productBacklogItemService.getProductBacklogItemsByStatus(projectId, ProductBacklogItemStatus.IN_BACKLOG, 1, 5)
+
+        // Then
+        assertThat(result).isEqualTo(productBacklogItemPage)
+    }
+
+    @Test
+    fun ensureGetProductBacklogItemsByStatusThrowsExceptionForNegativePage() {
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                productBacklogItemService.getProductBacklogItemsByStatus(
+                    UUID.randomUUID(),
+                    ProductBacklogItemStatus.IN_BACKLOG,
+                    page = -1,
+                )
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Page number must not be negative!")
+        verify(productBacklogItemRepository, never())
+            .findProductBacklogItemsByProjectIdAndStatus(any(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun ensureGetProductBacklogItemsByStatusThrowsExceptionForNonPositiveSize() {
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                productBacklogItemService.getProductBacklogItemsByStatus(
+                    UUID.randomUUID(),
+                    ProductBacklogItemStatus.IN_BACKLOG,
+                    size = 0,
+                )
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Page size must be positive!")
+        verify(productBacklogItemRepository, never())
+            .findProductBacklogItemsByProjectIdAndStatus(any(), any(), any(), any(), any())
+    }
+
+    @Test
     fun ensureDefineBacklogItemWorksProperly() {
         // Given
         val projectId = UUID.randomUUID()
