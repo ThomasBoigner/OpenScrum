@@ -3,6 +3,7 @@ package at.fhtw.openscrum.management.infrastructure.persistence.jpa.project
 import at.fhtw.openscrum.management.domain.model.project.Project
 import at.fhtw.openscrum.management.domain.model.project.ProjectId
 import at.fhtw.openscrum.management.domain.model.user.UserId
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -16,6 +17,7 @@ class ProjectEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
     var projectId: UUID,
+    @Column(length = 255)
     var projectName: String,
     var productOwnerId: UUID,
     var scrumMasterId: UUID,

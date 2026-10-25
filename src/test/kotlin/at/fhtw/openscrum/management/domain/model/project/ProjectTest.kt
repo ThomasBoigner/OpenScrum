@@ -27,6 +27,26 @@ class ProjectTest {
     }
 
     @Test
+    fun ensureProjectNameCanNotBeTooLong() {
+        // Given
+        val projectName = "p".repeat(256)
+
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                Project(
+                    projectName = projectName,
+                    developerIds = setOf(UserId()),
+                    productOwnerId = UserId(),
+                    scrumMasterId = UserId(),
+                )
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Project name must not be longer than 255 characters!")
+    }
+
+    @Test
     fun ensureUpdateWorksProperly() {
         // Given
         val oldProductOwnerId = UserId()
