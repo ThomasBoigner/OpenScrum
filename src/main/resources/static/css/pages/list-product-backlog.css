@@ -21,6 +21,14 @@ section#product-backlog {
     overflow: scroll;
 }
 
+div#product-backlog-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+}
+
 /* 1200px - 600px */
 @media screen and (max-width: 1200px) {
     /* Container */
@@ -36,6 +44,10 @@ section#product-backlog {
         gap: 24px;
         padding: 48px 32px;
     }
+
+    div#product-backlog-items {
+        gap: 24px;
+    }
 }
 
 /* < 600px */
@@ -43,5 +55,9 @@ section#product-backlog {
     /* Product Backlog */
     section#product-backlog {
         padding: 32px 16px;
+    }
+
+    div#product-backlog-items {
+        gap: 16px;
     }
 }

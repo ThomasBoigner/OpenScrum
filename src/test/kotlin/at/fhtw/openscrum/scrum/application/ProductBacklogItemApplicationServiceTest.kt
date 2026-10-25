@@ -6,7 +6,9 @@ import at.fhtw.openscrum.scrum.application.command.MarkAsCommitedToSprintCommand
 import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
 import at.fhtw.openscrum.scrum.application.command.UpdateProductBacklogItemCommand
+import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemDto
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemStatusDto
+import at.fhtw.openscrum.scrum.application.mappers.ProductBacklogItemMapper
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
@@ -16,6 +18,7 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.FullName
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
+import at.fhtw.openscrum.scrum.domain.util.Page
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -44,6 +47,7 @@ class ProductBacklogItemApplicationServiceTest {
     fun setUp() {
         productBacklogItemApplicationService =
             ProductBacklogItemApplicationService(
+                ProductBacklogItemMapper(),
                 productBacklogItemService,
                 productBacklogItemRepository,
                 productOwnerRepository,
@@ -54,33 +58,37 @@ class ProductBacklogItemApplicationServiceTest {
     fun ensureGetProductBacklogOfProjectWorksProperly() {
         // Given
         val projectId = UUID.randomUUID()
-        val item1 =
-            ProductBacklogItem(
-                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
-                title = "Define Backlog",
-                description = "As a product owner, I want to define the product backlog items.",
-            )
-        val item2 =
+        val productBacklogItem =
             ProductBacklogItem(
                 productBacklogItemId = ProductBacklogItemId(projectId = projectId),
                 title = "Implement Login",
                 description = "As a user, I want to log in to the application.",
             )
+        val productBacklogItemPage =
+            Page(
+                content = mutableListOf(productBacklogItem),
+                last = false,
+                totalPages = 3,
+                totalElements = 11,
+                first = false,
+                size = 5,
+                number = 1,
+                numberOfElements = 1,
+                empty = false,
+            )
 
-        whenever(productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId))
-            .thenReturn(listOf(item1, item2))
+        whenever(productBacklogItemService.getProductBacklogItems(projectId, "login", 1, 5))
+            .thenReturn(productBacklogItemPage)
 
         // When
-        val result = productBacklogItemApplicationService.getProductBacklogOfProject(projectId)
+        val result = productBacklogItemApplicationService.getProductBacklogOfProject(projectId, "login", 1, 5)
 
         // Then
-        assertThat(result).hasSize(2)
-        assertThat(result[0].title).isEqualTo(item1.title)
-        assertThat(result[0].description).isEqualTo(item1.description)
-        assertThat(result[0].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
-        assertThat(result[1].title).isEqualTo(item2.title)
-        assertThat(result[1].description).isEqualTo(item2.description)
-        assertThat(result[1].status).isEqualTo(ProductBacklogItemStatusDto.IN_BACKLOG)
+        assertThat(result.content).containsExactly(ProductBacklogItemDto(productBacklogItem))
+        assertThat(result.last).isFalse()
+        assertThat(result.first).isFalse()
+        assertThat(result.number).isEqualTo(1)
+        assertThat(result.totalElements).isEqualTo(11)
     }
 
     @Test

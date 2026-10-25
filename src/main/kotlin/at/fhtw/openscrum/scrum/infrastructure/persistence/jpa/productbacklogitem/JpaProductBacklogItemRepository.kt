@@ -4,12 +4,16 @@ import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogIte
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemStatus
+import at.fhtw.openscrum.scrum.domain.util.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
 class JpaProductBacklogItemRepository(
     private val productBacklogItemEntityRepository: ProductBacklogItemEntityRepository,
+    private val productBacklogItemEntityMapper: ProductBacklogItemEntityMapper,
 ) : ProductBacklogItemRepository {
     override fun save(productBacklogItem: ProductBacklogItem): ProductBacklogItem {
         val entity = ProductBacklogItemEntity(productBacklogItem)
@@ -22,10 +26,21 @@ class JpaProductBacklogItemRepository(
             .findProductBacklogItemEntityByProductBacklogItemId(productBacklogItemId.productBacklogItemId)
             ?.toProductBacklogItem()
 
-    override fun findProductBacklogItemsByProjectId(projectId: UUID): List<ProductBacklogItem> =
-        productBacklogItemEntityRepository
-            .findProductBacklogItemEntitiesByProjectId(projectId)
-            .map { it.toProductBacklogItem() }
+    override fun findProductBacklogItemsByProjectId(
+        projectId: UUID,
+        titleQuery: String?,
+        page: Int,
+        size: Int,
+        sortBy: String,
+    ): Page<ProductBacklogItem> =
+        productBacklogItemEntityMapper.toProductBacklogItemPage(
+            productBacklogItemEntityRepository
+                .findAllByProjectIdAndTitleContainingIgnoreCase(
+                    projectId,
+                    titleQuery ?: "",
+                    PageRequest.of(page, size, Sort.by(Sort.Order.asc(sortBy))),
+                ),
+        )
 
     override fun findProductBacklogItemsByProjectIdAndStatus(
         projectId: UUID,

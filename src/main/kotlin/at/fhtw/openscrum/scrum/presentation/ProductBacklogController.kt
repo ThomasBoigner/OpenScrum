@@ -66,13 +66,20 @@ class ProductBacklogController(
         principal: Principal,
         model: Model,
         @PathVariable projectId: UUID,
+        @RequestParam(required = false, name = "query") titleQuery: String?,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "5") size: Int,
     ): String {
         val authenticatedTeamMember =
             teamMemberApplicationService.getTeamMemberOfProject(projectId, principal.name)
                 ?: return "redirect:htmx:/error/403"
 
         model.addAttribute("authenticatedTeamMember", authenticatedTeamMember)
-        model.addAttribute("productBacklog", productBacklogApplicationService.getProductBacklogOfProject(projectId))
+        model.addAttribute("projectId", projectId)
+        model.addAttribute(
+            "productBacklogPage",
+            productBacklogApplicationService.getProductBacklogOfProject(projectId, titleQuery, page, size),
+        )
         return "fragments/product-backlog-list-item"
     }
 
