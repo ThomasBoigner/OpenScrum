@@ -2,9 +2,11 @@ package at.fhtw.openscrum.scrum.presentation
 
 import at.fhtw.openscrum.E2ETest
 import org.assertj.core.api.Assertions.assertThat
+import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
+import java.time.Duration
 
 class ProjectControllerTest : E2ETest() {
     /*
@@ -513,6 +515,64 @@ class ProjectControllerTest : E2ETest() {
     }
 
     /*
+    Given a product owner, a project and a 4096 character long product goal
+    When the product owner enters the information into the configure project form
+    Then he receives an error that the product goal text is too long
+     */
+    @Test
+    fun ensureConfigureProductGoalDoesNotWorkWhenProductGoalIsTooLong() {
+        // Given
+        val productOwnerPassword = "abc123"
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = productOwnerPassword,
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null
+            }
+
+        // When
+        login(productOwner.username, productOwnerPassword)
+
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/configure")
+        webDriver.findElement(By.cssSelector("textarea#product-goal")).sendKeys("p".repeat(4096))
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("form#product-goal-form button"))).click()
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#message.error-message")))
+        assertThat(error.text).contains("Product goal must not be longer than 4095 characters!")
+        assertThat(scrumProjectEntityRepository.findByProjectId(project.projectId.token)!!.productGoal).isNull()
+    }
+
+    /*
     Given a scrum master, a project and a definition of done
     When the scrum master enters the information into the configure project form
     Then the definition of done should be set
@@ -739,5 +799,65 @@ class ProjectControllerTest : E2ETest() {
         // Then
         val pageSource = webDriver.pageSource
         assertThat(pageSource).doesNotContain("Definition of Done")
+    }
+
+    /*
+    Given a scrum master, a project and a 4096 character long definition of done
+    When the scrum master enters the information into the configure project form
+    Then he receives an error tha the definition of done text is too long
+     */
+    @Test
+    fun ensureConfigureDefinitionOfDoneDoesNotWorkWhenDefinitionOfDoneIsTooLong() {
+        // Given
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMasterPassword = "abc123"
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = scrumMasterPassword,
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getScrumMasterOfProject(project.projectId.token) != null
+            }
+
+        // When
+        login(scrumMaster.username, scrumMasterPassword)
+
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/configure")
+        webDriver.findElement(By.cssSelector("textarea#definition-of-done")).sendKeys("d".repeat(4096))
+        wait
+            .until(ExpectedConditions.elementToBeClickable(By.cssSelector("form#definition-of-done-form button")))
+            .click()
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#message.error-message")))
+        assertThat(error.text).contains("Definition of done must not be longer than 4095 characters!")
+        assertThat(scrumProjectEntityRepository.findByProjectId(project.projectId.token)!!.definitionOfDone).isNull()
     }
 }

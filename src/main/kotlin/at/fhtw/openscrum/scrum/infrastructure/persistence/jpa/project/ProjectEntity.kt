@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.project
 import at.fhtw.openscrum.scrum.domain.model.project.Project
 import at.fhtw.openscrum.scrum.domain.model.project.ProjectId
 import at.fhtw.openscrum.scrum.domain.model.project.SprintLength
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -16,9 +17,12 @@ class ProjectEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
     var projectId: UUID,
+    @Column(length = 255)
     var projectName: String,
     var sprintLength: Long,
+    @Column(length = 4095)
     var definitionOfDone: String?,
+    @Column(length = 4095)
     var productGoal: String?,
 ) : AbstractAggregateRoot<ProjectEntity>() {
     constructor(project: Project) : this(

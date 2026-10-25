@@ -56,24 +56,36 @@ Then the product goal should be null
 
 ## Test 10
 
+Given a product owner, a project and a 4096 character long product goal  
+When the product owner enters the information into the configure project form  
+Then he receives an error that the product goal text is too long
+
+## Test 11
+
 Given a scrum master, a project and a definition of done  
 When the scrum master enters the information into the configure project form  
 Then the definition of done should be set
 
-## Test 11
+## Test 12
 
 Given a scrum master of another project, a project and a definition of done  
 When the scrum master enters the information into the configure project form  
 Then he receives an error that he is not the scrum master of this project
 
-## Test 12
+## Test 13
 
 Given a developer, a project and a definition of done  
 When the developer enters the information into the configure project form  
 Then he receives an error that he has no permission to change the definition of done
 
-## Test 13
+## Test 14
 
 Given a scrum master, a project and a blank definition of done  
 When the scrum master enters the information into the configure project form  
 Then the definition of done should be null
+
+## Test 15
+
+Given a scrum master, a project and a 4096 character long definition of done  
+When the scrum master enters the information into the configure project form  
+Then he receives an error tha the definition of done text is too long

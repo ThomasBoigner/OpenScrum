@@ -23,7 +23,7 @@ class Project(
     var projectName: String = ""
         private set(value) {
             require(value.isNotBlank()) { "Project name must not be blank!" }
-            require(value.length < 255) { "Project name must not be longer than 255 characters!" }
+            require(value.length <= 255) { "Project name must not be longer than 255 characters!" }
             field = value
         }
 

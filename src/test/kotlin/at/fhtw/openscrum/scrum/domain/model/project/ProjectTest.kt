@@ -150,6 +150,29 @@ class ProjectTest {
     }
 
     @Test
+    fun ensureDefineProductGoalThrowsWhenTooLong() {
+        // Given
+        val projectId = ProjectId(UUID.randomUUID())
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId.token),
+                username = "username",
+                fullName = FullName("First", "Last"),
+            )
+        val project = Project(projectId = projectId, projectName = "Test Project")
+
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                project.defineProductGoal(productOwner, "p".repeat(4096))
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Product goal must not be longer than 4095 characters!")
+        assertThat(project.productGoal).isNull()
+    }
+
+    @Test
     fun ensureDefineDefinitionOfDoneWorksProperly() {
         // Given
         val projectId = ProjectId(UUID.randomUUID())
@@ -207,6 +230,29 @@ class ProjectTest {
         project.defineDefinitionOfDone(scrumMaster, "   ")
 
         // Then
+        assertThat(project.definitionOfDone).isNull()
+    }
+
+    @Test
+    fun ensureDefineDefinitionOfDoneThrowsWhenTooLong() {
+        // Given
+        val projectId = ProjectId(UUID.randomUUID())
+        val scrumMaster =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId.token),
+                username = "username",
+                fullName = FullName("First", "Last"),
+            )
+        val project = Project(projectId = projectId, projectName = "Test Project")
+
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                project.defineDefinitionOfDone(scrumMaster, "d".repeat(4096))
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Definition of done must not be longer than 4095 characters!")
         assertThat(project.definitionOfDone).isNull()
     }
 

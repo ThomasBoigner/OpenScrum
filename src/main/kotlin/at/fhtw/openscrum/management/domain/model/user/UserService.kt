@@ -32,6 +32,7 @@ class UserService(
     ): User {
         log.debug("Trying to register user {}", username)
         require(authenticatedUser.role.isManager) { "Management permissions are needed!" }
+        require(password.length <= 255) { "Password must not be longer than 255 characters!" }
         require(!userRepository.existsByEmailAddress(email)) { "User with email $email already exists!" }
         require(!userRepository.existsByUsername(username)) { "User with username $username already exists!" }
 

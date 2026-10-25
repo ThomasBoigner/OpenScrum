@@ -165,6 +165,37 @@ class UserServiceTest {
     }
 
     @Test
+    fun ensureRegisterUserThrowsExceptionWhenPasswordIsTooLong() {
+        // Given
+        val username = "JohnDoe"
+        val emailAddress = "john.doe@gmail.com"
+        val firstName = "John"
+        val lastName = "Doe"
+        val password = "a".repeat(256)
+
+        val authenticatedUser =
+            User(
+                username = "admin",
+                emailAddress = EmailAddress("admin@gmail.com"),
+                fullName = FullName("admin", "admin"),
+                password = "admin",
+                role = Role.MANAGER,
+            )
+
+        // When
+        assertThrows<IllegalArgumentException> {
+            userService.registerUser(
+                authenticatedUser,
+                username,
+                emailAddress,
+                firstName,
+                lastName,
+                password,
+            )
+        }
+    }
+
+    @Test
     fun ensureRegisterUserThrowsExceptionWhenEmailIsTaken() {
         // Given
         val username = "JohnDoe"
