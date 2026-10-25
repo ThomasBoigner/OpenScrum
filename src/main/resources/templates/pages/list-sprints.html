@@ -13,8 +13,10 @@
     <header th:replace="~{fragments/scrum-header :: scrum-header(${project.projectId}, 'sprints')}"></header>
 
     <section id="sprint-list">
-        <div th:replace="~{fragments/search-input :: search-input}"></div>
-        <p hx:get="@{/projects/{projectId}/sprints/list(projectId=*{projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load sprints!</p>
+        <div th:replace="~{fragments/search-input :: search-input(searchUrl=@{/projects/{projectId}/sprints/list(projectId=*{projectId})}, searchTarget='#sprint-list-items')}"></div>
+        <div id="sprint-list-items" hx:get="@{/projects/{projectId}/sprints/list(projectId=*{projectId})}" hx-trigger="load" hx-swap="innerHTML">
+            <p>Could not load sprints!</p>
+        </div>
     </section>
 </div>
 </body>

@@ -8,6 +8,7 @@ import at.fhtw.openscrum.scrum.application.command.MoveSprintBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
+import at.fhtw.openscrum.scrum.application.mappers.SprintMapper
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemId
@@ -18,6 +19,7 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintService
 import at.fhtw.openscrum.scrum.domain.model.teammember.DeveloperRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
+import at.fhtw.openscrum.scrum.domain.util.Page
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -27,6 +29,7 @@ import java.util.UUID
 @Service
 @Transactional(readOnly = true)
 class SprintApplicationService(
+    private val sprintMapper: SprintMapper,
     private val sprintService: SprintService,
     private val sprintRepository: SprintRepository,
     private val productOwnerRepository: ProductOwnerRepository,
@@ -35,11 +38,28 @@ class SprintApplicationService(
     private val productBacklogItemRepository: ProductBacklogItemRepository,
     private val log: Logger = LoggerFactory.getLogger(SprintApplicationService::class.java),
 ) {
-    fun getSprintsOfProject(projectId: UUID): List<SprintDto> {
-        log.debug("Trying to get all sprint from project with id {}", projectId)
-        val sprints = sprintRepository.findSprintsByProjectId(projectId)
-        log.info("Found all ({}) sprints of project with id {}", sprints.size, projectId)
-        return sprints.map { SprintDto(it) }
+    fun getSprintsOfProject(
+        projectId: UUID,
+        sprintNameQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<SprintDto> {
+        log.debug(
+            "Trying to find page {} with size {} of sprints of project with id {} matching query '{}'",
+            page,
+            size,
+            projectId,
+            sprintNameQuery,
+        )
+        val sprintPage = sprintService.getSprints(projectId, sprintNameQuery, page, size)
+        log.info(
+            "Found {} of {} sprints of project with id {} matching query '{}'",
+            sprintPage.numberOfElements,
+            sprintPage.totalElements,
+            projectId,
+            sprintNameQuery,
+        )
+        return sprintMapper.toSprintDtoPage(sprintPage)
     }
 
     fun getSprint(

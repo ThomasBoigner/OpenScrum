@@ -56,8 +56,4 @@ div#product-backlog-items {
     section#product-backlog {
         padding: 32px 16px;
     }
-
-    div#product-backlog-items {
-        gap: 16px;
-    }
 }
