@@ -44,29 +44,35 @@ Then he receives an error that the project name can not be blank
 
 ## Test 8 - Management context
 
+Given a manager, a 256 character long project name, a product owner, a scrum master and developers  
+When the manager enters the information into the update project form  
+Then he receives an error that the project name is too long
+
+## Test 9 - Management context
+
 Given a manager, an existing project, a new project name, a user as the new product owner, the new scrum master and a new developer  
 When the manager enters the information into the update project form  
 Then he receives an error one user can not have multiple roles
 
-## Test 9 - Scrum context
+## Test 10 - Scrum context
 
 Given a project and a ProjectInformationChanged event
 When the ProjectInformationChanged event is received
 Then the project information should be updated
 
-## Test 10 - Scrum context
+## Test 11 - Scrum context
 
 Given a project with a product owner and a ProductOwnerUnassigned event  
 When the ProductOwnerUnassigned event is received  
 Then the product owner should be removed
 
-## Test 11 - Scrum context
+## Test 12 - Scrum context
 
 Given a project with a scrum master and a ScrumMasterUnassigned event  
 When the ScrumMasterUnassigned event is received  
 Then the scrum master should be removed
 
-## Test 12 - Scrum context
+## Test 13 - Scrum context
 
 Given a project with a developer and a DeveloperUnassigned event  
 When the DeveloperUnassigned event is received  

@@ -9,6 +9,7 @@ import at.fhtw.openscrum.scrum.application.command.PlanSprintCommand
 import at.fhtw.openscrum.scrum.application.dtos.SprintBacklogItemStatusDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintDto
 import at.fhtw.openscrum.scrum.application.dtos.SprintStatusDto
+import at.fhtw.openscrum.scrum.application.mappers.SprintMapper
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
@@ -29,6 +30,7 @@ import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMaster
 import at.fhtw.openscrum.scrum.domain.model.teammember.ScrumMasterRepository
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
+import at.fhtw.openscrum.scrum.domain.util.Page
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -67,6 +69,7 @@ class SprintApplicationServiceTest {
     fun setUp() {
         sprintApplicationService =
             SprintApplicationService(
+                SprintMapper(),
                 sprintService,
                 sprintRepository,
                 productOwnerRepository,
@@ -95,28 +98,56 @@ class SprintApplicationServiceTest {
                     sprintLength = 2,
                 ),
             )
-        whenever(sprintRepository.findSprintsByProjectId(projectId)).thenReturn(sprints)
+        val sprintPage =
+            Page(
+                content = sprints.toMutableList(),
+                last = false,
+                totalPages = 3,
+                totalElements = 12,
+                first = false,
+                size = 2,
+                number = 1,
+                numberOfElements = 2,
+                empty = false,
+            )
+        whenever(sprintService.getSprints(projectId, "sprint", 1, 2)).thenReturn(sprintPage)
 
         // When
-        val result = sprintApplicationService.getSprintsOfProject(projectId)
+        val result = sprintApplicationService.getSprintsOfProject(projectId, "sprint", 1, 2)
 
         // Then
-        assertThat(result).hasSize(2)
-        assertThat(result[0]).isEqualTo(SprintDto(sprints[0]))
-        assertThat(result[1]).isEqualTo(SprintDto(sprints[1]))
+        assertThat(result.content).containsExactly(SprintDto(sprints[0]), SprintDto(sprints[1]))
+        assertThat(result.first).isFalse()
+        assertThat(result.last).isFalse()
+        assertThat(result.number).isEqualTo(1)
+        assertThat(result.totalElements).isEqualTo(12)
     }
 
     @Test
-    fun ensureGetSprintsOfProjectReturnsEmptyListWhenNoSprintsExist() {
+    fun ensureGetSprintsOfProjectReturnsEmptyPageWhenNoSprintsExist() {
         // Given
         val projectId = UUID.randomUUID()
-        whenever(sprintRepository.findSprintsByProjectId(projectId)).thenReturn(emptyList())
+        val sprintPage =
+            Page(
+                content = mutableListOf<Sprint>(),
+                last = true,
+                totalPages = 0,
+                totalElements = 0,
+                first = true,
+                size = 5,
+                number = 0,
+                numberOfElements = 0,
+                empty = true,
+            )
+        whenever(sprintService.getSprints(projectId, null, 0, 5)).thenReturn(sprintPage)
 
         // When
         val result = sprintApplicationService.getSprintsOfProject(projectId)
 
         // Then
-        assertThat(result).isEmpty()
+        assertThat(result.content).isEmpty()
+        assertThat(result.empty).isTrue()
+        assertThat(result.totalElements).isEqualTo(0)
     }
 
     @Test

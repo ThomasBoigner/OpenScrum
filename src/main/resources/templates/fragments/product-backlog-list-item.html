@@ -1,8 +1,8 @@
-<p th:if="${#lists.isEmpty(productBacklog)}">No product backlog items found!</p>
+<p th:if="${productBacklogPage.empty && productBacklogPage.first}">No product backlog items found!</p>
 <div th:id="|product-backlog-item-*{productBacklogItemId}|"
      th:fragment="product-backlog-list-item"
      class="product-backlog-list-item"
-     th:each="productBacklogItem : ${productBacklog}"
+     th:each="productBacklogItem : ${productBacklogPage.content}"
      th:object="${productBacklogItem}"
      xmlns:hx="http://www.w3.org/1999/xhtml">
     <div class="product-backlog-item-information">
@@ -34,3 +34,11 @@
         </a>
     </div>
 </div>
+<p th:unless="${productBacklogPage.last}"
+   hx:get="@{/projects/{projectId}/backlog/list(projectId=${projectId}, query=${param.query}, page=${productBacklogPage.number + 1})}"
+   hx-trigger="intersect once"
+   hx-swap="outerHTML"
+   xmlns:hx="http://www.w3.org/1999/xhtml"
+>
+    Loading more product backlog items...
+</p>

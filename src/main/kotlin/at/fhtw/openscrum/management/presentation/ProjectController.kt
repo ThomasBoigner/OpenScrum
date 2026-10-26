@@ -84,9 +84,12 @@ class ProjectController(
     fun getDeveloperListItems(
         principal: Principal,
         @RequestParam(name = "developerIds", required = false) developerIds: Set<UUID>?,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "5") size: Int,
         model: Model,
     ): String {
-        model.addAttribute("users", userApplicationService.getUsers(principal.name))
+        val userPage = userApplicationService.getUserPage(principal.name, null, page, size)
+        model.addAttribute("userPage", userPage)
         model.addAttribute("developerIds", developerIds ?: setOf<UUID>())
         return "fragments/developer-list-item"
     }

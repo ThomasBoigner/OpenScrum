@@ -7,7 +7,7 @@ data class EmailAddress(
 ) {
     init {
         require(emailAddress.isNotBlank()) { "Email address must not be blank!" }
-        require(emailAddress.length < 128) { "Email address must not be longer than 128 characters!" }
+        require(emailAddress.length <= 255) { "Email address must not be longer than 255 characters!" }
         require(Pattern.matches("\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*", emailAddress)) {
             "Email format is not valid!"
         }

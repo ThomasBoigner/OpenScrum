@@ -1,4 +1,4 @@
-package at.fhtw.openscrum.management.application
+package at.fhtw.openscrum.management.application.mappers
 
 import at.fhtw.openscrum.management.application.dtos.ProjectDto
 import at.fhtw.openscrum.management.domain.model.project.Project

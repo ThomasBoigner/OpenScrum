@@ -280,4 +280,90 @@ class ProductBacklogItemTest {
         // Then
         assertThat(productBacklogItem.status).isEqualTo(ProductBacklogItemStatus.IN_BACKLOG)
     }
+
+    @Test
+    fun ensureProductBacklogItemCanNotBeCreatedWithTooLongTitle() {
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                ProductBacklogItem(
+                    productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                    title = "t".repeat(256),
+                    description = "As a product owner, I want to define the product backlog items.",
+                )
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Title must not be longer than 255 characters!")
+    }
+
+    @Test
+    fun ensureProductBacklogItemCanNotBeCreatedWithTooLongDescription() {
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                ProductBacklogItem(
+                    productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                    title = "Define Backlog",
+                    description = "d".repeat(4096),
+                )
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Description must not be longer than 4095 characters!")
+    }
+
+    @Test
+    fun ensureUpdateThrowsWhenTitleIsTooLong() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "productowner",
+                fullName = FullName("First", "Last"),
+            )
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+
+        // When
+        val titleException =
+            assertThrows<IllegalArgumentException> {
+                productBacklogItem.update(productOwner, "t".repeat(256), "Updated description")
+            }
+
+        // Then
+        assertThat(titleException.message).isEqualTo("Title must not be longer than 255 characters!")
+    }
+
+    @Test
+    fun ensureUpdateThrowsWhenDescriptionIsTooLong() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val productOwner =
+            ProductOwner(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "productowner",
+                fullName = FullName("First", "Last"),
+            )
+        val productBacklogItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Define Backlog",
+                description = "As a product owner, I want to define the product backlog items.",
+            )
+
+        // When
+        val descriptionException =
+            assertThrows<IllegalArgumentException> {
+                productBacklogItem.update(productOwner, "Update Backlog", "d".repeat(4096))
+            }
+
+        // Then
+        assertThat(descriptionException.message).isEqualTo("Description must not be longer than 4095 characters!")
+    }
 }

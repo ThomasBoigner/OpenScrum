@@ -27,6 +27,154 @@ class JpaUserRepositoryTest {
     }
 
     @Test
+    fun ensureFindAllWorksProperly() {
+        // Given
+        val user1 =
+            User(
+                username = "john.doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("First", "Last"),
+                password = "abc123",
+                role = Role.USER,
+            )
+        val user2 =
+            User(
+                username = "jane.doe",
+                emailAddress = EmailAddress("jane.doe@gmail.com"),
+                fullName = FullName("First", "Last"),
+                password = "abc123",
+                role = Role.USER,
+            )
+        val user3 =
+            User(
+                username = "max.mustermann",
+                emailAddress = EmailAddress("max.mustermann@gmail.com"),
+                fullName = FullName("First", "Last"),
+                password = "abc123",
+                role = Role.USER,
+            )
+        userRepository.save(user1)
+        userRepository.save(user2)
+        userRepository.save(user3)
+
+        // When
+        val result = userRepository.findAll("DOE")
+
+        // Then
+        assertThat(result.content).containsExactlyInAnyOrder(user1, user2)
+    }
+
+    @Test
+    fun ensureFindAlLReturnsEmptyListWhenNothingMatches() {
+        // Given
+        val user1 =
+            User(
+                username = "john.doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("First", "Last"),
+                password = "abc123",
+                role = Role.USER,
+            )
+        userRepository.save(user1)
+
+        // When
+        val result = userRepository.findAll("abc")
+
+        // Then
+        assertThat(result.content).isEmpty()
+        assertThat(result.empty).isTrue()
+    }
+
+    @Test
+    fun ensureFindAllReturnsAllUsersForEmptyQuery() {
+        // Given
+        val user1 =
+            User(
+                username = "john.doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("First", "Last"),
+                password = "abc123",
+                role = Role.USER,
+            )
+        val user2 =
+            User(
+                username = "jane.doe",
+                emailAddress = EmailAddress("jane.doe@gmail.com"),
+                fullName = FullName("First", "Last"),
+                password = "abc123",
+                role = Role.USER,
+            )
+        userRepository.save(user1)
+        userRepository.save(user2)
+
+        // When
+        val result = userRepository.findAll("")
+
+        // Then
+        assertThat(result.content).containsExactlyInAnyOrder(user1, user2)
+    }
+
+    @Test
+    fun ensureFindAllReturnsAllUsersForNullQuery() {
+        // Given
+        val user1 =
+            User(
+                username = "john.doe",
+                emailAddress = EmailAddress("john.doe@gmail.com"),
+                fullName = FullName("First", "Last"),
+                password = "abc123",
+                role = Role.USER,
+            )
+        val user2 =
+            User(
+                username = "jane.doe",
+                emailAddress = EmailAddress("jane.doe@gmail.com"),
+                fullName = FullName("First", "Last"),
+                password = "abc123",
+                role = Role.USER,
+            )
+        userRepository.save(user1)
+        userRepository.save(user2)
+
+        // When
+        val result = userRepository.findAll()
+
+        // Then
+        assertThat(result.content).containsExactlyInAnyOrder(user1, user2)
+    }
+
+    @Test
+    fun ensureFindAllReturnsRequestedPageSortedByUsername() {
+        // Given
+        val users =
+            listOf("user.05", "user.02", "user.07", "user.01", "user.04", "user.06", "user.03").map { username ->
+                User(
+                    username = username,
+                    emailAddress = EmailAddress("$username@gmail.com"),
+                    fullName = FullName("First", "Last"),
+                    password = "abc123",
+                    role = Role.USER,
+                )
+            }
+        users.forEach { userRepository.save(it) }
+
+        // When
+        val firstPage = userRepository.findAll(page = 0, size = 5)
+        val secondPage = userRepository.findAll(page = 1, size = 5)
+
+        // Then
+        assertThat(firstPage.content.map { it.username })
+            .containsExactly("user.01", "user.02", "user.03", "user.04", "user.05")
+        assertThat(firstPage.first).isTrue()
+        assertThat(firstPage.last).isFalse()
+        assertThat(firstPage.totalElements).isEqualTo(7)
+        assertThat(firstPage.totalPages).isEqualTo(2)
+        assertThat(secondPage.content.map { it.username }).containsExactly("user.06", "user.07")
+        assertThat(secondPage.first).isFalse()
+        assertThat(secondPage.last).isTrue()
+    }
+
+    @Test
     fun ensureSaveWorksProperly() {
         // Given
         val user =

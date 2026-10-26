@@ -38,6 +38,7 @@ class Project(
         productGoal: String?,
     ) {
         require(productOwner?.teamMemberId?.projectId == this.projectId.token) { "You are not the product owner of this project!" }
+        require((productGoal?.length ?: 0) < 4096) { "Product goal must not be longer than 4095 characters!" }
         this.productGoal = if (!productGoal.isNullOrBlank()) productGoal else null
     }
 
@@ -46,6 +47,7 @@ class Project(
         definitionOfDone: String?,
     ) {
         require(scrumMaster?.teamMemberId?.projectId == this.projectId.token) { "You are not the scrum master of this project!" }
+        require((definitionOfDone?.length ?: 0) < 4096) { "Definition of done must not be longer than 4095 characters!" }
         this.definitionOfDone = if (!definitionOfDone.isNullOrBlank()) definitionOfDone else null
     }
 

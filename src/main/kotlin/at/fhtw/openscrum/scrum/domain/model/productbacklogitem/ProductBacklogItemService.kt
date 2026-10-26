@@ -2,6 +2,7 @@ package at.fhtw.openscrum.scrum.domain.model.productbacklogitem
 
 import at.fhtw.openscrum.scrum.domain.model.EventPublisher
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwner
+import at.fhtw.openscrum.scrum.domain.util.Page
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.UUID
@@ -11,6 +12,28 @@ class ProductBacklogItemService(
     private val eventPublisher: EventPublisher,
     private val log: Logger = LoggerFactory.getLogger(ProductBacklogItemService::class.java),
 ) {
+    fun getProductBacklogItems(
+        projectId: UUID,
+        titleQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<ProductBacklogItem> {
+        require(page >= 0) { "Page number must not be negative!" }
+        require(size > 0) { "Page size must be positive!" }
+        return productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId, titleQuery, page, size)
+    }
+
+    fun getProductBacklogItemsByStatus(
+        projectId: UUID,
+        status: ProductBacklogItemStatus,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<ProductBacklogItem> {
+        require(page >= 0) { "Page number must not be negative!" }
+        require(size > 0) { "Page size must be positive!" }
+        return productBacklogItemRepository.findProductBacklogItemsByProjectIdAndStatus(projectId, status, page, size)
+    }
+
     fun defineBacklogItem(
         productOwner: ProductOwner?,
         projectId: UUID,

@@ -1,5 +1,5 @@
-<p th:if="${#lists.isEmpty(sprints)}">No sprints found!</p>
-<div th:fragment="sprint-list-item" class="sprint-list-item" th:each="sprint : ${sprints}" th:object="${sprint}">
+<p th:if="${sprintPage.empty && sprintPage.first}">No sprints found!</p>
+<div th:fragment="sprint-list-item" class="sprint-list-item" th:each="sprint : ${sprintPage.content}" th:object="${sprint}">
     <div class="sprint-information">
         <h2 th:text="*{sprintName}">Sprint 1</h2>
         <div class="sprint-status">
@@ -11,3 +11,11 @@
         <img th:src="@{/assets/svg/arrow-primary.svg}" alt="arrow">
     </a>
 </div>
+<p th:unless="${sprintPage.last}"
+   hx:get="@{/projects/{projectId}/sprints/list(projectId=${projectId}, query=${param.query}, page=${sprintPage.number + 1})}"
+   hx-trigger="intersect once"
+   hx-swap="outerHTML"
+   xmlns:hx="http://www.w3.org/1999/xhtml"
+>
+    Loading more sprints...
+</p>

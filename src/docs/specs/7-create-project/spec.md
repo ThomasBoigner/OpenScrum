@@ -38,23 +38,29 @@ Then he receives an error that the information is invalid
 
 ## Test 7 - Management context
 
+Given a manager, a 256 character long project name, a product owner, a scrum master and developers  
+When the manager enters the information into the create project form  
+Then he receives an error that the project name is too long
+
+## Test 8 - Management context
+
 Given a manager, a project name, a user as product owner, scrum master and developer  
 When the manager enters the information into the create project form  
 Then he receives an error one user can not have multiple roles
 
-## Test 8 - Scrum context
+## Test 9 - Scrum context
 
 Given a project and a ProductOwnerAssigned event  
 When the ProductOwnerAssigned event is received  
 Then the product owner should be added to the project
 
-## Test 9 - Scrum context
+## Test 10 - Scrum context
 
 Given a project and a ScrumMasterAssigned event  
 When the ScrumMasterAssigned event is received  
 Then the scrum master should be added to the project
 
-## Test 10 - Scrum context
+## Test 11 - Scrum context
 
 Given a project and a DeveloperAssigned event  
 When the DeveloperAssigned event is received  

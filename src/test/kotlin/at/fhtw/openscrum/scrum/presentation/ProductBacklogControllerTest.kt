@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import java.time.Duration
 import java.util.UUID
@@ -343,6 +344,68 @@ class ProductBacklogControllerTest : E2ETest() {
         // Then
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
         assertThat(error.text).containsIgnoringCase("description")
+    }
+
+    /*
+    Given a product owner, a 256 character long title and a 4096 character long description
+    When the product owner enters the information into the define product backlog item form
+    Then he should receive an error that the title and description are too long
+     */
+    @Test
+    fun ensureDefineProductBacklogItemDoesNotWorkWhenTitleAndDescriptionAreTooLong() {
+        // Given
+        val productOwnerPassword = "abc123"
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = productOwnerPassword,
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null
+            }
+
+        // When
+        login(productOwner.username, productOwnerPassword)
+
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/backlog/define")
+        webDriver.findElement(By.cssSelector("input#title")).sendKeys("t".repeat(256))
+        webDriver.findElement(By.cssSelector("textarea#description")).sendKeys("d".repeat(4096))
+        wait
+            .until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#define-product-backlog-item-form button")))
+            .click()
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+        assertThat(error.text).contains("Title must not be longer than 255 characters!")
+        assertThat(error.text).contains("Description must not be longer than 4095 characters!")
+        assertThat(productBacklogItemEntityRepository.findAll()).isEmpty()
     }
 
     /*
@@ -886,6 +949,91 @@ class ProductBacklogControllerTest : E2ETest() {
     }
 
     /*
+    Given a product owner, a 256 character long title and a 4096 character long description
+    When the product owner enters the information into the update product backlog item form of the item
+    Then he should receive an error that the title and description are too long
+     */
+    @Test
+    fun ensureUpdateProductBacklogItemDoesNotWorkWhenTitleAndDescriptionAreTooLong() {
+        // Given
+        val title = "Implement login page"
+        val description = "The login page should allow users to sign in with their credentials"
+
+        val productOwnerPassword = "abc123"
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = productOwnerPassword,
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null
+            }
+
+        val productBacklogItem =
+            productBacklogItemApplicationService.defineProductBacklogItem(
+                authenticatedUserUsername = productOwner.username,
+                command =
+                    DefineProductBacklogItemCommand(
+                        projectId = project.projectId.token,
+                        title = title,
+                        description = description,
+                    ),
+            )
+
+        // When
+        login(productOwner.username, productOwnerPassword)
+
+        webDriver.get(
+            "$baseUrl/projects/${project.projectId.token}/backlog/${productBacklogItem.productBacklogItemId}/update",
+        )
+        val titleField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input#title")))
+        titleField.clear()
+        titleField.sendKeys("t".repeat(256))
+        val descriptionField = webDriver.findElement(By.cssSelector("textarea#description"))
+        descriptionField.clear()
+        descriptionField.sendKeys("d".repeat(4096))
+        wait
+            .until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-product-backlog-item-form button")))
+            .click()
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+        assertThat(error.text).contains("Title must not be longer than 255 characters!")
+        assertThat(error.text).contains("Description must not be longer than 4095 characters!")
+        val unchangedItem =
+            productBacklogItemApplicationService.getProductBacklogItem(project.projectId.token, productBacklogItem.productBacklogItemId)!!
+        assertThat(unchangedItem.title).isEqualTo(title)
+        assertThat(unchangedItem.description).isEqualTo(description)
+    }
+
+    /*
     Given a product owner and a product backlog item that is not committed to a sprint
     When the product owner clicks the delete product backlog item button
     Then the product backlog item should be deleted
@@ -957,5 +1105,152 @@ class ProductBacklogControllerTest : E2ETest() {
         // Then
         wait.until(ExpectedConditions.stalenessOf(productBacklogListItem))
         assertThat(webDriver.findElements(By.cssSelector(".product-backlog-list-item"))).isEmpty()
+    }
+
+    @Test
+    fun ensureSearchProductBacklogWorksProperly() {
+        // Given
+        val productOwnerUsername = "product.owner"
+        val productOwnerPassword = "abc123"
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = productOwnerUsername,
+                firstName = "Product",
+                lastName = "Owner",
+                password = productOwnerPassword,
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+        val projectId = project.projectId.token
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getProductOwnerOfProject(projectId) != null &&
+                    teamMemberApplicationService.getScrumMasterOfProject(projectId) != null
+            }
+
+        listOf("Implement login", "Implement logout", "Write documentation").forEach { title ->
+            productBacklogItemApplicationService.defineProductBacklogItem(
+                authenticatedUserUsername = productOwner.username,
+                command =
+                    DefineProductBacklogItemCommand(
+                        projectId = projectId,
+                        title = title,
+                        description = "Description of $title",
+                    ),
+            )
+        }
+
+        // When
+        login(productOwnerUsername, productOwnerPassword)
+        webDriver.get("$baseUrl/projects/$projectId/backlog")
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".product-backlog-list-item"), 3))
+        val firstRow = webDriver.findElement(By.cssSelector(".product-backlog-list-item"))
+        webDriver.findElement(By.cssSelector("input#search-input")).sendKeys("LOG")
+        // the search response replaces the list, so the old first row becomes stale once the search has been answered
+        wait.until(ExpectedConditions.stalenessOf(firstRow))
+
+        // Then
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".product-backlog-list-item"), 2))
+        val titles = webDriver.findElements(By.cssSelector(".product-backlog-list-item h2")).map { it.text }
+        assertThat(titles).containsExactlyInAnyOrder("Implement login", "Implement logout")
+    }
+
+    @Test
+    fun ensurePaginateProductBacklogWorksProperly() {
+        // Given
+        val productOwnerUsername = "product.owner"
+        val productOwnerPassword = "abc123"
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = productOwnerUsername,
+                firstName = "Product",
+                lastName = "Owner",
+                password = productOwnerPassword,
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+        val projectId = project.projectId.token
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getProductOwnerOfProject(projectId) != null &&
+                    teamMemberApplicationService.getScrumMasterOfProject(projectId) != null
+            }
+
+        val pageSize = 5
+        val titles = (1..pageSize + 2).map { "Item %02d".format(it) }
+        val loaderSelector = "#product-backlog-items [hx-trigger='intersect once']"
+
+        titles.forEach { title ->
+            productBacklogItemApplicationService.defineProductBacklogItem(
+                authenticatedUserUsername = productOwner.username,
+                command =
+                    DefineProductBacklogItemCommand(
+                        projectId = projectId,
+                        title = title,
+                        description = "Description of $title",
+                    ),
+            )
+        }
+
+        webDriver.manage().window().size = Dimension(1920, 600)
+
+        // When
+        login(productOwnerUsername, productOwnerPassword)
+        webDriver.get("$baseUrl/projects/$projectId/backlog")
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".product-backlog-list-item"), pageSize))
+        assertThat(webDriver.findElements(By.cssSelector(loaderSelector))).hasSize(1)
+
+        // scroll to the end of the product backlog
+        webDriver.executeScript("document.querySelector(arguments[0]).scrollIntoView()", loaderSelector)
+
+        // Then
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".product-backlog-list-item"), pageSize + 2))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(loaderSelector), 0))
+        val loadedTitles = webDriver.findElements(By.cssSelector(".product-backlog-list-item h2")).map { it.text }
+        assertThat(loadedTitles).isEqualTo(titles)
     }
 }

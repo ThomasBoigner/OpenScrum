@@ -48,6 +48,7 @@ class Sprint(
         productBacklogItems: Set<ProductBacklogItem>,
     ) {
         require(sprintGoal.isNotBlank()) { "Sprint goal cannot be blank" }
+        require(sprintGoal.length <= 4095) { "Sprint goal must not be longer than 4095 characters!" }
         require(productBacklogItems.isNotEmpty()) { "Sprint backlog cannot be empty" }
         require(scrumMaster?.teamMemberId?.projectId == this.sprintId.projectId) {
             "You are not the scrum master of this project"

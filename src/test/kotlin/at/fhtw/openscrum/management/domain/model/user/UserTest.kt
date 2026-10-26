@@ -23,6 +23,27 @@ class UserTest {
     }
 
     @Test
+    fun ensureUsernameCanNotBeTooLong() {
+        // Given
+        val username = "a".repeat(256)
+
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                User(
+                    username = username,
+                    emailAddress = EmailAddress("john.doe@gmail.com"),
+                    fullName = FullName("John", "Doe"),
+                    password = "abc123",
+                    role = Role.USER,
+                )
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Username must not be longer than 255 characters!")
+    }
+
+    @Test
     fun ensurePasswordCanNotBeBlank() {
         // Given
         val password = ""

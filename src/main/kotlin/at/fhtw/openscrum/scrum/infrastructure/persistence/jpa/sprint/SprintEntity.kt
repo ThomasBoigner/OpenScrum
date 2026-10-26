@@ -4,6 +4,7 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.Sprint
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintStatus
 import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -23,11 +24,13 @@ class SprintEntity(
     var id: Long? = null,
     var projectId: UUID,
     var sprintId: UUID,
+    @Column(length = 255)
     var sprintName: String,
     var startDate: LocalDate,
     var endDate: LocalDate,
     @Enumerated(EnumType.STRING)
     var status: SprintStatus,
+    @Column(length = 4095)
     var sprintGoal: String?,
     @OneToMany(
         cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE],

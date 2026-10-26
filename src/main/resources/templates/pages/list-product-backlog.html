@@ -14,8 +14,10 @@
     <header th:replace="~{fragments/scrum-header :: scrum-header(${project.projectId}, 'backlog')}"></header>
 
     <section id="product-backlog">
-        <div th:replace="~{fragments/search-input :: search-input}"></div>
-        <p hx:get="@{/projects/{projectId}/backlog/list(projectId=*{projectId})}" hx-trigger="load" hx-swap="outerHTML">Could not load product backlog!</p>
+        <div th:replace="~{fragments/search-input :: search-input(searchUrl=@{/projects/{projectId}/backlog/list(projectId=*{projectId})}, searchTarget='#product-backlog-items')}"></div>
+        <div id="product-backlog-items" hx:get="@{/projects/{projectId}/backlog/list(projectId=*{projectId})}" hx-trigger="load" hx-swap="innerHTML">
+            <p>Could not load product backlog!</p>
+        </div>
         <th:block th:if="${authenticatedTeamMember.isProductOwner()}">
             <a th:replace="~{fragments/floating-action-button :: floating-action-button(@{/projects/{projectId}/backlog/define(projectId=*{projectId})}, 'plus.svg', 'Add', 'secondary')}"></a>
         </th:block>

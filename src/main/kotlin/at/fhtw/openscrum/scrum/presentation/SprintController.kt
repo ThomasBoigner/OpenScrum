@@ -62,10 +62,18 @@ class SprintController(
     @HxRequest
     @GetMapping(value = [FRAGMENT_SPRINT_LIST_ITEM])
     fun getSprintListItems(
+        principal: Principal,
         model: Model,
         @PathVariable projectId: UUID,
+        @RequestParam(required = false, name = "query") sprintNameQuery: String?,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "5") size: Int,
     ): String {
-        model.addAttribute("sprints", sprintApplicationService.getSprintsOfProject(projectId))
+        model.addAttribute("projectId", projectId)
+        model.addAttribute(
+            "sprintPage",
+            sprintApplicationService.getSprintsOfProject(projectId, sprintNameQuery, page, size),
+        )
         return "fragments/sprint-list-item"
     }
 

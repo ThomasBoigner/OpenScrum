@@ -1,5 +1,6 @@
 package at.fhtw.openscrum.scrum.domain.model.productbacklogitem
 
+import at.fhtw.openscrum.scrum.domain.util.Page
 import java.util.UUID
 
 interface ProductBacklogItemRepository {
@@ -7,12 +8,21 @@ interface ProductBacklogItemRepository {
 
     fun findProductBacklogItemByProductBacklogItemId(productBacklogItemId: ProductBacklogItemId): ProductBacklogItem?
 
-    fun findProductBacklogItemsByProjectId(projectId: UUID): List<ProductBacklogItem>
+    fun findProductBacklogItemsByProjectId(
+        projectId: UUID,
+        titleQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
+        sortBy: String = "title",
+    ): Page<ProductBacklogItem>
 
     fun findProductBacklogItemsByProjectIdAndStatus(
         projectId: UUID,
         status: ProductBacklogItemStatus,
-    ): List<ProductBacklogItem>
+        page: Int = 0,
+        size: Int = 5,
+        sortBy: String = "title",
+    ): Page<ProductBacklogItem>
 
     fun delete(productBacklogItemId: ProductBacklogItemId)
 

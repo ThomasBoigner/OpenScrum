@@ -267,6 +267,49 @@ class ProjectControllerTest : E2ETest() {
     }
 
     /*
+    Given a manager, a 256 character long project name, a product owner, a scrum master and developers
+    When the manager enters the information into the create project form
+    Then he receives an error that the project name is too long
+     */
+    @Test
+    fun ensureCreateProjectDoesNotWorkWithTooLongProjectName() {
+        // Given
+        val projectName = "p".repeat(256)
+
+        userService.registerUser(
+            authenticatedUser = admin,
+            username = "product.owner",
+            firstName = "Product",
+            lastName = "Owner",
+            password = "abc123",
+            email = "product.owner@gmail.com",
+        )
+        userService.registerUser(
+            authenticatedUser = admin,
+            username = "scrum.master",
+            firstName = "Scrum",
+            lastName = "Master",
+            password = "abc123",
+            email = "scrum.master@gmail.com",
+        )
+
+        // When
+        loginAsAdmin()
+
+        // fill in create project form with too long project name
+        webDriver.get("$baseUrl/projects/create")
+        webDriver.findElement(By.cssSelector("input#project-name")).sendKeys(projectName)
+        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
+        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+        assertThat(error.text).contains("Project name must not be longer than 255 characters!")
+        assertThat(managementProjectEntityRepository.findAll()).isEmpty()
+    }
+
+    /*
     Given a manager, a project name, a user as product owner, scrum master and developer
     When the manager enters the information into the create project form
     Then he receives an error one user can not have multiple roles
@@ -724,6 +767,57 @@ class ProjectControllerTest : E2ETest() {
     }
 
     /*
+    Given a manager, a 256 character long project name, a product owner, a scrum master and developers
+    When the manager enters the information into the update project form
+    Then he receives an error that the project name is too long
+     */
+    @Test
+    fun ensureUpdateProjectDoesNotWorkWithTooLongProjectName() {
+        // Given
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        // When
+        loginAsAdmin()
+
+        // fill in update project form with too long project name
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/update")
+        webDriver.findElement(By.cssSelector("input#project-name")).clear()
+        webDriver.findElement(By.cssSelector("input#project-name")).sendKeys("p".repeat(256))
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+        assertThat(error.text).contains("Project name must not be longer than 255 characters!")
+        assertThat(managementProjectEntityRepository.findByProjectId(project.projectId.token)!!.projectName).isEqualTo("OpenScrum")
+    }
+
+    /*
     Given a manager, an existing project, a new project name, a user as the new product owner, the new scrum master and a new developer
     When the manager enters the information into the update project form
     Then he receives an error one user can not have multiple roles
@@ -1097,5 +1191,147 @@ class ProjectControllerTest : E2ETest() {
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(loaderSelector), 0))
         val loadedProjectNames = webDriver.findElements(By.cssSelector(".projects-list-item h2")).map { it.text }
         assertThat(loadedProjectNames).isEqualTo(projectNames)
+    }
+
+    @Test
+    fun ensurePaginateDevelopersOnCreateProjectWorksProperly() {
+        // Given
+        val pageSize = 5
+        val loaderSelector = ".developer-item-list [hx-trigger='intersect once']"
+
+        userService.registerUser(
+            authenticatedUser = admin,
+            username = "product.owner",
+            firstName = "Product",
+            lastName = "Owner",
+            password = "abc123",
+            email = "product.owner@gmail.com",
+        )
+        userService.registerUser(
+            authenticatedUser = admin,
+            username = "scrum.master",
+            firstName = "Scrum",
+            lastName = "Master",
+            password = "abc123",
+            email = "scrum.master@gmail.com",
+        )
+        val developers =
+            (1..pageSize + 2).map {
+                userService.registerUser(
+                    authenticatedUser = admin,
+                    username = "dev.%02d".format(it),
+                    firstName = "Developer",
+                    lastName = "%02d".format(it),
+                    password = "abc123",
+                    email = "dev.%02d@gmail.com".format(it),
+                )
+            }
+        val developerOnSecondPage = developers.last()
+
+        webDriver.manage().window().size = Dimension(1920, 600)
+
+        // When
+        loginAsAdmin()
+        webDriver.get("$baseUrl/projects/create")
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".developer-item"), pageSize))
+        assertThat(webDriver.findElements(By.cssSelector(loaderSelector))).hasSize(1)
+
+        // scroll to the end of the developer selection
+        webDriver.executeScript("document.querySelector(arguments[0]).scrollIntoView()", loaderSelector)
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".developer-item"), developers.size + 3))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(loaderSelector), 0))
+
+        webDriver.findElement(By.cssSelector("input#project-name")).sendKeys("OpenScrum")
+        Select(webDriver.findElement(By.cssSelector("select#product-owner"))).selectByVisibleText("Product Owner")
+        Select(webDriver.findElement(By.cssSelector("select#scrum-master"))).selectByVisibleText("Scrum Master")
+        val developerCheckbox =
+            webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${developerOnSecondPage.userId.token}']"))
+        webDriver.executeScript("arguments[0].scrollIntoView()", developerCheckbox)
+        wait.until(ExpectedConditions.elementToBeClickable(developerCheckbox)).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
+
+        // Then
+        wait.until(ExpectedConditions.urlToBe("$baseUrl/projects"))
+        val project = managementProjectEntityRepository.findAll().single()
+        assertThat(project.developerIds).containsExactly(developerOnSecondPage.userId.token)
+    }
+
+    @Test
+    fun ensurePaginateDevelopersOnUpdateProjectWorksProperly() {
+        // Given
+        val pageSize = 5
+        val loaderSelector = ".developer-item-list [hx-trigger='intersect once']"
+
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = "abc123",
+                email = "scrum.master@gmail.com",
+            )
+        val developers =
+            (1..pageSize + 2).map {
+                userService.registerUser(
+                    authenticatedUser = admin,
+                    username = "dev.%02d".format(it),
+                    firstName = "Developer",
+                    lastName = "%02d".format(it),
+                    password = "abc123",
+                    email = "dev.%02d@gmail.com".format(it),
+                )
+            }
+        val (newDeveloperOnSecondPage, assignedDeveloperOnSecondPage) = developers.takeLast(2)
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(assignedDeveloperOnSecondPage),
+            )
+
+        webDriver.manage().window().size = Dimension(1920, 600)
+
+        // When
+        loginAsAdmin()
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/update")
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".developer-item"), pageSize))
+        assertThat(webDriver.findElements(By.cssSelector(loaderSelector))).hasSize(1)
+
+        // scroll to the end of the developer selection
+        webDriver.executeScript("document.querySelector(arguments[0]).scrollIntoView()", loaderSelector)
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".developer-item"), developers.size + 3))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(loaderSelector), 0))
+
+        // the already assigned developer stays selected after loading the next page
+        val assignedDeveloperCheckbox =
+            webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${assignedDeveloperOnSecondPage.userId.token}']"))
+        assertThat(assignedDeveloperCheckbox.isSelected).isTrue()
+
+        // swap the assigned developer for another developer of the second page
+        webDriver.executeScript("arguments[0].scrollIntoView()", assignedDeveloperCheckbox)
+        wait.until(ExpectedConditions.elementToBeClickable(assignedDeveloperCheckbox)).click()
+        val newDeveloperCheckbox =
+            webDriver.findElement(By.cssSelector("input[name='developerIds'][value='${newDeveloperOnSecondPage.userId.token}']"))
+        webDriver.executeScript("arguments[0].scrollIntoView()", newDeveloperCheckbox)
+        wait.until(ExpectedConditions.elementToBeClickable(newDeveloperCheckbox)).click()
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#project-form button"))).click()
+
+        // Then
+        wait.until(ExpectedConditions.urlToBe("$baseUrl/projects"))
+        val updatedProject = managementProjectEntityRepository.findByProjectId(project.projectId.token)!!
+        assertThat(updatedProject.developerIds).containsExactly(newDeveloperOnSecondPage.userId.token)
     }
 }

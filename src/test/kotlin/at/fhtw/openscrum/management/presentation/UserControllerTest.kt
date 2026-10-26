@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
 import org.junit.jupiter.api.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import java.time.Duration
 import java.util.UUID
@@ -201,6 +202,44 @@ class UserControllerTest : E2ETest() {
         assertThat(error.text).contains("First name")
         assertThat(error.text).contains("Last name")
         assertThat(error.text).contains("Password")
+    }
+
+    /*
+    Given a manager, a 256 character long username, a 256 character long first name, a 256 character long last name,
+    a 256 character long email address and a 256 character long password
+    When the manager enters the information
+    Then he receives an error that the text is too long
+     */
+    @Test
+    fun ensureRegisterUserDoesNotWorkWithTooLongInformation() {
+        // Given
+        val username = "u".repeat(256)
+        val firstName = "f".repeat(256)
+        val lastName = "l".repeat(256)
+        val email = "e".repeat(256 - "@gmail.com".length) + "@gmail.com"
+        val password = "p".repeat(256)
+
+        // When
+        loginAsAdmin()
+
+        // register user
+        webDriver.get("$baseUrl/users/register")
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys(username)
+        webDriver.findElement(By.cssSelector("input#first-name")).sendKeys(firstName)
+        webDriver.findElement(By.cssSelector("input#last-name")).sendKeys(lastName)
+        webDriver.findElement(By.cssSelector("input#email-address")).sendKeys(email)
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys(password)
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#registration-form button"))).click()
+        wait.until(ExpectedConditions.urlContains("/users"))
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+        assertThat(error.text).contains("Username must not be longer than 255 characters!")
+        assertThat(error.text).contains("First name must not be longer than 255 characters!")
+        assertThat(error.text).contains("Last name must not be longer than 255 characters!")
+        assertThat(error.text).contains("Email address must not be longer than 255 characters!")
+        assertThat(error.text).contains("Password must not be longer than 255 characters!")
+        assertThat(userEntityRepository.findByUsername(username)).isNull()
     }
 
     /*
@@ -652,6 +691,54 @@ class UserControllerTest : E2ETest() {
     }
 
     /*
+    Given a manager, a 256 character long username, a 256 character long first name, a 256 character long last name,
+    a 256 character long email address and a 256 character long password
+    When the manager enters the information into the update user form
+    Then he receives an error that the text is too long
+     */
+    @Test
+    fun ensureUpdateUserDoesNotWorkWithTooLongInformation() {
+        // Given
+        val user =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "john.doe",
+                firstName = "John",
+                lastName = "Doe",
+                password = "abc123",
+                email = "john.doe@gmail.com",
+            )
+
+        // When
+        loginAsAdmin()
+
+        // update user with too long information
+        webDriver.get("$baseUrl/users/${user.userId.token}/update")
+        webDriver.findElement(By.cssSelector("input#username")).clear()
+        webDriver.findElement(By.cssSelector("input#username")).sendKeys("u".repeat(256))
+        webDriver.findElement(By.cssSelector("input#first-name")).clear()
+        webDriver.findElement(By.cssSelector("input#first-name")).sendKeys("f".repeat(256))
+        webDriver.findElement(By.cssSelector("input#last-name")).clear()
+        webDriver.findElement(By.cssSelector("input#last-name")).sendKeys("l".repeat(256))
+        webDriver.findElement(By.cssSelector("input#email-address")).clear()
+        webDriver.findElement(By.cssSelector("input#email-address")).sendKeys("e".repeat(256 - "@gmail.com".length) + "@gmail.com")
+        webDriver.findElement(By.cssSelector("input#password")).sendKeys("p".repeat(256))
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#update-user-form button"))).click()
+
+        // Then
+        val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+        assertThat(error.text).contains("Username must not be longer than 255 characters!")
+        assertThat(error.text).contains("First name must not be longer than 255 characters!")
+        assertThat(error.text).contains("Last name must not be longer than 255 characters!")
+        assertThat(error.text).contains("Email address must not be longer than 255 characters!")
+        assertThat(error.text).contains("Password must not be longer than 255 characters!")
+        val unchangedUser = userEntityRepository.findByUserId(user.userId.token)!!
+        assertThat(unchangedUser.username).isEqualTo("john.doe")
+        assertThat(unchangedUser.fullName.firstName).isEqualTo("John")
+        assertThat(unchangedUser.emailAddress).isEqualTo("john.doe@gmail.com")
+    }
+
+    /*
     Given a manager and an existing user, a new username, a new first name, a new last name, a new email address and a blank password
     When the manager enters the information into the update user form
     Then the user information should be updated, the password should stay unchanged and a UserInformationChanged event should be published
@@ -798,5 +885,70 @@ class UserControllerTest : E2ETest() {
         assertThat(webDriver.findElements(By.cssSelector("#user-${user.userId.token}"))).isEmpty()
         assertThat(webDriver.findElements(By.cssSelector(".users-list-item"))).hasSize(1)
         assertThat(userEntityRepository.findByUserId(user.userId.token)).isNull()
+    }
+
+    @Test
+    fun ensureSearchUsersWorksProperly() {
+        // Given
+        listOf("john.doe", "jane.doe", "max.mustermann").forEach { username ->
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = username,
+                firstName = "First",
+                lastName = "Last",
+                password = "abc123",
+                email = "$username@gmail.com",
+            )
+        }
+
+        // When
+        loginAsAdmin()
+        webDriver.get("$baseUrl/users")
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".users-list-item"), 4))
+        val firstRow = webDriver.findElement(By.cssSelector(".users-list-item"))
+        webDriver.findElement(By.cssSelector("input#search-input")).sendKeys("DOE")
+        // the search response replaces the list, so the old first row becomes stale once the search has been answered
+        wait.until(ExpectedConditions.stalenessOf(firstRow))
+
+        // Then
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".users-list-item"), 2))
+        val usernames = webDriver.findElements(By.cssSelector(".users-list-item h2")).map { it.text }
+        assertThat(usernames).containsExactlyInAnyOrder("john.doe", "jane.doe")
+    }
+
+    @Test
+    fun ensurePaginateUsersWorksProperly() {
+        // Given
+        val pageSize = 5
+        val usernames = (1..pageSize + 2).map { "user.%02d".format(it) }
+        val loaderSelector = "#users-list-items [hx-trigger='intersect once']"
+
+        usernames.forEach { username ->
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = username,
+                firstName = "First",
+                lastName = "Last",
+                password = "abc123",
+                email = "$username@gmail.com",
+            )
+        }
+
+        webDriver.manage().window().size = Dimension(1920, 600)
+
+        // When
+        loginAsAdmin()
+        webDriver.get("$baseUrl/users")
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".users-list-item"), pageSize))
+        assertThat(webDriver.findElements(By.cssSelector(loaderSelector))).hasSize(1)
+
+        // scroll to the end of the users list
+        webDriver.executeScript("document.querySelector(arguments[0]).scrollIntoView()", loaderSelector)
+
+        // Then
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".users-list-item"), pageSize + 3))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(loaderSelector), 0))
+        val loadedUsernames = webDriver.findElements(By.cssSelector(".users-list-item h2")).map { it.text }
+        assertThat(loadedUsernames).isEqualTo(listOf("admin") + usernames)
     }
 }

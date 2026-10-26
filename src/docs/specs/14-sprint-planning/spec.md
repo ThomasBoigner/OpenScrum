@@ -50,6 +50,12 @@ Then he receives an error that the sprint goal can not be blank
 
 ## Test 9
 
+Given a scrum master, a sprint, a 4096 character long sprint goal and product backlog items  
+When the scrum master enters the information into the plan sprint form  
+Then he receives an error that the sprint goal is too long
+
+## Test 10
+
 Given a scrum master, a sprint and a sprint goal and no product backlog items  
 When the scrum master enters the information into the plan sprint form  
 Then the scrum master should receive an error that the sprint backlog can not be empty

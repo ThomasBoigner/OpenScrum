@@ -4,6 +4,7 @@ import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.sprint.SprintBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.TeamMemberId
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -20,7 +21,9 @@ class SprintBacklogItemEntity(
     var projectId: UUID,
     var sprintId: UUID,
     var productBacklogItemId: UUID,
+    @Column(length = 255)
     var title: String,
+    @Column(length = 4095)
     var description: String,
     var assignedDeveloperUserId: UUID?,
     var assignedDeveloperProjectId: UUID?,

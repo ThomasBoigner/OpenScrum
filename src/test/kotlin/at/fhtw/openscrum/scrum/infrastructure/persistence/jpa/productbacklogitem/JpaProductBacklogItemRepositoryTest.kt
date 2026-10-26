@@ -89,8 +89,122 @@ class JpaProductBacklogItemRepositoryTest {
         val result = productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId)
 
         // Then
-        assertThat(result).hasSize(2)
-        assertThat(result).isEqualTo(listOf(productBacklogItem, productBacklogItem2))
+        assertThat(result.content).hasSize(2)
+        assertThat(result.content).contains(productBacklogItem, productBacklogItem2)
+    }
+
+    @Test
+    fun ensureFindProductBacklogItemsByProjectIdFiltersByTitleIgnoringCase() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val loginItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            )
+        val logoutItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement logout",
+                description = "As a user, I want to log out of the application.",
+            )
+        val otherItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Write documentation",
+                description = "As a developer, I want to document the application.",
+            )
+        val otherProjectItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            )
+        listOf(loginItem, logoutItem, otherItem, otherProjectItem).forEach { productBacklogItemRepository.save(it) }
+
+        // When
+        val result = productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId, "LOG", 0, 5)
+
+        // Then
+        assertThat(result.content).containsExactly(loginItem, logoutItem)
+        assertThat(result.totalElements).isEqualTo(2)
+    }
+
+    @Test
+    fun ensureFindProductBacklogItemsByProjectIdReturnsAllProjectBacklogItemsForEmptyTitleQuery() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val loginItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            )
+        val logoutItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement logout",
+                description = "As a user, I want to log out of the application.",
+            )
+        val otherItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Write documentation",
+                description = "As a developer, I want to document the application.",
+            )
+        val otherProjectItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            )
+        listOf(loginItem, logoutItem, otherItem, otherProjectItem).forEach { productBacklogItemRepository.save(it) }
+
+        // When
+        val result = productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId, "", 0, 5)
+
+        // Then
+        assertThat(result.content).contains(loginItem, logoutItem, otherItem)
+        assertThat(result.totalElements).isEqualTo(3)
+    }
+
+    @Test
+    fun ensureFindProductBacklogItemsByProjectIdReturnsAllProjectBacklogItemsForNullTitleQuery() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val loginItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            )
+        val logoutItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Implement logout",
+                description = "As a user, I want to log out of the application.",
+            )
+        val otherItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                title = "Write documentation",
+                description = "As a developer, I want to document the application.",
+            )
+        val otherProjectItem =
+            ProductBacklogItem(
+                productBacklogItemId = ProductBacklogItemId(projectId = UUID.randomUUID()),
+                title = "Implement Login",
+                description = "As a user, I want to log in to the application.",
+            )
+        listOf(loginItem, logoutItem, otherItem, otherProjectItem).forEach { productBacklogItemRepository.save(it) }
+
+        // When
+        val result = productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId, null, 0, 5)
+
+        // Then
+        assertThat(result.content).contains(loginItem, logoutItem, otherItem)
+        assertThat(result.totalElements).isEqualTo(3)
     }
 
     @Test
@@ -122,8 +236,8 @@ class JpaProductBacklogItemRepositoryTest {
             )
 
         // Then
-        assertThat(result).hasSize(1)
-        assertThat(result).isEqualTo(listOf(inBacklogItem))
+        assertThat(result.content).containsExactly(inBacklogItem)
+        assertThat(result.totalElements).isEqualTo(1)
     }
 
     @Test
@@ -142,6 +256,6 @@ class JpaProductBacklogItemRepositoryTest {
         productBacklogItemRepository.delete(productBacklogItem.productBacklogItemId)
 
         // Then
-        assertThat(productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId)).isEmpty()
+        assertThat(productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId).content).isEmpty()
     }
 }

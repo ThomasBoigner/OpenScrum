@@ -5,6 +5,7 @@ import at.fhtw.openscrum.management.application.command.DeleteUserCommand
 import at.fhtw.openscrum.management.application.command.DemoteUserCommand
 import at.fhtw.openscrum.management.application.command.PromoteUserCommand
 import at.fhtw.openscrum.management.application.dtos.UserDto
+import at.fhtw.openscrum.management.domain.util.Page
 import at.fhtw.openscrum.management.presentation.forms.RegisterUserForm
 import at.fhtw.openscrum.management.presentation.forms.UpdateUserForm
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import java.security.Principal
 import java.util.UUID
@@ -61,9 +63,12 @@ class UserController(
     @GetMapping(value = [FRAGMENT_USERS_LIST_ITEM])
     fun getUsersListItems(
         principal: Principal,
+        @RequestParam(required = false, name = "query") usernameQuery: String?,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "5") size: Int,
         model: Model,
     ): String {
-        model.addAttribute("users", userApplicationService.getUsers(principal.name))
+        model.addAttribute("userPage", userApplicationService.getUserPage(principal.name, usernameQuery, page, size))
         model.addAttribute(
             "authenticatedUser",
             userApplicationService.getUserByUsername(principal.name),
@@ -183,7 +188,20 @@ class UserController(
         log.debug("Received http POST request to promote user with id {}", userId)
         try {
             val user = userApplicationService.promoteUser(principal.name, PromoteUserCommand(userId))
-            model.addAttribute("users", listOfNotNull(user))
+            model.addAttribute(
+                "userPage",
+                Page(
+                    content = mutableListOf(user),
+                    last = true,
+                    totalPages = 1,
+                    totalElements = 1,
+                    first = true,
+                    size = 1,
+                    number = 1,
+                    numberOfElements = 1,
+                    empty = false,
+                ),
+            )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while promoting user with message: {}", ex.message)
             model.addAttribute("users", emptyList<UserDto>())
@@ -207,7 +225,20 @@ class UserController(
         log.debug("Received http POST request to demote user with id {}", userId)
         try {
             val user = userApplicationService.demoteUser(principal.name, DemoteUserCommand(userId))
-            model.addAttribute("users", listOf(user))
+            model.addAttribute(
+                "userPage",
+                Page(
+                    content = mutableListOf(user),
+                    last = true,
+                    totalPages = 1,
+                    totalElements = 1,
+                    first = true,
+                    size = 1,
+                    number = 1,
+                    numberOfElements = 1,
+                    empty = false,
+                ),
+            )
         } catch (ex: IllegalArgumentException) {
             log.warn("Error while demoting user with message: {}", ex.message)
             model.addAttribute("users", emptyList<UserDto>())

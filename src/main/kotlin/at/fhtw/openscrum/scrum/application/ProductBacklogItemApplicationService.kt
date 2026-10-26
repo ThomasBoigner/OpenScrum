@@ -7,49 +7,77 @@ import at.fhtw.openscrum.scrum.application.command.MarkAsDoneCommand
 import at.fhtw.openscrum.scrum.application.command.UncommitFromSprintCommand
 import at.fhtw.openscrum.scrum.application.command.UpdateProductBacklogItemCommand
 import at.fhtw.openscrum.scrum.application.dtos.ProductBacklogItemDto
+import at.fhtw.openscrum.scrum.application.mappers.ProductBacklogItemMapper
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemRepository
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemService
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemStatus
 import at.fhtw.openscrum.scrum.domain.model.teammember.ProductOwnerRepository
+import at.fhtw.openscrum.scrum.domain.util.Page
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
-import kotlin.collections.map
 
 @Service
 @Transactional(readOnly = true)
 class ProductBacklogItemApplicationService(
+    private val productBacklogItemMapper: ProductBacklogItemMapper,
     private val productBacklogItemService: ProductBacklogItemService,
     private val productBacklogItemRepository: ProductBacklogItemRepository,
     private val productOwnerRepository: ProductOwnerRepository,
     private val log: Logger = LoggerFactory.getLogger(ProductBacklogItemApplicationService::class.java),
 ) {
-    fun getProductBacklogOfProject(projectId: UUID): List<ProductBacklogItemDto> {
-        log.debug("Trying to get all product backlog items of project with id {}", projectId)
-        val productBacklogItems = productBacklogItemRepository.findProductBacklogItemsByProjectId(projectId)
-        log.info("Found all ({}) product backlog items of project with id {}", productBacklogItems.size, projectId)
-        return productBacklogItems.map { ProductBacklogItemDto(it) }
+    fun getProductBacklogOfProject(
+        projectId: UUID,
+        titleQuery: String? = null,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<ProductBacklogItemDto> {
+        log.debug(
+            "Trying to find page {} with size {} of product backlog items of project with id {} matching query '{}'",
+            page,
+            size,
+            projectId,
+            titleQuery,
+        )
+        val productBacklogItemPage = productBacklogItemService.getProductBacklogItems(projectId, titleQuery, page, size)
+        log.info(
+            "Found {} of {} product backlog items of project with id {} matching query '{}'",
+            productBacklogItemPage.numberOfElements,
+            productBacklogItemPage.totalElements,
+            projectId,
+            titleQuery,
+        )
+        return productBacklogItemMapper.toProductBacklogItemDtoPage(productBacklogItemPage)
     }
 
-    fun getProductBacklogOfProjectWithStatusInBacklog(projectId: UUID): List<ProductBacklogItemDto> {
+    fun getProductBacklogOfProjectWithStatusInBacklog(
+        projectId: UUID,
+        page: Int = 0,
+        size: Int = 5,
+    ): Page<ProductBacklogItemDto> {
         log.debug(
-            "Trying to get all product backlog items of project with id {} that have status in backlog",
+            "Trying to find page {} with size {} of product backlog items of project with id {} that have status in backlog",
+            page,
+            size,
             projectId,
         )
-        val productBacklogItems =
-            productBacklogItemRepository.findProductBacklogItemsByProjectIdAndStatus(
+        val productBacklogItemPage =
+            productBacklogItemService.getProductBacklogItemsByStatus(
                 projectId,
                 ProductBacklogItemStatus.IN_BACKLOG,
+                page,
+                size,
             )
         log.info(
-            "Found all ({}) product backlog items of project with id {} that have status in backlog",
-            productBacklogItems.size,
+            "Found {} of {} product backlog items of project with id {} that have status in backlog",
+            productBacklogItemPage.numberOfElements,
+            productBacklogItemPage.totalElements,
             projectId,
         )
-        return productBacklogItems.map { ProductBacklogItemDto(it) }
+        return productBacklogItemMapper.toProductBacklogItemDtoPage(productBacklogItemPage)
     }
 
     fun getProductBacklogItem(
