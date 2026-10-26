@@ -35,3 +35,9 @@ Then he should receive an error that the title must not be blank
 Given a product owner, a title and a blank description  
 When the product owner enters the information into the define product backlog item form  
 Then he should receive an error that the description must not be blank
+
+## Test 7
+
+Given a product owner, a 256 character long title and a 4096 character long description  
+When the product owner enters the information into the define product backlog item form  
+Then he should receive an error that the title and description are too long

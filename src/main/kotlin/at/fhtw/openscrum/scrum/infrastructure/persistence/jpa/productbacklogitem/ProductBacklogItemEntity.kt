@@ -3,6 +3,7 @@ package at.fhtw.openscrum.scrum.infrastructure.persistence.jpa.productbacklogite
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItem
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemId
 import at.fhtw.openscrum.scrum.domain.model.productbacklogitem.ProductBacklogItemStatus
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -18,7 +19,9 @@ class ProductBacklogItemEntity(
     var id: Long? = null,
     var projectId: UUID,
     var productBacklogItemId: UUID,
+    @Column(length = 255)
     var title: String,
+    @Column(length = 4095)
     var description: String,
     @Enumerated(EnumType.STRING)
     var status: ProductBacklogItemStatus,

@@ -12,11 +12,13 @@ class ProductBacklogItem(
     var title: String = ""
         private set(value) {
             require(value.isNotBlank()) { "Title cannot be blank" }
+            require(value.length <= 255) { "Title must not be longer than 255 characters!" }
             field = value
         }
     var description: String = ""
         private set(value) {
             require(value.isNotBlank()) { "Description cannot be blank" }
+            require(value.length <= 4095) { "Description must not be longer than 4095 characters!" }
             field = value
         }
 

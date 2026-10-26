@@ -88,4 +88,4 @@ Then the definition of done should be null
 
 Given a scrum master, a project and a 4096 character long definition of done  
 When the scrum master enters the information into the configure project form  
-Then he receives an error tha the definition of done text is too long
+Then he receives an error that the definition of done text is too long
