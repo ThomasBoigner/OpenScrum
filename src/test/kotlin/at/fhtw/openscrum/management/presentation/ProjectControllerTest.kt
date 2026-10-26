@@ -813,7 +813,7 @@ class ProjectControllerTest : E2ETest() {
 
         // Then
         val error = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
-        assertThat(error.text).contains("Project name must not be longer than 128 characters!")
+        assertThat(error.text).contains("Project name must not be longer than 255 characters!")
         assertThat(managementProjectEntityRepository.findByProjectId(project.projectId.token)!!.projectName).isEqualTo("OpenScrum")
     }
 

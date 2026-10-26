@@ -276,6 +276,45 @@ class SprintTest {
     }
 
     @Test
+    fun ensureSprintPlanningFailsWhenSprintGoalIsTooLong() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val scrumMaster =
+            ScrumMaster(
+                teamMemberId = TeamMemberId(userId = UUID.randomUUID(), projectId = projectId),
+                username = "john.doe",
+                fullName = FullName(firstName = "John", lastName = "Doe"),
+            )
+        val sprint =
+            Sprint(
+                sprintId = SprintId(projectId = projectId),
+                sprintNumber = 1,
+                startDate = LocalDate.of(2000, 1, 1),
+                sprintLength = 2L,
+            )
+        val productBacklogItems =
+            setOf(
+                ProductBacklogItem(
+                    productBacklogItemId = ProductBacklogItemId(projectId = projectId),
+                    title = "Implement login",
+                    description = "As a user I want to log in",
+                ),
+            )
+
+        // When
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                sprint.planSprint(scrumMaster, "g".repeat(4096), productBacklogItems)
+            }
+
+        // Then
+        assertThat(exception.message).isEqualTo("Sprint goal must not be longer than 4095 characters!")
+        assertThat(sprint.sprintGoal).isNull()
+        assertThat(sprint.status).isEqualTo(SprintStatus.NOT_PLANNED)
+        assertThat(sprint.sprintBacklogItems).isEmpty()
+    }
+
+    @Test
     fun ensureSprintPlanningFailsWhenNoProductBacklogItemsAreCommitted() {
         // Given
         val projectId = UUID.randomUUID()

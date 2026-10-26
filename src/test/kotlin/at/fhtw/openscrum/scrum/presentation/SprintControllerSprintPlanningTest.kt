@@ -641,6 +641,94 @@ class SprintControllerSprintPlanningTest : E2ETest() {
     }
 
     /*
+    Given a scrum master, a sprint, a 4096 character long sprint goal and product backlog items
+    When the scrum master enters the information into the plan sprint form
+    Then he receives an error that the sprint goal is too long
+     */
+    @Test
+    fun ensurePlanSprintDoesNotWorkWhenSprintGoalIsTooLong() {
+        // Given
+        val productOwner =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "product.owner",
+                firstName = "Product",
+                lastName = "Owner",
+                password = "abc123",
+                email = "product.owner@gmail.com",
+            )
+
+        val scrumMasterPassword = "abc123"
+        val scrumMaster =
+            userService.registerUser(
+                authenticatedUser = admin,
+                username = "scrum.master",
+                firstName = "Scrum",
+                lastName = "Master",
+                password = scrumMasterPassword,
+                email = "scrum.master@gmail.com",
+            )
+
+        val project =
+            projectService.createProject(
+                authenticatedUser = admin,
+                projectName = "OpenScrum",
+                productOwner = productOwner,
+                scrumMaster = scrumMaster,
+                developers = setOf(),
+            )
+
+        await()
+            .atMost(Duration.ofSeconds(10))
+            .pollInterval(Duration.ofMillis(200))
+            .until {
+                teamMemberApplicationService.getProductOwnerOfProject(project.projectId.token) != null &&
+                    teamMemberApplicationService.getScrumMasterOfProject(project.projectId.token) != null
+            }
+
+        val productBacklogItem =
+            productBacklogItemApplicationService.defineProductBacklogItem(
+                productOwner.username,
+                DefineProductBacklogItemCommand(
+                    projectId = project.projectId.token,
+                    title = "Implement Login",
+                    description = "As a user, I want to log in to the application.",
+                ),
+            )
+
+        val sprint =
+            sprintApplicationService.initializeSprint(
+                InitializeSprintCommand(
+                    projectId = project.projectId.token,
+                    sprintLength = 2,
+                ),
+            )
+
+        // When
+        login(scrumMaster.username, scrumMasterPassword)
+
+        webDriver.get("$baseUrl/projects/${project.projectId.token}/sprints/${sprint.sprintId}/planning")
+        webDriver.findElement(By.cssSelector("textarea#sprint-goal-input")).sendKeys("g".repeat(4096))
+
+        val checkbox =
+            wait.until(
+                ExpectedConditions.elementToBeClickable(
+                    By.cssSelector("input[name='productBacklogIds'][value='${productBacklogItem.productBacklogItemId}']"),
+                ),
+            )
+        checkbox.click()
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("section#plan-sprint-form button"))).click()
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.error-message")))
+
+        // Then
+        assertThat(webDriver.pageSource).contains("Sprint goal must not be longer than 4095 characters!")
+        val unplannedSprint = sprintApplicationService.getSprint(project.projectId.token, sprint.sprintId)!!
+        assertThat(unplannedSprint.sprintGoal).isNull()
+        assertThat(unplannedSprint.status.isPlanned).isFalse()
+    }
+
+    /*
     Given a scrum master, a sprint and a sprint goal and no product backlog items
     When the scrum master enters the information into the plan sprint form
     Then the scrum master should receive an error that the sprint backlog can not be empty
